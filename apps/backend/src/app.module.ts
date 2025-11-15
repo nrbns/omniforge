@@ -19,6 +19,7 @@ import { SearchModule } from './search/search.module';
 import { CodeReviewModule } from './code-review/code-review.module';
 import { CommonModule } from './common/common.module';
 import { HealthModule } from './health/health.module';
+import { ScaffoldModule } from './scaffold/scaffold.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { HealthModule } from './health/health.module';
     SearchModule,
     CodeReviewModule,
     HealthModule,
+    ScaffoldModule,
     IdeasModule,
     ProjectsModule,
     BuildsModule,

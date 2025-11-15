@@ -6,6 +6,7 @@ import { BuildProcessor } from './processors/build.processor';
 import { DeployProcessor } from './processors/deploy.processor';
 import { RAGModule } from '../rag/rag.module';
 import { KnowledgeBaseModule } from '../knowledge-base/knowledge-base.module';
+import { ScaffoldModule } from '../scaffold/scaffold.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { KnowledgeBaseModule } from '../knowledge-base/knowledge-base.module';
     ),
     RAGModule,
     KnowledgeBaseModule,
+    ScaffoldModule,
   ],
   providers: [
     AgentsService,

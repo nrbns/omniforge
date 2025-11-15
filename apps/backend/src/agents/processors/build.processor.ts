@@ -3,6 +3,7 @@ import { Job } from 'bullmq';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RealtimeService } from '../../realtime/realtime.service';
 import { HuggingFaceService } from '../../huggingface/huggingface.service';
+import { ScaffoldService } from '../../scaffold/scaffold.service';
 import {
   PlannerAgent,
   UIDesignerAgent,
@@ -41,6 +42,7 @@ export class BuildProcessor extends WorkerHost {
     private prisma: PrismaService,
     private realtime: RealtimeService,
     private huggingFace: HuggingFaceService,
+    private scaffoldService: ScaffoldService,
   ) {
     super();
   }
@@ -75,6 +77,16 @@ export class BuildProcessor extends WorkerHost {
       // Step 3b: Review and optimize generated code
       await this.updateBuildLog(buildId, 'Reviewing and optimizing code...');
       // Code review and optimization would happen here
+
+      // Step 3c: Generate scaffold
+      await this.updateBuildLog(buildId, 'Generating project scaffold...');
+      const scaffoldPath = await this.scaffoldService.generateScaffold(ideaId, plannedSpec.name);
+      await this.updateProgress(buildId, 50);
+      
+      // Update build with scaffold path
+      await this.updateBuildStatus(buildId, 'RUNNING', {
+        outputPath: scaffoldPath,
+      });
 
       // Step 4: Generate backend code
       await this.updateBuildLog(buildId, 'Generating backend code...');
