@@ -66,6 +66,53 @@
 
 ## 🚀 Quick Start
 
+### Demo Mode (No API Keys Required!)
+
+The fastest way to try OmniForge:
+
+```bash
+# Clone the repository
+git clone https://github.com/nrbns/omniforge.git
+cd omniforge
+
+# Install dependencies
+npm install
+
+# Run demo setup (handles everything automatically)
+npm run demo:setup
+```
+
+This will:
+- ✅ Check prerequisites (Node.js, Docker)
+- ✅ Start Docker services (PostgreSQL, Redis, Neo4j, Qdrant)
+- ✅ Run database migrations
+- ✅ Seed demo data
+- ✅ Start backend (port 3001) and frontend (port 3000)
+
+**Access the demo:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001/api
+- API Docs: http://localhost:3001/api/docs
+
+**Test the API:**
+```bash
+# Health check
+curl http://localhost:3001/api/health
+
+# Create an idea
+curl -X POST http://localhost:3001/api/ideas \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "demo-user",
+    "title": "My App Idea",
+    "rawInput": "I want to build a task management app"
+  }'
+```
+
+For detailed testing instructions, see [QUICK_TEST.md](./QUICK_TEST.md).
+
+### Manual Setup (Production)
+
 ### ⚡ **Fastest Way (Demo Mode - No API Keys Required!)**
 
 Get OmniForge running in **under 5 minutes** without any API keys:
