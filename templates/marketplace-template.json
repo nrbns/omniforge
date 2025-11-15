@@ -1,0 +1,58 @@
+{
+  "name": "Marketplace Template",
+  "description": "Template for building marketplaces with listings, search, and transactions",
+  "version": "1.0.0",
+  "pages": [
+    {
+      "id": "home",
+      "name": "Home",
+      "path": "/",
+      "components": ["SearchBar", "CategoryGrid", "FeaturedListings"]
+    },
+    {
+      "id": "listings",
+      "name": "Listings",
+      "path": "/listings",
+      "components": ["ListingCard", "Filters", "Pagination"]
+    },
+    {
+      "id": "listing-detail",
+      "name": "Listing Detail",
+      "path": "/listings/:id",
+      "components": ["ListingGallery", "Description", "SellerInfo", "ContactForm"]
+    }
+  ],
+  "dataModels": [
+    {
+      "name": "Listing",
+      "fields": [
+        { "name": "title", "type": "String", "required": true },
+        { "name": "description", "type": "String", "required": true },
+        { "name": "price", "type": "Float", "required": true },
+        { "name": "sellerId", "type": "String", "required": true }
+      ]
+    },
+    {
+      "name": "Transaction",
+      "fields": [
+        { "name": "listingId", "type": "String", "required": true },
+        { "name": "buyerId", "type": "String", "required": true },
+        { "name": "amount", "type": "Float", "required": true }
+      ]
+    }
+  ],
+  "apis": [
+    { "path": "/api/listings", "method": "GET" },
+    { "path": "/api/listings", "method": "POST" },
+    { "path": "/api/listings/:id", "method": "GET" },
+    { "path": "/api/transactions", "method": "POST" }
+  ],
+  "integrations": [
+    { "name": "Stripe", "type": "payment" }
+  ],
+  "ui": {
+    "theme": "light",
+    "primaryColor": "#10b981"
+  }
+}
+

@@ -1,0 +1,58 @@
+{
+  "name": "SaaS Application Template",
+  "description": "Template for building SaaS applications with user management, subscriptions, and billing",
+  "version": "1.0.0",
+  "pages": [
+    {
+      "id": "landing",
+      "name": "Landing Page",
+      "path": "/",
+      "components": ["Hero", "Features", "Pricing", "CTA"]
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "path": "/dashboard",
+      "components": ["Stats", "RecentActivity", "QuickActions"]
+    },
+    {
+      "id": "settings",
+      "name": "Settings",
+      "path": "/settings",
+      "components": ["Profile", "Billing", "Team"]
+    }
+  ],
+  "dataModels": [
+    {
+      "name": "User",
+      "fields": [
+        { "name": "email", "type": "String", "required": true },
+        { "name": "name", "type": "String", "required": true },
+        { "name": "subscription", "type": "String", "required": false }
+      ]
+    },
+    {
+      "name": "Subscription",
+      "fields": [
+        { "name": "userId", "type": "String", "required": true },
+        { "name": "plan", "type": "String", "required": true },
+        { "name": "status", "type": "String", "required": true }
+      ]
+    }
+  ],
+  "apis": [
+    { "path": "/api/users", "method": "GET" },
+    { "path": "/api/users", "method": "POST" },
+    { "path": "/api/subscriptions", "method": "GET" },
+    { "path": "/api/subscriptions", "method": "POST" }
+  ],
+  "integrations": [
+    { "name": "Stripe", "type": "payment" },
+    { "name": "SendGrid", "type": "email" }
+  ],
+  "ui": {
+    "theme": "light",
+    "primaryColor": "#3b82f6"
+  }
+}
+
