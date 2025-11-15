@@ -1,4 +1,4 @@
-import { LLMService } from '../llm/llm.service';
+import { LLMService } from '@omniforge/llm';
 
 export class CodeReviewAgent {
   private llmService: LLMService;

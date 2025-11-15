@@ -54,7 +54,7 @@ export class HealthController {
       const latency = Date.now() - start;
       return { status: 'ok', latency };
     } catch (error) {
-      return { status: 'error', error: (error as Error).message };
+      return { status: 'error', latency: undefined };
     }
   }
 
@@ -65,7 +65,7 @@ export class HealthController {
       const latency = Date.now() - start;
       return { status: 'ok', latency };
     } catch (error) {
-      return { status: 'error', error: (error as Error).message };
+      return { status: 'error', latency: undefined };
     }
   }
 }

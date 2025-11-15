@@ -1,5 +1,9 @@
 import Link from 'next/link';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import {
+  ConditionalSignedIn,
+  ConditionalSignedOut,
+  ConditionalUserButton,
+} from '../components/AuthWrappers';
 
 export default function HomePage() {
   return (
@@ -10,29 +14,29 @@ export default function HomePage() {
             OmniForge
           </Link>
           <div className="flex items-center gap-4">
-            <SignedOut>
+            <ConditionalSignedOut>
               <Link
-                href="/sign-in"
+                href="/dashboard"
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 Sign In
               </Link>
               <Link
-                href="/sign-up"
+                href="/dashboard"
                 className="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700"
               >
                 Get Started
               </Link>
-            </SignedOut>
-            <SignedIn>
+            </ConditionalSignedOut>
+            <ConditionalSignedIn>
               <Link
                 href="/dashboard"
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 Dashboard
               </Link>
-              <UserButton />
-            </SignedIn>
+              <ConditionalUserButton />
+            </ConditionalSignedIn>
           </div>
         </div>
       </header>
@@ -49,22 +53,22 @@ export default function HomePage() {
             multi-agent generation, and app store packaging.
           </p>
           <div className="flex gap-4 justify-center">
-            <SignedOut>
+            <ConditionalSignedOut>
               <Link
-                href="/sign-up"
+                href="/dashboard"
                 className="px-8 py-4 text-lg font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
               >
                 Start Building
               </Link>
-            </SignedOut>
-            <SignedIn>
+            </ConditionalSignedOut>
+            <ConditionalSignedIn>
               <Link
                 href="/dashboard"
                 className="px-8 py-4 text-lg font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
               >
                 Go to Dashboard
               </Link>
-            </SignedIn>
+            </ConditionalSignedIn>
             <a
               href="https://github.com/omniforge/omniforge"
               target="_blank"

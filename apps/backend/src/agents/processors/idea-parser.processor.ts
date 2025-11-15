@@ -7,6 +7,7 @@ import { RAGService } from '@omniforge/rag';
 import { LLMService } from '@omniforge/llm';
 import { TemplateRetrievalService } from '@omniforge/knowledge-base';
 import { IdeaParserAgent } from '@omniforge/redix';
+import { Idea } from '@omniforge/shared';
 import { Logger } from '@nestjs/common';
 
 interface ParseJob {
@@ -58,7 +59,15 @@ export class IdeaParserProcessor extends WorkerHost {
       this.logger.log(`Parsing idea with RAG + Multi-LLM: ${title}`);
       await this.realtime.emit(`idea:${ideaId}`, 'idea.parsing', { ideaId, progress: 20 });
 
-      const spec = await ideaParserAgent.parseIdea(idea);
+      // Convert null to undefined for compatibility with Idea type
+      const ideaForParsing: Idea = {
+        ...idea,
+        description: idea.description ?? undefined,
+        rawInput: idea.rawInput ?? undefined,
+        parentIdeaId: idea.parentIdeaId ?? undefined,
+        specJson: idea.specJson ?? undefined,
+      };
+      const spec = await ideaParserAgent.parseIdea(ideaForParsing);
 
       await this.realtime.emit(`idea:${ideaId}`, 'idea.parsing', { ideaId, progress: 80 });
 
@@ -73,7 +82,7 @@ export class IdeaParserProcessor extends WorkerHost {
         where: { id: ideaId },
         data: {
           status: 'PARSED',
-          specJson: spec,
+          specJson: spec as any,
         },
       });
 

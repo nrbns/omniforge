@@ -200,7 +200,7 @@ export class PlannerAgent {
 
     updatedTask.status = 'completed';
     updatedTask.logs = [
-      ...updatedTask.logs,
+      ...(updatedTask.logs || []),
       {
         timestamp: new Date().toISOString(),
         level: 'info',

@@ -1,12 +1,12 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useConditionalUser } from '../../components/AuthWrappers';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Idea } from '@omniforge/shared';
 
 export default function DashboardPage() {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded } = useConditionalUser();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +40,10 @@ export default function DashboardPage() {
             OmniForge
           </Link>
           <div className="text-sm text-gray-600">
-            Welcome, {user?.firstName || user?.emailAddresses[0]?.emailAddress}
+            Welcome,{' '}
+            {user?.firstName ||
+              (user as any)?.emailAddresses?.[0]?.emailAddress ||
+              'Demo User'}
           </div>
         </div>
       </header>

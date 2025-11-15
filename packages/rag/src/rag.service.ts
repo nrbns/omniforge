@@ -125,8 +125,22 @@ ${documents
     language: string = 'typescript',
     framework?: string
   ): Promise<string> {
+    // Retrieve relevant documents first (if retrieval service available)
+    let retrievedDocs: any[] = [];
+    try {
+      const queryResult = await (this as any).retrievalService?.retrieve(
+        `Generate ${language} code for: ${requirements}${framework ? ` using ${framework}` : ''}`,
+        'omniforge',
+        5
+      );
+      retrievedDocs = queryResult?.results?.map((r: any) => r.document) || [];
+    } catch {
+      // Retrieval not available, continue with empty docs
+    }
+    
     const context: RAGContext = {
       query: `Generate ${language} code for: ${requirements}${framework ? ` using ${framework}` : ''}`,
+      retrievedDocs,
     };
 
     const response = await this.generate(context);

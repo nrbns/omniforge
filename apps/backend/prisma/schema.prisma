@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
@@ -55,40 +55,40 @@ enum ProjectStatus {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  image         String?
-  clerkId       String?   @unique
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  clerkId   String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  ideas         Idea[]
-  commits       Commit[]
-  projects      Project[]
-  deployments   Deployment[]
+  ideas       Idea[]
+  commits     Commit[]
+  projects    Project[]
+  deployments Deployment[]
 
   @@map("users")
 }
 
 model Idea {
-  id            String      @id @default(cuid())
-  userId        String
-  title         String
-  description   String?     @db.Text
-  rawInput      String?     @db.Text
-  specJson      Json?       // Full extracted spec
-  status        IdeaStatus  @default(DRAFT)
-  branch        String      @default("main")
-  parentIdeaId  String?     // For branches
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id           String     @id @default(cuid())
+  userId       String
+  title        String
+  description  String?    @db.Text
+  rawInput     String?    @db.Text
+  specJson     Json? // Full extracted spec
+  status       IdeaStatus @default(DRAFT)
+  branch       String     @default("main")
+  parentIdeaId String? // For branches
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  commits       Commit[]
-  projects      Project[]
-  branches      Idea[]      @relation("IdeaBranches", fields: [parentIdeaId], references: [id])
-  parent        Idea?       @relation("IdeaBranches")
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commits  Commit[]
+  projects Project[]
+  branches Idea[]    @relation("IdeaBranches")
+  parent   Idea?     @relation("IdeaBranches", fields: [parentIdeaId], references: [id])
 
   @@index([userId])
   @@index([status])
@@ -97,18 +97,18 @@ model Idea {
 }
 
 model Commit {
-  id            String      @id @default(cuid())
-  ideaId        String
-  userId        String
-  type          CommitType
-  message       String
-  branch        String
-  diff          Json?       // Idea changes diff
-  specSnapshot  Json?       // Spec at this commit
-  createdAt     DateTime    @default(now())
+  id           String     @id @default(cuid())
+  ideaId       String
+  userId       String
+  type         CommitType
+  message      String
+  branch       String
+  diff         Json? // Idea changes diff
+  specSnapshot Json? // Spec at this commit
+  createdAt    DateTime   @default(now())
 
-  idea          Idea        @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  idea Idea @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([ideaId])
   @@index([branch])
@@ -116,20 +116,20 @@ model Commit {
 }
 
 model Project {
-  id            String        @id @default(cuid())
-  ideaId        String
-  userId        String
-  name          String
-  description   String?       @db.Text
-  status        ProjectStatus @default(DRAFT)
-  config        Json?         // Build config, env vars, etc.
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id          String        @id @default(cuid())
+  ideaId      String
+  userId      String
+  name        String
+  description String?       @db.Text
+  status      ProjectStatus @default(DRAFT)
+  config      Json? // Build config, env vars, etc.
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  idea          Idea          @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  builds        Build[]
-  deployments   Deployment[]
+  idea        Idea         @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  builds      Build[]
+  deployments Deployment[]
 
   @@index([ideaId])
   @@index([userId])
@@ -138,18 +138,18 @@ model Project {
 }
 
 model Build {
-  id            String      @id @default(cuid())
-  projectId     String
-  status        BuildStatus @default(PENDING)
-  agent         String?     // Which agent ran it
-  logs          String?     @db.Text
-  outputPath    String?     // Path to built artifacts
-  error         String?     @db.Text
-  startedAt     DateTime?
-  completedAt   DateTime?
-  createdAt     DateTime    @default(now())
+  id          String      @id @default(cuid())
+  projectId   String
+  status      BuildStatus @default(PENDING)
+  agent       String? // Which agent ran it
+  logs        String?     @db.Text
+  outputPath  String? // Path to built artifacts
+  error       String?     @db.Text
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime    @default(now())
 
-  project       Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([status])
@@ -157,21 +157,21 @@ model Build {
 }
 
 model Deployment {
-  id            String            @id @default(cuid())
-  projectId     String
-  userId        String
-  buildId       String?
-  status        DeploymentStatus  @default(PENDING)
-  platform      String            // vercel, docker, ios, android
-  url           String?
-  version       String?
-  config        Json?             // Deployment-specific config
-  error         String?           @db.Text
-  deployedAt    DateTime?
-  createdAt     DateTime          @default(now())
+  id         String           @id @default(cuid())
+  projectId  String
+  userId     String
+  buildId    String?
+  status     DeploymentStatus @default(PENDING)
+  platform   String // vercel, docker, ios, android
+  url        String?
+  version    String?
+  config     Json? // Deployment-specific config
+  error      String?          @db.Text
+  deployedAt DateTime?
+  createdAt  DateTime         @default(now())
 
-  project       Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([status])
@@ -179,17 +179,16 @@ model Deployment {
 }
 
 model DesignToken {
-  id            String      @id @default(cuid())
-  projectId     String?     // Null for global tokens
-  key           String      // e.g., "color.primary"
-  value         String      // e.g., "#3b82f6"
-  category      String      // color, spacing, typography, etc.
-  figmaId       String?     // Sync with Figma
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id        String   @id @default(cuid())
+  projectId String? // Null for global tokens
+  key       String // e.g., "color.primary"
+  value     String // e.g., "#3b82f6"
+  category  String // color, spacing, typography, etc.
+  figmaId   String? // Sync with Figma
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([projectId, key])
   @@index([projectId])
   @@map("design_tokens")
 }
-

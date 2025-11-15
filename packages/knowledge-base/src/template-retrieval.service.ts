@@ -1,6 +1,6 @@
 import { KnowledgeEntry, TemplateMatch } from './types';
 import { KnowledgeBaseService } from './knowledge-base.service';
-import { VectorStoreService } from '../rag/src/vector-store.service';
+import { VectorStoreService } from '@omniforge/rag';
 
 export class TemplateRetrievalService {
   private knowledgeBase: KnowledgeBaseService;

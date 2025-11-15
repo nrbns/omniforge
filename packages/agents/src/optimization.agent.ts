@@ -1,4 +1,4 @@
-import { LLMService } from '../llm/llm.service';
+import { LLMService } from '@omniforge/llm';
 
 export class OptimizationAgent {
   private llmService: LLMService;
@@ -93,7 +93,7 @@ Provide optimized queries with indexes and explainations:`;
 
       // Extract queries from response
       const queryMatches = response.match(/\d+\.\s*([\s\S]*?)(?=\d+\.|$)/g) || [];
-      return queryMatches.map((match) => match.replace(/^\d+\.\s*/, '').trim());
+      return queryMatches.map((match: string) => match.replace(/^\d+\.\s*/, '').trim());
     } catch (error) {
       console.error('Error optimizing queries:', error);
       return queries;

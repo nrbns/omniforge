@@ -1,4 +1,4 @@
-import { LLMService } from '../llm/llm.service';
+import { LLMService } from '@omniforge/llm';
 
 export class PerformanceAgent {
   private llmService: LLMService;
@@ -106,7 +106,7 @@ Provide specific, actionable recommendations:`;
 
       // Extract recommendations (numbered list)
       const recommendations = response.match(/\d+\.\s*([^\n]+)/g) || [];
-      return recommendations.map((rec) => rec.replace(/^\d+\.\s*/, '').trim());
+      return recommendations.map((rec: string) => rec.replace(/^\d+\.\s*/, '').trim());
     } catch (error) {
       console.error('Error generating improvements:', error);
       return [];

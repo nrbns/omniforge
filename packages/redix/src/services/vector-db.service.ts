@@ -1,4 +1,10 @@
-import { HuggingFaceService } from '../../../apps/backend/src/huggingface/huggingface.service';
+// HuggingFaceService should be injected via constructor, not imported
+// This will be provided by the backend module
+export interface HuggingFaceService {
+  generateEmbedding(text: string): Promise<number[]>;
+  generateEmbeddings(texts: string[]): Promise<number[][]>;
+  generateText(prompt: string, maxTokens?: number, temperature?: number): Promise<string>;
+}
 
 export class VectorDBService {
   private client: any;

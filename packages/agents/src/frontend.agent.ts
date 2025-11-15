@@ -18,7 +18,8 @@ export class FrontendAgent {
 
     // Generate pages
     for (const page of spec.pages || []) {
-      const pageContent = await this.generatePageComponent(page);
+      // Generate page component inline
+      const pageContent = this.generatePageContent(page);
       files.push(this.generatePage(page, pageContent));
       files.push(this.generatePageMetadata(page));
     }
@@ -74,6 +75,11 @@ export default function RootLayout({
 }
 `,
     };
+  }
+
+  private generatePageContent(page: PageSpec): string {
+    const components = page.components || [];
+    return components.map((c, i) => this.generateComponentCode(c, i)).join('\n        ');
   }
 
   private generatePage(page: PageSpec, content?: string): { path: string; content: string } {

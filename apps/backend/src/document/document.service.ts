@@ -53,6 +53,7 @@ export class DocumentService {
           ideaId,
           source: doc.metadata.filename,
           processedAt: doc.metadata.extractedAt,
+          createdAt: new Date(),
         },
       }]);
     } catch (error) {

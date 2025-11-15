@@ -108,7 +108,7 @@ export class IdeasService {
         message: dto.message,
         branch: dto.branch || idea.branch,
         diff: dto.diff,
-        specSnapshot: idea.specJson,
+        specSnapshot: idea.specJson ?? undefined,
       },
     });
 
@@ -126,7 +126,7 @@ export class IdeasService {
         title: `${parentIdea.title} (${dto.branchName})`,
         description: parentIdea.description,
         rawInput: parentIdea.rawInput,
-        specJson: parentIdea.specJson,
+        specJson: parentIdea.specJson ?? undefined,
         branch: dto.branchName,
         parentIdeaId: id,
         status: parentIdea.status,

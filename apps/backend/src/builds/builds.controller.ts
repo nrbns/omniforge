@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { BuildsService } from './builds.service';
 import { ProjectsService } from '../projects/projects.service';
@@ -47,9 +48,10 @@ export class BuildsController {
   @ApiResponse({ status: 200, description: 'Task status' })
   async getTasks(@Param('id') id: string) {
     const build = await this.buildsService.findOne(id);
+    // Build model doesn't have config, return empty tasks array for now
     return {
       buildId: id,
-      tasks: build.config?.tasks || [],
+      tasks: [],
     };
   }
 
@@ -59,12 +61,11 @@ export class BuildsController {
   @ApiResponse({ status: 200, description: 'Download build artifact' })
   async downloadBuild(@Param('id') id: string, @Res() res: Response) {
     const build = await this.buildsService.findOne(id);
-    if (build.status !== 'COMPLETED' || !build.outputPath) {
-      res.status(400).json({ error: 'Build not completed or no output available' });
-      return;
+    if (build.status !== 'SUCCESS' || !build.outputPath) {
+      return res.status(400).json({ error: 'Build not completed or no output available' });
     }
     
     const filename = build.outputPath.split('/').pop() || `build-${id}.tar.gz`;
-    res.redirect(`/api/scaffold/download/${encodeURIComponent(filename)}`);
+    return res.redirect(`/api/scaffold/download/${encodeURIComponent(filename)}`);
   }
 }

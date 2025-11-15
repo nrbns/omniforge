@@ -53,8 +53,13 @@ export class SearchService {
    * RAG-enhanced search with generated answers
    */
   async ragSearch(query: string, limit: number = 10) {
+    // First retrieve documents
+    const queryResult = await this.retrieval.retrieve(query, 'omniforge', limit);
+    const retrievedDocs = queryResult.results?.map(r => r.document) || [];
+    
     const response = await this.rag.generate({
       query,
+      retrievedDocs,
       maxTokens: 1024,
     });
 

@@ -74,13 +74,14 @@ export class TokensService {
     const results = [];
 
     for (const token of tokens) {
+      // Handle nullable projectId for unique constraint
+      // Prisma requires explicit type handling for nullable fields in unique constraints
+      const whereClause = projectId
+        ? { projectId_key: { projectId, key: token.key } }
+        : { projectId_key: { projectId: null, key: token.key } };
+
       const result = await this.prisma.designToken.upsert({
-        where: {
-          projectId_key: {
-            projectId: projectId || null,
-            key: token.key,
-          },
-        },
+        where: whereClause as any, // Type assertion needed for nullable unique constraint
         update: {
           value: token.value,
           category: token.category,

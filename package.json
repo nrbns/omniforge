@@ -28,6 +28,9 @@
     "docker:clean": "docker-compose down -v",
     "demo": "npm run docker:up && npm run dev:demo",
     "demo:setup": "node scripts/demo.js || bash scripts/demo.sh || powershell -ExecutionPolicy Bypass -File scripts/demo.ps1",
+    "docker:check": "powershell -ExecutionPolicy Bypass -File scripts/check-docker.ps1",
+    "start": "powershell -ExecutionPolicy Bypass -File scripts/quick-start.ps1",
+    "wait-for-docker": "powershell -ExecutionPolicy Bypass -File scripts/wait-and-start.ps1",
     "setup": "npm install && npm run docker:up && npm run db:generate && npm run db:migrate && npm run db:seed",
     "clean": "turbo run clean && rm -rf node_modules",
     "prepare": "husky install || true"

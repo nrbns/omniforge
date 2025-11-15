@@ -34,7 +34,7 @@ export class ScaffoldService {
       throw new Error(`Idea ${ideaId} has no specification. Parse it first.`);
     }
 
-    const spec = idea.specJson as AppSpec;
+    const spec = idea.specJson as any; // AppSpec from shared types
     const name = projectName || spec.name || idea.title;
 
     this.logger.log(`Generating scaffold for idea ${ideaId} as "${name}"`);
@@ -47,7 +47,7 @@ export class ScaffoldService {
     const build = await this.prisma.build.create({
       data: {
         projectId: ideaId, // Using ideaId as placeholder
-        status: 'COMPLETED',
+        status: 'SUCCESS',
         startedAt: new Date(),
         completedAt: new Date(),
         outputPath: tarPath,

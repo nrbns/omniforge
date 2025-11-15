@@ -1,5 +1,5 @@
 import { Idea } from '@omniforge/shared';
-import { AppSpec } from '../types';
+import { AppSpec } from '@omniforge/shared';
 import { RAGService } from '@omniforge/rag';
 import { LLMService } from '@omniforge/llm';
 import { TemplateRetrievalService } from '@omniforge/knowledge-base';

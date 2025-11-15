@@ -20,7 +20,7 @@ export class KnowledgeBaseService {
       id: entry.id,
       content: entry.content,
       metadata: {
-        type: entry.category,
+        type: entry.category === 'example' ? 'template' : entry.category as 'idea' | 'code' | 'template' | 'knowledge' | 'user_input',
         title: entry.title,
         tags: entry.tags,
         ...entry.metadata,
