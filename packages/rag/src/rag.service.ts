@@ -1,6 +1,6 @@
 import { RAGContext, RAGResponse, Document } from './types';
 import { RetrievalService } from './retrieval.service';
-import { LLMService } from '../llm/llm.service';
+import { LLMService } from '@omniforge/llm';
 
 export class RAGService {
   private retrievalService: RetrievalService;

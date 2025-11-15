@@ -2,21 +2,22 @@ import { Module } from '@nestjs/common';
 import { KnowledgeBaseService } from '@omniforge/knowledge-base';
 import { TemplateRetrievalService } from '@omniforge/knowledge-base';
 import { KnowledgeBaseController } from './knowledge-base.controller';
-import { VectorStoreService } from '@omniforge/rag';
+import { RAGModule } from '../rag/rag.module';
 
 @Module({
+  imports: [RAGModule],
   controllers: [KnowledgeBaseController],
   providers: [
     {
       provide: 'KnowledgeBaseService',
-      useFactory: (vectorStore: VectorStoreService) => {
+      useFactory: (vectorStore: any) => {
         return new KnowledgeBaseService(vectorStore);
       },
       inject: ['VectorStoreService'],
     },
     {
       provide: 'TemplateRetrievalService',
-      useFactory: (kb: KnowledgeBaseService, vectorStore: VectorStoreService) => {
+      useFactory: (kb: KnowledgeBaseService, vectorStore: any) => {
         return new TemplateRetrievalService(kb, vectorStore);
       },
       inject: ['KnowledgeBaseService', 'VectorStoreService'],

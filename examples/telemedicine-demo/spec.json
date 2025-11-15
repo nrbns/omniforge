@@ -1,0 +1,145 @@
+{
+  "version": "1.0.0",
+  "name": "Telemedicine App",
+  "description": "A telemedicine app for remote consultations with video calls, prescription management, and appointment scheduling",
+  "pages": [
+    {
+      "id": "home",
+      "name": "Home",
+      "path": "/",
+      "components": ["Hero", "Features", "CTA"]
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "path": "/dashboard",
+      "components": ["Stats", "UpcomingAppointments", "QuickActions"]
+    },
+    {
+      "id": "patient-portal",
+      "name": "Patient Portal",
+      "path": "/patient",
+      "components": ["AppointmentsList", "PrescriptionsList", "VideoCall"]
+    },
+    {
+      "id": "doctor-portal",
+      "name": "Doctor Portal",
+      "path": "/doctor",
+      "components": ["Schedule", "PatientQueue", "VideoCall"]
+    },
+    {
+      "id": "appointments",
+      "name": "Appointments",
+      "path": "/appointments",
+      "components": ["AppointmentCalendar", "BookingForm"]
+    },
+    {
+      "id": "prescriptions",
+      "name": "Prescriptions",
+      "path": "/prescriptions",
+      "components": ["PrescriptionsList", "PrescriptionDetail"]
+    }
+  ],
+  "dataModels": [
+    {
+      "name": "User",
+      "fields": [
+        { "name": "id", "type": "String", "required": true },
+        { "name": "email", "type": "String", "required": true },
+        { "name": "name", "type": "String", "required": true },
+        { "name": "role", "type": "String", "required": true },
+        { "name": "createdAt", "type": "DateTime", "required": true }
+      ]
+    },
+    {
+      "name": "Patient",
+      "fields": [
+        { "name": "id", "type": "String", "required": true },
+        { "name": "userId", "type": "String", "required": true },
+        { "name": "dateOfBirth", "type": "DateTime", "required": false },
+        { "name": "medicalHistory", "type": "String", "required": false }
+      ]
+    },
+    {
+      "name": "Doctor",
+      "fields": [
+        { "name": "id", "type": "String", "required": true },
+        { "name": "userId", "type": "String", "required": true },
+        { "name": "licenseNumber", "type": "String", "required": true },
+        { "name": "specialization", "type": "String", "required": true }
+      ]
+    },
+    {
+      "name": "Appointment",
+      "fields": [
+        { "name": "id", "type": "String", "required": true },
+        { "name": "patientId", "type": "String", "required": true },
+        { "name": "doctorId", "type": "String", "required": true },
+        { "name": "scheduledAt", "type": "DateTime", "required": true },
+        { "name": "status", "type": "String", "required": true },
+        { "name": "videoCallUrl", "type": "String", "required": false }
+      ]
+    },
+    {
+      "name": "Prescription",
+      "fields": [
+        { "name": "id", "type": "String", "required": true },
+        { "name": "appointmentId", "type": "String", "required": true },
+        { "name": "patientId", "type": "String", "required": true },
+        { "name": "doctorId", "type": "String", "required": true },
+        { "name": "medications", "type": "Json", "required": true },
+        { "name": "instructions", "type": "String", "required": true },
+        { "name": "prescribedAt", "type": "DateTime", "required": true }
+      ]
+    }
+  ],
+  "apis": [
+    { "path": "/api/auth/login", "method": "POST" },
+    { "path": "/api/auth/register", "method": "POST" },
+    { "path": "/api/appointments", "method": "GET" },
+    { "path": "/api/appointments", "method": "POST" },
+    { "path": "/api/appointments/:id", "method": "GET" },
+    { "path": "/api/appointments/:id", "method": "PUT" },
+    { "path": "/api/appointments/:id", "method": "DELETE" },
+    { "path": "/api/prescriptions", "method": "GET" },
+    { "path": "/api/prescriptions", "method": "POST" },
+    { "path": "/api/video/call/:id", "method": "POST" }
+  ],
+  "realtime": [
+    {
+      "channel": "appointments",
+      "events": ["appointment.created", "appointment.updated", "appointment.cancelled"]
+    },
+    {
+      "channel": "video",
+      "events": ["call.started", "call.ended", "call.signal"]
+    },
+    {
+      "channel": "prescriptions",
+      "events": ["prescription.created"]
+    }
+  ],
+  "integrations": [
+    { "name": "Zoom", "type": "video", "config": { "apiKey": "{{ZOOM_API_KEY}}" } },
+    { "name": "Twilio", "type": "video", "config": { "apiKey": "{{TWILIO_API_KEY}}" } },
+    { "name": "Stripe", "type": "payment", "config": { "apiKey": "{{STRIPE_API_KEY}}" } },
+    { "name": "SendGrid", "type": "email", "config": { "apiKey": "{{SENDGRID_API_KEY}}" } }
+  ],
+  "ui": {
+    "theme": "light",
+    "primaryColor": "#2563eb",
+    "colors": {
+      "primary": "#2563eb",
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "error": "#ef4444"
+    },
+    "typography": {
+      "fontFamily": "Inter, sans-serif"
+    }
+  },
+  "generatedAt": "2024-01-15T10:00:00.000Z",
+  "generator": "OmniForge v0.1.0",
+  "_demo": true
+}
+

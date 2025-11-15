@@ -8,7 +8,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@omniforge/shared": "workspace:*"
+    "@omniforge/shared": "*",
+    "@omniforge/rag": "*",
+    "@omniforge/llm": "*",
+    "@omniforge/knowledge-base": "*"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

@@ -19,8 +19,13 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@omniforge/shared": ["../../packages/shared/src"],
+      "@omniforge/ui": ["../../packages/ui/src"],
       "@omniforge/redix": ["../../packages/redix/src"],
-      "@omniforge/agents": ["../../packages/agents/src"]
+      "@omniforge/agents": ["../../packages/agents/src"],
+      "@omniforge/rag": ["../../packages/rag/src"],
+      "@omniforge/llm": ["../../packages/llm/src"],
+      "@omniforge/knowledge-base": ["../../packages/knowledge-base/src"],
+      "@omniforge/document-processor": ["../../packages/document-processor/src"]
     }
   },
   "include": ["src/**/*"],

@@ -17,6 +17,8 @@ import { DocumentModule } from './document/document.module';
 import { KnowledgeBaseModule } from './knowledge-base/knowledge-base.module';
 import { SearchModule } from './search/search.module';
 import { CodeReviewModule } from './code-review/code-review.module';
+import { CommonModule } from './common/common.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { CodeReviewModule } from './code-review/code-review.module';
         password: process.env.REDIS_PASSWORD || undefined,
       },
     }),
+    CommonModule,
     PrismaModule,
     RedisModule,
     Neo4jModule,
@@ -40,6 +43,7 @@ import { CodeReviewModule } from './code-review/code-review.module';
     KnowledgeBaseModule,
     SearchModule,
     CodeReviewModule,
+    HealthModule,
     IdeasModule,
     ProjectsModule,
     BuildsModule,

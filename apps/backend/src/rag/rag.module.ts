@@ -60,7 +60,8 @@ import { ConfigService } from '@nestjs/config';
         const llmService = new LLMService(providers, providers[0]?.provider);
         
         // Add Hugging Face provider
-        const hfProvider = new (require('@omniforge/llm').HuggingFaceProvider)(huggingFace);
+        const { HuggingFaceProvider } = require('@omniforge/llm');
+        const hfProvider = new HuggingFaceProvider(huggingFace);
         llmService.setHuggingFaceProvider(hfProvider);
 
         return llmService;

@@ -7,7 +7,10 @@
   "scripts": {
     "type-check": "tsc --noEmit"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@omniforge/rag": "*",
+    "@omniforge/shared": "*"
+  },
   "devDependencies": {
     "typescript": "^5.3.3"
   }

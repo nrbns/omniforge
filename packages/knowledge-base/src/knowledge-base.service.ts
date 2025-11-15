@@ -1,5 +1,5 @@
 import { KnowledgeEntry } from './types';
-import { VectorStoreService } from '../rag/src/vector-store.service';
+import { VectorStoreService } from '@omniforge/rag';
 
 export class KnowledgeBaseService {
   private vectorStore: VectorStoreService;

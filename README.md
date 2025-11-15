@@ -66,47 +66,74 @@
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### ⚡ **Fastest Way (Demo Mode - No API Keys Required!)**
 
-- Node.js 18+ and npm 9+
-- Docker and Docker Compose
-- PostgreSQL, Redis, Neo4j, Qdrant (or use Docker Compose)
-- **Hugging Face API Key** (get one at [huggingface.co](https://huggingface.co))
-
-### Installation
+Get OmniForge running in **under 5 minutes** without any API keys:
 
 ```bash
 # Clone the repository
-git clone https://github.com/omniforge/omniforge.git
+git clone https://github.com/nrbns/omniforge.git
 cd omniforge
 
 # Install dependencies
 npm install
 
-# Start infrastructure services
+# Start infrastructure (PostgreSQL, Redis, Neo4j, Qdrant)
 npm run docker:up
-
-# Set up environment variables
-cp apps/backend/.env.example apps/backend/.env
-# Edit apps/backend/.env and add your HUGGINGFACE_API_KEY
 
 # Run database migrations
 npm run db:migrate
 
-# Start development servers
+# Seed demo data (optional)
+npm run db:seed
+
+# Start in demo mode (no API keys needed!)
+npm run dev:demo
+```
+
+**That's it!** 🎉
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:3001/api
+- **API Documentation**: http://localhost:3001/api/docs
+
+### 📝 **Create Your First Idea (Demo Mode)**
+
+1. Open http://localhost:3000
+2. Click "New Idea"
+3. Enter your idea: `"A task management app with kanban boards"`
+4. Click "Parse Idea" → **AI extracts specification** (using demo mode)
+5. Click "Build Project" → **Agents generate code** (using demo mode)
+
+### 🔧 **With Real API Keys (Production Mode)**
+
+For better quality with real AI models:
+
+```bash
+# 1. Copy environment files
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env.local
+
+# 2. Add your API keys to apps/backend/.env
+# Get Hugging Face key: https://huggingface.co/settings/tokens
+DEMO_MODE=false
+HUGGINGFACE_API_KEY=hf_...
+
+# 3. Start normally
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:3000` and the backend API at `http://localhost:3001/api`.
+### 📦 **One-Command Setup**
 
-### Create Your First Idea
+```bash
+npm run setup
+```
 
-1. Sign up or sign in at `http://localhost:3000`
-2. Click "New Idea" in the dashboard
-3. Describe your app idea (e.g., "A telemedicine app for remote consultations")
-4. Click "Parse Idea" - **Hugging Face AI will intelligently extract the specification**
-5. Click "Build Project" - **AI agents will generate your code**
-6. Deploy with one click!
+This installs, starts Docker, runs migrations, and seeds data automatically!
+
+### 📚 **Need Help?**
+
+See [QUICKSTART.md](./QUICKSTART.md) for detailed setup instructions.
 
 ---
 

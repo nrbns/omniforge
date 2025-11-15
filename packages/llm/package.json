@@ -8,7 +8,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "axios": "^1.6.2"
+    "axios": "^1.6.2",
+    "@omniforge/shared": "*"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

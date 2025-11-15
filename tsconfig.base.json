@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "composite": true,
+    "removeComments": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "@omniforge/shared": ["./packages/shared/src"],
+      "@omniforge/ui": ["./packages/ui/src"],
+      "@omniforge/rag": ["./packages/rag/src"],
+      "@omniforge/llm": ["./packages/llm/src"],
+      "@omniforge/agents": ["./packages/agents/src"],
+      "@omniforge/redix": ["./packages/redix/src"],
+      "@omniforge/knowledge-base": ["./packages/knowledge-base/src"],
+      "@omniforge/document-processor": ["./packages/document-processor/src"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
+

@@ -1,8 +1,8 @@
 import { Idea } from '@omniforge/shared';
 import { AppSpec } from '../types';
-import { RAGService } from '../../rag/src/rag.service';
-import { LLMService } from '../../llm/src/llm.service';
-import { TemplateRetrievalService } from '../../knowledge-base/src/template-retrieval.service';
+import { RAGService } from '@omniforge/rag';
+import { LLMService } from '@omniforge/llm';
+import { TemplateRetrievalService } from '@omniforge/knowledge-base';
 
 export class IdeaParserAgent {
   private ragService?: RAGService;

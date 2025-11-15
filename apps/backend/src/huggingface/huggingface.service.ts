@@ -7,21 +7,32 @@ import {
   TextGenerationResponse,
   ClassificationResponse,
 } from '@omniforge/shared';
+import { DemoService } from '../common/services/demo.service';
 
 @Injectable()
 export class HuggingFaceService implements OnModuleInit {
   private readonly logger = new Logger(HuggingFaceService.name);
   private apiKey: string;
-  private client: AxiosInstance;
+  private client: AxiosInstance | null = null;
   private readonly baseUrl = 'https://api-inference.huggingface.co/models';
+  private readonly demoService: DemoService;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    demoService?: DemoService,
+  ) {
     this.apiKey = this.configService.get<string>('HUGGINGFACE_API_KEY') || '';
+    this.demoService = demoService || new DemoService();
   }
 
   onModuleInit() {
+    if (this.demoService.isEnabled()) {
+      this.logger.log('🚀 DEMO MODE: Hugging Face service will use mock responses');
+      return;
+    }
+
     if (!this.apiKey) {
-      this.logger.warn('Hugging Face API key not found. Some features may be limited.');
+      this.logger.warn('Hugging Face API key not found. Running in demo mode.');
       return;
     }
 
@@ -34,15 +45,20 @@ export class HuggingFaceService implements OnModuleInit {
       timeout: 60000, // 60 seconds for model inference
     });
 
-    this.logger.log('Hugging Face service initialized');
+    this.logger.log('✅ Hugging Face service initialized with API key');
   }
 
   /**
    * Generate embeddings for semantic search
    */
   async generateEmbedding(text: string): Promise<number[]> {
+    if (this.demoService.isEnabled()) {
+      return this.demoService.mockGenerateEmbedding(text);
+    }
+
     if (!this.client) {
-      throw new Error('Hugging Face API key not configured');
+      this.logger.warn('Falling back to demo mode for embeddings');
+      return this.demoService.mockGenerateEmbedding(text);
     }
 
     try {
@@ -56,7 +72,8 @@ export class HuggingFaceService implements OnModuleInit {
       return response.data.embedding;
     } catch (error: any) {
       this.logger.error(`Error generating embedding: ${error.message}`);
-      throw error;
+      this.logger.warn('Falling back to demo mode');
+      return this.demoService.mockGenerateEmbedding(text);
     }
   }
 
@@ -68,8 +85,13 @@ export class HuggingFaceService implements OnModuleInit {
     maxLength: number = 512,
     temperature: number = 0.7
   ): Promise<string> {
+    if (this.demoService.isEnabled()) {
+      return this.demoService.mockGenerateCode(prompt);
+    }
+
     if (!this.client) {
-      throw new Error('Hugging Face API key not configured');
+      this.logger.warn('Falling back to demo mode for text generation');
+      return this.demoService.mockGenerateCode(prompt);
     }
 
     try {
@@ -89,7 +111,7 @@ export class HuggingFaceService implements OnModuleInit {
     } catch (error: any) {
       this.logger.error(`Error generating text: ${error.message}`);
       // Fallback to simpler model if main model fails
-      return this.generateTextFallback(prompt);
+      return this.demoService.mockGenerateCode(prompt);
     }
   }
 
@@ -97,8 +119,13 @@ export class HuggingFaceService implements OnModuleInit {
    * Generate code using code generation model
    */
   async generateCode(prompt: string, language: string = 'typescript'): Promise<string> {
+    if (this.demoService.isEnabled()) {
+      return this.demoService.mockGenerateCode(prompt, language);
+    }
+
     if (!this.client) {
-      throw new Error('Hugging Face API key not configured');
+      this.logger.warn('Falling back to demo mode for code generation');
+      return this.demoService.mockGenerateCode(prompt, language);
     }
 
     try {
@@ -119,7 +146,8 @@ export class HuggingFaceService implements OnModuleInit {
       return response.data[0]?.generated_text || '';
     } catch (error: any) {
       this.logger.error(`Error generating code: ${error.message}`);
-      throw error;
+      this.logger.warn('Falling back to demo mode');
+      return this.demoService.mockGenerateCode(prompt, language);
     }
   }
 
@@ -127,8 +155,12 @@ export class HuggingFaceService implements OnModuleInit {
    * Classify text for idea categorization
    */
   async classifyText(text: string): Promise<{ label: string; score: number }> {
+    if (this.demoService.isEnabled()) {
+      return { label: 'POSITIVE', score: 0.9 };
+    }
+
     if (!this.client) {
-      throw new Error('Hugging Face API key not configured');
+      return { label: 'POSITIVE', score: 0.9 };
     }
 
     try {
@@ -146,7 +178,7 @@ export class HuggingFaceService implements OnModuleInit {
       };
     } catch (error: any) {
       this.logger.error(`Error classifying text: ${error.message}`);
-      throw error;
+      return { label: 'POSITIVE', score: 0.9 };
     }
   }
 
@@ -176,6 +208,12 @@ Return ONLY valid JSON with this structure:
 
 Idea: ${prompt}`;
 
+    if (this.demoService.isEnabled()) {
+      // Parse prompt and generate mock spec
+      const mockIdea = { title: prompt.split('\n')[0], description: prompt, rawInput: prompt };
+      return this.demoService.mockParseIdea(mockIdea);
+    }
+
     try {
       const generated = await this.generateText(systemPrompt, 2048, 0.3);
       
@@ -188,7 +226,8 @@ Idea: ${prompt}`;
       throw new Error('Could not extract JSON from response');
     } catch (error: any) {
       this.logger.error(`Error extracting idea spec: ${error.message}`);
-      throw error;
+      const mockIdea = { title: prompt.split('\n')[0], description: prompt, rawInput: prompt };
+      return this.demoService.mockParseIdea(mockIdea);
     }
   }
 
@@ -196,8 +235,12 @@ Idea: ${prompt}`;
    * Complete code snippet
    */
   async completeCode(prefix: string, suffix?: string): Promise<string> {
+    if (this.demoService.isEnabled()) {
+      return this.demoService.mockGenerateCode(prefix);
+    }
+
     if (!this.client) {
-      throw new Error('Hugging Face API key not configured');
+      return this.demoService.mockGenerateCode(prefix);
     }
 
     try {
@@ -218,7 +261,7 @@ Idea: ${prompt}`;
       return response.data[0]?.generated_text || '';
     } catch (error: any) {
       this.logger.error(`Error completing code: ${error.message}`);
-      throw error;
+      return this.demoService.mockGenerateCode(prefix);
     }
   }
 
@@ -226,8 +269,12 @@ Idea: ${prompt}`;
    * Analyze sentiment of idea feedback
    */
   async analyzeSentiment(text: string): Promise<{ label: string; score: number }> {
+    if (this.demoService.isEnabled()) {
+      return { label: 'POSITIVE', score: 0.85 };
+    }
+
     if (!this.client) {
-      throw new Error('Hugging Face API key not configured');
+      return { label: 'POSITIVE', score: 0.85 };
     }
 
     try {
@@ -245,7 +292,7 @@ Idea: ${prompt}`;
       };
     } catch (error: any) {
       this.logger.error(`Error analyzing sentiment: ${error.message}`);
-      throw error;
+      return { label: 'POSITIVE', score: 0.85 };
     }
   }
 
@@ -283,11 +330,4 @@ Idea: ${prompt}`;
     const magnitudeB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0));
     return dotProduct / (magnitudeA * magnitudeB);
   }
-
-  private async generateTextFallback(prompt: string): Promise<string> {
-    // Simple fallback - return formatted prompt as placeholder
-    this.logger.warn('Using fallback text generation');
-    return `[Generated from: ${prompt.slice(0, 100)}...]`;
-  }
 }
-

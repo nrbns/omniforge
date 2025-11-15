@@ -6,7 +6,15 @@ import { RAGModule } from '../rag/rag.module';
 @Module({
   imports: [RAGModule],
   controllers: [CodeReviewController],
-  providers: [CodeReviewService],
+  providers: [
+    {
+      provide: CodeReviewService,
+      useFactory: (llmService: any) => {
+        return new CodeReviewService(llmService);
+      },
+      inject: ['LLMService'],
+    },
+  ],
   exports: [CodeReviewService],
 })
 export class CodeReviewModule {}
