@@ -29,6 +29,8 @@ import { WorkflowsModule } from './workflows/workflows.module';
 import { LeadsModule } from './leads/leads.module';
 import { StripeModule } from './integrations/stripe/stripe.module';
 import { EmailModule } from './email/email.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { ExportModule } from './export/export.module';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { EmailModule } from './email/email.module';
     LeadsModule,
     StripeModule,
     EmailModule,
+    AnalyticsModule,
+    ExportModule,
     IdeasModule,
     ProjectsModule,
     BuildsModule,
