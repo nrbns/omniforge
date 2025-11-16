@@ -27,7 +27,7 @@ export class IdeaParserProcessor extends WorkerHost {
     private huggingFace: HuggingFaceService,
     private rag: RAGService,
     private llm: LLMService,
-    private templateRetrieval: TemplateRetrievalService,
+    private templateRetrieval: TemplateRetrievalService
   ) {
     super();
   }

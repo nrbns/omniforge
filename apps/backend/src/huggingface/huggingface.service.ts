@@ -19,7 +19,7 @@ export class HuggingFaceService implements OnModuleInit {
 
   constructor(
     private configService: ConfigService,
-    demoService?: DemoService,
+    demoService?: DemoService
   ) {
     this.apiKey = this.configService.get<string>('HUGGINGFACE_API_KEY') || '';
     this.demoService = demoService || new DemoService();
@@ -130,7 +130,7 @@ export class HuggingFaceService implements OnModuleInit {
 
     try {
       const fullPrompt = `// ${language}\n${prompt}\n`;
-      
+
       const response = await this.client.post<TextGenerationResponse[]>(
         `${HUGGINGFACE_MODELS.CODE_GENERATION}`,
         {
@@ -216,13 +216,13 @@ Idea: ${prompt}`;
 
     try {
       const generated = await this.generateText(systemPrompt, 2048, 0.3);
-      
+
       // Extract JSON from response
       const jsonMatch = generated.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
-      
+
       throw new Error('Could not extract JSON from response');
     } catch (error: any) {
       this.logger.error(`Error extracting idea spec: ${error.message}`);
@@ -245,7 +245,7 @@ Idea: ${prompt}`;
 
     try {
       const input = suffix ? { prefix, suffix } : prefix;
-      
+
       const response = await this.client.post<TextGenerationResponse[]>(
         `${HUGGINGFACE_MODELS.CODE_COMPLETION}`,
         {
@@ -300,9 +300,7 @@ Idea: ${prompt}`;
    * Batch generate embeddings
    */
   async generateEmbeddings(texts: string[]): Promise<number[][]> {
-    const embeddings = await Promise.all(
-      texts.map((text) => this.generateEmbedding(text))
-    );
+    const embeddings = await Promise.all(texts.map((text) => this.generateEmbedding(text)));
     return embeddings;
   }
 
@@ -319,9 +317,7 @@ Idea: ${prompt}`;
       similarity: this.cosineSimilarity(queryEmbedding, idea.embedding),
     }));
 
-    return similarities
-      .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, topK);
+    return similarities.sort((a, b) => b.similarity - a.similarity).slice(0, topK);
   }
 
   private cosineSimilarity(a: number[], b: number[]): number {

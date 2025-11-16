@@ -26,4 +26,3 @@ import { RAGModule } from '../rag/rag.module';
   exports: ['KnowledgeBaseService', 'TemplateRetrievalService'],
 })
 export class KnowledgeBaseModule {}
-

@@ -6,10 +6,7 @@ export class CodeReviewController {
   constructor(private readonly codeReviewService: CodeReviewService) {}
 
   @Post('review')
-  async reviewCode(
-    @Body('code') code: string,
-    @Body('language') language: string = 'typescript',
-  ) {
+  async reviewCode(@Body('code') code: string, @Body('language') language: string = 'typescript') {
     return this.codeReviewService.reviewCode(code, language);
   }
 
@@ -17,7 +14,7 @@ export class CodeReviewController {
   async optimizeCode(
     @Body('code') code: string,
     @Body('review') review: any,
-    @Body('language') language: string = 'typescript',
+    @Body('language') language: string = 'typescript'
   ) {
     return this.codeReviewService.optimizeCode(code, review, language);
   }
@@ -25,16 +22,13 @@ export class CodeReviewController {
   @Post('optimize-performance')
   async optimizePerformance(
     @Body('code') code: string,
-    @Body('language') language: string = 'typescript',
+    @Body('language') language: string = 'typescript'
   ) {
     return this.codeReviewService.optimizePerformance(code, language);
   }
 
   @Post('analyze')
-  async analyzeCode(
-    @Body('code') code: string,
-    @Body('language') language: string = 'typescript',
-  ) {
+  async analyzeCode(@Body('code') code: string, @Body('language') language: string = 'typescript') {
     return this.codeReviewService.fullCodeAnalysis(code, language);
   }
 
@@ -43,4 +37,3 @@ export class CodeReviewController {
     return this.codeReviewService.generateMonitoring(framework);
   }
 }
-

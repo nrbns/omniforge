@@ -34,7 +34,7 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
-    }),
+    })
   );
 
   // Global exception filter
@@ -50,7 +50,9 @@ async function bootstrap() {
   // Swagger / OpenAPI documentation
   const config = new DocumentBuilder()
     .setTitle('OmniForge API')
-    .setDescription('The world\'s first open-source, end-to-end Idea → App → Deployment → App Store AI Builder')
+    .setDescription(
+      "The world's first open-source, end-to-end Idea → App → Deployment → App Store AI Builder"
+    )
     .setVersion('0.1.0')
     .addTag('ideas', 'Idea management and parsing')
     .addTag('projects', 'Project management')
@@ -72,7 +74,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
-  
+
   logger.log(`🚀 Backend API running on http://localhost:${port}/api`);
   logger.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
   if (isDemoMode) {

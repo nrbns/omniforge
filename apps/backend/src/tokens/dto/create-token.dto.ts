@@ -21,4 +21,3 @@ export class CreateTokenDto {
   @IsOptional()
   figmaId?: string;
 }
-

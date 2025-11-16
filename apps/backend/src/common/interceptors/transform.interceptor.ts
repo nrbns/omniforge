@@ -16,8 +16,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
         success: true,
         data,
         timestamp: new Date().toISOString(),
-      })),
+      }))
     );
   }
 }
-

@@ -21,4 +21,3 @@ export class DeploymentsController {
     return this.deploymentsService.findOne(id);
   }
 }
-

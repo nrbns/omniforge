@@ -9,7 +9,7 @@ export class IdeasService {
   constructor(
     private prisma: PrismaService,
     private agentsService: AgentsService,
-    private realtimeService: RealtimeService,
+    private realtimeService: RealtimeService
   ) {}
 
   async create(dto: CreateIdeaDto) {
@@ -178,4 +178,3 @@ export class IdeasService {
     return updated;
   }
 }
-

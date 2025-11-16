@@ -51,8 +51,8 @@ program
       console.log('📝 Next steps:');
       console.log(`  cd ${path.basename(projectDir)}`);
       console.log('  omniforge create "Your app idea"');
-    } catch (error) {
-      console.error('❌ Error initializing project:', error.message);
+    } catch (error: any) {
+      console.error('❌ Error initializing project:', error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -77,14 +77,14 @@ program
         }),
       });
       
-      const data = await response.json();
+      const data: any = await response.json();
       
       console.log(`✅ Idea created: ${data.id}`);
       console.log(`📋 Title: ${data.title}`);
       console.log(`\n🔗 View at: http://localhost:3000/dashboard/ideas/${data.id}`);
       console.log(`\n💻 Parse idea: omniforge parse ${data.id}`);
-    } catch (error) {
-      console.error('❌ Error creating idea:', error.message);
+    } catch (error: any) {
+      console.error('❌ Error creating idea:', error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -100,13 +100,13 @@ program
         method: 'POST',
       });
       
-      const data = await response.json();
+      const data: any = await response.json();
       
       console.log('✅ Idea parsed successfully!');
       console.log(`📊 Status: ${data.status}`);
       console.log(`\n💻 Build project: omniforge build ${ideaId}`);
-    } catch (error) {
-      console.error('❌ Error parsing idea:', error.message);
+    } catch (error: any) {
+      console.error('❌ Error parsing idea:', error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -130,7 +130,7 @@ program
         }),
       });
       
-      const project = await projectResponse.json();
+      const project: any = await projectResponse.json();
       
       // Build project
       const buildResponse = await fetch(`http://localhost:3001/api/projects/${project.id}/build`, {
@@ -139,15 +139,15 @@ program
         body: JSON.stringify({}),
       });
       
-      const build = await buildResponse.json();
+      const build: any = await buildResponse.json();
       
       console.log('✅ Build started!');
       console.log(`📦 Project: ${project.id}`);
       console.log(`🔨 Build: ${build.id}`);
       console.log(`\n📊 View build: http://localhost:3000/dashboard/projects/${project.id}`);
       console.log(`\n💻 Deploy: omniforge deploy ${project.id}`);
-    } catch (error) {
-      console.error('❌ Error building project:', error.message);
+    } catch (error: any) {
+      console.error('❌ Error building project:', error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -170,13 +170,13 @@ program
         }),
       });
       
-      const data = await response.json();
+      const data: any = await response.json();
       
       console.log('✅ Deployment started!');
       console.log(`📦 Deployment: ${data.id}`);
       console.log(`\n📊 View deployment: http://localhost:3000/dashboard/projects/${projectId}`);
-    } catch (error) {
-      console.error('❌ Error deploying project:', error.message);
+    } catch (error: any) {
+      console.error('❌ Error deploying project:', error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -205,14 +205,14 @@ program
       }
       
       const response = await fetch(endpoint);
-      const data = await response.json();
+      const data: any = await response.json();
       
       console.log(`\n✅ Status: ${data.status || 'N/A'}`);
       if (data.createdAt) {
         console.log(`📅 Created: ${new Date(data.createdAt).toLocaleString()}`);
       }
-    } catch (error) {
-      console.error('❌ Error checking status:', error.message);
+    } catch (error: any) {
+      console.error('❌ Error checking status:', error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });

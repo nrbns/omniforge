@@ -48,7 +48,7 @@ export default function HomePage() {
             <span className="block text-primary-600">Instantly</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            The world's first open-source, end-to-end AI builder that transforms
+            The world&apos;s first open-source, end-to-end AI builder that transforms
             your ideas into production-ready apps with real-time collaboration,
             multi-agent generation, and app store packaging.
           </p>

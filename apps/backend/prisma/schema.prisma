@@ -130,6 +130,7 @@ model Project {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   builds      Build[]
   deployments Deployment[]
+  business    Business?
 
   @@index([ideaId])
   @@index([userId])
@@ -191,4 +192,349 @@ model DesignToken {
   @@unique([projectId, key])
   @@index([projectId])
   @@map("design_tokens")
+}
+
+// ============================================
+// BUSINESS ENGINE MODELS
+// ============================================
+
+model Business {
+  id                String   @id @default(cuid())
+  projectId         String   @unique
+  businessType      String   // saas, ecommerce, marketplace, service, etc.
+  businessModel     String   // subscription, one-time, commission, etc.
+  targetAudience    Json?    // personas, demographics
+  revenueModel      Json?    // pricing, tiers, plans
+  competitiveAnalysis Json?  // competitors, positioning
+  marketingStrategy Json?    // channels, budget, tactics
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  marketingAssets   MarketingAsset[]
+  salesFunnels      SalesFunnel[]
+  crm               CRM?
+  store             Store?
+  workflows         Workflow[]
+
+  @@map("businesses")
+}
+
+model MarketingAsset {
+  id            String   @id @default(cuid())
+  businessId    String
+  type          String   // landing_page, ad_creative, email_sequence, blog_post, social_post, seo_tags
+  title         String
+  content       Json     // Full content (copy, images, CTAs, etc.)
+  platform      String?  // facebook, google, instagram, email, blog, etc.
+  status        String   @default("draft") // draft, published, archived
+  performance   Json?    // metrics, analytics
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([type])
+  @@map("marketing_assets")
+}
+
+model SalesFunnel {
+  id            String   @id @default(cuid())
+  businessId    String
+  name          String
+  description   String?  @db.Text
+  stages        Json     // Array of funnel stages
+  conversionRate Float? // Calculated conversion rate
+  revenue       Float?   // Total revenue from funnel
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  leads         Lead[]
+
+  @@index([businessId])
+  @@map("sales_funnels")
+}
+
+model CRM {
+  id            String   @id @default(cuid())
+  businessId    String   @unique
+  config        Json?    // Custom fields, pipelines, stages
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  contacts      Contact[]
+  companies     Company[]
+  deals         Deal[]
+  activities    Activity[]
+
+  @@map("crms")
+}
+
+model Contact {
+  id            String   @id @default(cuid())
+  crmId         String
+  email         String
+  firstName     String?
+  lastName      String?
+  phone         String?
+  company       String?
+  title         String?
+  customFields  Json?    // Dynamic fields
+  tags          String[] // Tags for segmentation
+  leadScore     Int      @default(0)
+  status        String   @default("new") // new, contacted, qualified, customer, lost
+  source        String?  // How they found us
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  crm           CRM      @relation(fields: [crmId], references: [id], onDelete: Cascade)
+  deals         Deal[]
+  activities    Activity[]
+  leads         Lead[]
+
+  @@unique([crmId, email])
+  @@index([crmId])
+  @@index([status])
+  @@index([leadScore])
+  @@map("contacts")
+}
+
+model Company {
+  id            String   @id @default(cuid())
+  crmId         String
+  name          String
+  website       String?
+  industry      String?
+  size          String?  // small, medium, large, enterprise
+  customFields  Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  crm           CRM      @relation(fields: [crmId], references: [id], onDelete: Cascade)
+  deals         Deal[]
+
+  @@index([crmId])
+  @@map("companies")
+}
+
+model Deal {
+  id            String   @id @default(cuid())
+  crmId         String
+  contactId     String?
+  companyId     String?
+  title         String
+  value         Float
+  stage         String   // prospecting, qualification, proposal, negotiation, closed_won, closed_lost
+  probability   Int      @default(0) // 0-100
+  expectedCloseDate DateTime?
+  customFields  Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  crm           CRM      @relation(fields: [crmId], references: [id], onDelete: Cascade)
+  contact       Contact? @relation(fields: [contactId], references: [id])
+  company       Company? @relation(fields: [companyId], references: [id])
+
+  @@index([crmId])
+  @@index([stage])
+  @@map("deals")
+}
+
+model Activity {
+  id            String   @id @default(cuid())
+  crmId         String
+  contactId     String?
+  dealId        String?
+  type          String   // call, email, meeting, note, task
+  subject       String
+  description   String?  @db.Text
+  dueDate       DateTime?
+  completed     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  crm           CRM      @relation(fields: [crmId], references: [id], onDelete: Cascade)
+  contact       Contact? @relation(fields: [contactId], references: [id])
+
+  @@index([crmId])
+  @@index([contactId])
+  @@index([dealId])
+  @@map("activities")
+}
+
+model Lead {
+  id            String   @id @default(cuid())
+  funnelId      String?
+  contactId     String?
+  email         String
+  firstName     String?
+  lastName      String?
+  phone         String?
+  source        String   // landing_page, ad, referral, etc.
+  status        String   @default("new") // new, contacted, qualified, converted, lost
+  leadScore     Int      @default(0)
+  metadata      Json?    // Additional data from form/ad
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  funnel        SalesFunnel? @relation(fields: [funnelId], references: [id])
+  contact       Contact?     @relation(fields: [contactId], references: [id])
+
+  @@index([funnelId])
+  @@index([status])
+  @@index([leadScore])
+  @@map("leads")
+}
+
+model Store {
+  id            String   @id @default(cuid())
+  businessId    String   @unique
+  name          String
+  domain        String?
+  currency      String   @default("USD")
+  taxConfig     Json?    // Tax settings
+  shippingConfig Json?   // Shipping rules
+  paymentConfig Json?    // Payment gateways (Stripe, PayPal, etc.)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  products      Product[]
+  orders        Order[]
+  coupons       Coupon[]
+
+  @@map("stores")
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  storeId       String
+  name          String
+  description   String?  @db.Text
+  sku           String?
+  price         Float
+  comparePrice  Float?   // Original price for discounts
+  cost          Float?   // Cost of goods
+  inventory     Int?     // null = unlimited
+  images        String[] // Image URLs
+  variants      Json?    // Size, color, etc.
+  seo           Json?    // SEO metadata
+  status        String   @default("draft") // draft, active, archived
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  store         Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orderItems    OrderItem[]
+
+  @@index([storeId])
+  @@index([status])
+  @@map("products")
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  storeId       String
+  orderNumber   String   @unique
+  customerEmail String
+  customerName  String?
+  status        String   @default("pending") // pending, paid, fulfilled, cancelled, refunded
+  subtotal      Float
+  tax           Float    @default(0)
+  shipping      Float    @default(0)
+  total         Float
+  currency      String   @default("USD")
+  paymentMethod String?
+  shippingAddress Json?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  store         Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+
+  @@index([storeId])
+  @@index([status])
+  @@index([orderNumber])
+  @@map("orders")
+}
+
+model OrderItem {
+  id            String   @id @default(cuid())
+  orderId       String
+  productId     String
+  quantity      Int
+  price         Float    // Price at time of order
+  variant       Json?    // Selected variant
+  createdAt     DateTime @default(now())
+
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product  @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model Coupon {
+  id            String   @id @default(cuid())
+  storeId       String
+  code          String   @unique
+  type          String   // percentage, fixed_amount
+  value         Float
+  minPurchase   Float?
+  maxUses       Int?
+  usedCount     Int      @default(0)
+  validFrom     DateTime?
+  validUntil    DateTime?
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  store         Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([code])
+  @@map("coupons")
+}
+
+model Workflow {
+  id            String   @id @default(cuid())
+  businessId    String
+  name          String
+  description   String?  @db.Text
+  trigger       Json     // Trigger configuration
+  steps         Json     // Array of workflow steps
+  active        Boolean  @default(true)
+  lastRunAt     DateTime?
+  runCount      Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  executions    WorkflowExecution[]
+
+  @@index([businessId])
+  @@index([active])
+  @@map("workflows")
+}
+
+model WorkflowExecution {
+  id            String   @id @default(cuid())
+  workflowId    String
+  status        String   @default("running") // running, completed, failed
+  input         Json?    // Input data
+  output        Json?    // Output data
+  error         String?  @db.Text
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+
+  workflow      Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+  @@index([status])
+  @@map("workflow_executions")
 }

@@ -42,7 +42,7 @@ export class BuildProcessor extends WorkerHost {
     private prisma: PrismaService,
     private realtime: RealtimeService,
     private huggingFace: HuggingFaceService,
-    private scaffoldService: ScaffoldService,
+    private scaffoldService: ScaffoldService
   ) {
     super();
   }
@@ -67,13 +67,11 @@ export class BuildProcessor extends WorkerHost {
       await this.saveTokens(projectId, tokens);
       await this.updateProgress(buildId, 20);
 
-      // Step 3: Generate frontend code with Multi-LLM
+      // Step 3: Generate frontend code with AI
       await this.updateBuildLog(buildId, 'Generating frontend code with AI...');
-      const llmService = require('@nestjs/core').ModuleRef.get('LLMService');
-      const frontendAgent = new FrontendAgent(llmService || this.huggingFace);
-      const frontendFiles = await frontendAgent.generateFrontend(plannedSpec);
+      const frontendFiles = await this.frontendAgent.generateFrontend(plannedSpec);
       await this.updateProgress(buildId, 40);
-      
+
       // Step 3b: Review and optimize generated code
       await this.updateBuildLog(buildId, 'Reviewing and optimizing code...');
       // Code review and optimization would happen here
@@ -82,7 +80,7 @@ export class BuildProcessor extends WorkerHost {
       await this.updateBuildLog(buildId, 'Generating project scaffold...');
       const scaffoldPath = await this.scaffoldService.generateScaffold(ideaId, plannedSpec.name);
       await this.updateProgress(buildId, 50);
-      
+
       // Update build with scaffold path
       await this.updateBuildStatus(buildId, 'RUNNING', {
         outputPath: scaffoldPath,
@@ -228,4 +226,3 @@ export class BuildProcessor extends WorkerHost {
     }
   }
 }
-

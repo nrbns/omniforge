@@ -7,4 +7,3 @@ import { Neo4jService } from './neo4j.service';
   exports: [Neo4jService],
 })
 export class Neo4jModule {}
-

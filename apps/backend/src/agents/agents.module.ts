@@ -10,21 +10,12 @@ import { ScaffoldModule } from '../scaffold/scaffold.module';
 
 @Module({
   imports: [
-    BullModule.registerQueue(
-      { name: 'idea-parser' },
-      { name: 'build' },
-      { name: 'deploy' },
-    ),
+    BullModule.registerQueue({ name: 'idea-parser' }, { name: 'build' }, { name: 'deploy' }),
     RAGModule,
     KnowledgeBaseModule,
     ScaffoldModule,
   ],
-  providers: [
-    AgentsService,
-    IdeaParserProcessor,
-    BuildProcessor,
-    DeployProcessor,
-  ],
+  providers: [AgentsService, IdeaParserProcessor, BuildProcessor, DeployProcessor],
   exports: [AgentsService],
 })
 export class AgentsModule {}

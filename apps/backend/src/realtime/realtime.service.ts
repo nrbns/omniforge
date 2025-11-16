@@ -17,4 +17,3 @@ export class RealtimeService {
     this.gateway.server.emit(event, data);
   }
 }
-

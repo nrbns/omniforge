@@ -8,7 +8,7 @@ import { RedisService } from '../redis/redis.service';
 export class HealthController {
   constructor(
     private prisma: PrismaService,
-    private redis: RedisService,
+    private redis: RedisService
   ) {}
 
   @Get()
@@ -69,4 +69,3 @@ export class HealthController {
     }
   }
 }
-

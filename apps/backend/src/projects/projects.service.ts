@@ -9,7 +9,7 @@ export class ProjectsService {
   constructor(
     private prisma: PrismaService,
     private agentsService: AgentsService,
-    private realtimeService: RealtimeService,
+    private realtimeService: RealtimeService
   ) {}
 
   async create(dto: CreateProjectDto) {
@@ -128,4 +128,3 @@ export class ProjectsService {
     return build;
   }
 }
-

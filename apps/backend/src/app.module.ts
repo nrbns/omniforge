@@ -20,6 +20,13 @@ import { CodeReviewModule } from './code-review/code-review.module';
 import { CommonModule } from './common/common.module';
 import { HealthModule } from './health/health.module';
 import { ScaffoldModule } from './scaffold/scaffold.module';
+import { BusinessModule } from './business/business.module';
+import { MarketingModule } from './marketing/marketing.module';
+import { SalesModule } from './sales/sales.module';
+import { CrmModule } from './crm/crm.module';
+import { StoreModule } from './store/store.module';
+import { WorkflowsModule } from './workflows/workflows.module';
+import { LeadsModule } from './leads/leads.module';
 
 @Module({
   imports: [
@@ -46,6 +53,13 @@ import { ScaffoldModule } from './scaffold/scaffold.module';
     CodeReviewModule,
     HealthModule,
     ScaffoldModule,
+    BusinessModule,
+    MarketingModule,
+    SalesModule,
+    CrmModule,
+    StoreModule,
+    WorkflowsModule,
+    LeadsModule,
     IdeasModule,
     ProjectsModule,
     BuildsModule,
@@ -56,4 +70,3 @@ import { ScaffoldModule } from './scaffold/scaffold.module';
   ],
 })
 export class AppModule {}
-

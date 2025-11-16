@@ -13,4 +13,3 @@ export class UpdateProjectDto {
   @IsOptional()
   config?: Record<string, any>;
 }
-

@@ -50,4 +50,3 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     await this.client.publish(channel, message);
   }
 }
-

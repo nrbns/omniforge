@@ -9,4 +9,3 @@ export class UpdateTokenDto {
   @IsOptional()
   figmaId?: string;
 }
-

@@ -71,40 +71,40 @@ export class ScaffoldGenerator {
    */
   async generate(spec: AppSpec, projectName: string = 'generated-app'): Promise<string> {
     const projectDir = path.join(this.outputDir, projectName);
-    
+
     // Create project directory
     await fs.mkdir(projectDir, { recursive: true });
-    
+
     // Generate package.json
     await this.generatePackageJson(projectDir, spec);
-    
+
     // Generate Next.js structure
     await this.generateNextJSStructure(projectDir, spec);
-    
+
     // Generate API structure
     await this.generateAPIStructure(projectDir, spec);
-    
+
     // Generate Prisma schema
     await this.generatePrismaSchema(projectDir, spec);
-    
+
     // Generate README
     await this.generateREADME(projectDir, spec);
-    
+
     // Generate .env.example
     await this.generateEnvExample(projectDir);
-    
+
     // Generate tailwind.config.js
     await this.generateTailwindConfig(projectDir, spec);
-    
+
     // Generate next.config.js
     await this.generateNextConfig(projectDir);
-    
+
     // Generate tsconfig.json
     await this.generateTsConfig(projectDir);
-    
+
     // Create tarball
     const tarPath = await this.createTarBall(projectDir, projectName);
-    
+
     return tarPath;
   }
 
@@ -140,10 +140,7 @@ export class ScaffoldGenerator {
       },
     };
 
-    await fs.writeFile(
-      path.join(projectDir, 'package.json'),
-      JSON.stringify(packageJson, null, 2)
-    );
+    await fs.writeFile(path.join(projectDir, 'package.json'), JSON.stringify(packageJson, null, 2));
   }
 
   private async generateNextJSStructure(projectDir: string, spec: AppSpec): Promise<void> {
@@ -197,7 +194,10 @@ body {
     // Generate pages
     for (const page of spec.pages || []) {
       const pageContent = this.generatePageComponent(page, spec);
-      const pagePath = page.path === '/' ? 'page.tsx' : `${page.path.replace(/^\//, '').replace(/\//g, '/')}/page.tsx`;
+      const pagePath =
+        page.path === '/'
+          ? 'page.tsx'
+          : `${page.path.replace(/^\//, '').replace(/\//g, '/')}/page.tsx`;
       const fullPath = path.join(appDir, pagePath);
       await fs.mkdir(path.dirname(fullPath), { recursive: true });
       await fs.writeFile(fullPath, pageContent);
@@ -217,13 +217,17 @@ export default function ${componentName}Page() {
       <main className="container mx-auto px-4 py-8">
         <h2 className="text-xl font-semibold mb-4">${page.name}</h2>
         <p>This is the ${page.name} page.</p>
-        ${page.components?.length > 0 ? `
+        ${
+          page.components?.length > 0
+            ? `
         <div className="mt-8">
           <h3 className="text-lg font-semibold mb-2">Components</h3>
           <div className="space-y-4">
-            ${page.components.map(c => `<div className="p-4 border rounded">${c.type} component</div>`).join('\n            ')}
+            ${page.components.map((c) => `<div className="p-4 border rounded">${c.type} component</div>`).join('\n            ')}
           </div>
-        </div>` : ''}
+        </div>`
+            : ''
+        }
       </main>
     </div>
   );
@@ -288,14 +292,14 @@ datasource db {
 `;
       // Add id field
       schema += `  id        String   @id @default(cuid())\n`;
-      
+
       // Add fields
       for (const field of model.fields || []) {
         const type = this.mapPrismaType(field.type);
         const optional = field.required === false ? '?' : '';
         schema += `  ${field.name}      ${type}${optional}\n`;
       }
-      
+
       schema += `  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -353,15 +357,15 @@ Visit http://localhost:3000
 
 ## Pages
 
-${spec.pages?.map(p => `- ${p.name} (${p.path})`).join('\n') || 'None'}
+${spec.pages?.map((p) => `- ${p.name} (${p.path})`).join('\n') || 'None'}
 
 ## API Endpoints
 
-${spec.apis?.map(a => `- ${a.method} ${a.path}`).join('\n') || 'None'}
+${spec.apis?.map((a) => `- ${a.method} ${a.path}`).join('\n') || 'None'}
 
 ## Data Models
 
-${spec.dataModels?.map(m => `- ${m.name}`).join('\n') || 'None'}
+${spec.dataModels?.map((m) => `- ${m.name}`).join('\n') || 'None'}
 `;
 
     await fs.writeFile(path.join(projectDir, 'README.md'), readme);
@@ -445,15 +449,12 @@ module.exports = nextConfig;
       exclude: ['node_modules'],
     };
 
-    await fs.writeFile(
-      path.join(projectDir, 'tsconfig.json'),
-      JSON.stringify(tsConfig, null, 2)
-    );
+    await fs.writeFile(path.join(projectDir, 'tsconfig.json'), JSON.stringify(tsConfig, null, 2));
   }
 
   private async createTarBall(projectDir: string, projectName: string): Promise<string> {
     const tarPath = path.join(this.outputDir, `${projectName}.tar.gz`);
-    
+
     try {
       await tar.create(
         {
@@ -463,11 +464,10 @@ module.exports = nextConfig;
         },
         [projectName]
       );
-      
+
       return tarPath;
     } catch (error) {
       throw new Error(`Failed to create tarball: ${error.message}`);
     }
   }
 }
-

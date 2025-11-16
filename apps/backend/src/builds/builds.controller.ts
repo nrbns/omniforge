@@ -9,7 +9,7 @@ import { ProjectsService } from '../projects/projects.service';
 export class BuildsController {
   constructor(
     private readonly buildsService: BuildsService,
-    private readonly projectsService: ProjectsService,
+    private readonly projectsService: ProjectsService
   ) {}
 
   @Post('projects/:projectId')
@@ -64,7 +64,7 @@ export class BuildsController {
     if (build.status !== 'SUCCESS' || !build.outputPath) {
       return res.status(400).json({ error: 'Build not completed or no output available' });
     }
-    
+
     const filename = build.outputPath.split('/').pop() || `build-${id}.tar.gz`;
     return res.redirect(`/api/scaffold/download/${encodeURIComponent(filename)}`);
   }

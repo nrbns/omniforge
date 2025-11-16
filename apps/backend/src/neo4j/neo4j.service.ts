@@ -10,8 +10,8 @@ export class Neo4jService implements OnModuleInit, OnModuleDestroy {
       process.env.NEO4J_URI || 'bolt://localhost:7687',
       neo4j.auth.basic(
         process.env.NEO4J_USER || 'neo4j',
-        process.env.NEO4J_PASSWORD || 'omniforge_dev',
-      ),
+        process.env.NEO4J_PASSWORD || 'omniforge_dev'
+      )
     );
   }
 
@@ -36,10 +36,7 @@ export class Neo4jService implements OnModuleInit, OnModuleDestroy {
     return this.driver.session();
   }
 
-  async runQuery<T = any>(
-    query: string,
-    params: Record<string, any> = {},
-  ): Promise<T[]> {
+  async runQuery<T = any>(query: string, params: Record<string, any> = {}): Promise<T[]> {
     const session = this.getSession();
     try {
       const result = await session.run(query, params);
@@ -49,4 +46,3 @@ export class Neo4jService implements OnModuleInit, OnModuleDestroy {
     }
   }
 }
-

@@ -41,4 +41,3 @@ export class TokensController {
     return this.tokensService.importJson(data.tokens, data.projectId);
   }
 }
-

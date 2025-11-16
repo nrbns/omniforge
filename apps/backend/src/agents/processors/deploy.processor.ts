@@ -20,7 +20,7 @@ export class DeployProcessor extends WorkerHost {
 
   constructor(
     private prisma: PrismaService,
-    private realtime: RealtimeService,
+    private realtime: RealtimeService
   ) {
     super();
   }
@@ -118,7 +118,11 @@ export class DeployProcessor extends WorkerHost {
     }
   }
 
-  private async deployToVercel(deploymentId: string, projectId: string, config?: any): Promise<any> {
+  private async deployToVercel(
+    deploymentId: string,
+    projectId: string,
+    config?: any
+  ): Promise<any> {
     this.logger.log(`Deploying to Vercel: ${projectId}`);
     // TODO: Implement Vercel deployment
     // - Generate vercel.json
@@ -129,7 +133,11 @@ export class DeployProcessor extends WorkerHost {
     };
   }
 
-  private async deployToDocker(deploymentId: string, projectId: string, config?: any): Promise<any> {
+  private async deployToDocker(
+    deploymentId: string,
+    projectId: string,
+    config?: any
+  ): Promise<any> {
     this.logger.log(`Deploying to Docker: ${projectId}`);
     // TODO: Implement Docker deployment
     // - Build Docker image
@@ -154,7 +162,11 @@ export class DeployProcessor extends WorkerHost {
     };
   }
 
-  private async deployToAndroid(deploymentId: string, projectId: string, config?: any): Promise<any> {
+  private async deployToAndroid(
+    deploymentId: string,
+    projectId: string,
+    config?: any
+  ): Promise<any> {
     this.logger.log(`Deploying to Android: ${projectId}`);
     // TODO: Implement Android deployment
     // - Generate Fastlane config
@@ -167,4 +179,3 @@ export class DeployProcessor extends WorkerHost {
     };
   }
 }
-

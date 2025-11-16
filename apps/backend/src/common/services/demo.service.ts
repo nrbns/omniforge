@@ -24,7 +24,11 @@ export class DemoService {
   /**
    * Mock idea parsing
    */
-  async mockParseIdea(idea: { title: string; description?: string; rawInput?: string }): Promise<any> {
+  async mockParseIdea(idea: {
+    title: string;
+    description?: string;
+    rawInput?: string;
+  }): Promise<any> {
     this.logger.log('📝 [DEMO] Mock parsing idea: ' + idea.title);
 
     // Simulate processing delay
@@ -208,4 +212,3 @@ export async function demoHandler(req: Request, res: Response) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
-

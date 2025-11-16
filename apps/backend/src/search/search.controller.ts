@@ -20,4 +20,3 @@ export class SearchController {
     return this.searchService.ragSearch(query);
   }
 }
-

@@ -9,7 +9,7 @@ export class DeploymentsService {
   constructor(
     private prisma: PrismaService,
     private agentsService: AgentsService,
-    private realtimeService: RealtimeService,
+    private realtimeService: RealtimeService
   ) {}
 
   async create(dto: CreateDeploymentDto) {
@@ -47,7 +47,7 @@ export class DeploymentsService {
     await this.realtimeService.emit(
       `deployment:${deployment.id}`,
       'deployment.created',
-      deployment,
+      deployment
     );
 
     return deployment;
@@ -92,4 +92,3 @@ export class DeploymentsService {
     return deployment;
   }
 }
-

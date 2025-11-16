@@ -11,4 +11,3 @@ import { RealtimeModule } from '../realtime/realtime.module';
   exports: [IdeasService],
 })
 export class IdeasModule {}
-

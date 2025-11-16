@@ -25,4 +25,3 @@ export class CommitIdeaDto {
   @IsOptional()
   specSnapshot?: Record<string, any>;
 }
-

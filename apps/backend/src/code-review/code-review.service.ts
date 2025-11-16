@@ -53,11 +53,7 @@ export class CodeReviewService {
       review,
       performance,
       optimized,
-      recommendations: [
-        ...review.suggestions,
-        ...performance.recommendations,
-      ],
+      recommendations: [...review.suggestions, ...performance.recommendations],
     };
   }
 }
-

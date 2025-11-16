@@ -8,7 +8,7 @@ interface DemoUser {
   emailAddresses: Array<{ emailAddress: string }>;
 }
 
-interface DemoAuthContextType {
+export interface DemoAuthContextType {
   user: DemoUser | null;
   isLoaded: boolean;
   isSignedIn: boolean;

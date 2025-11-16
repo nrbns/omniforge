@@ -12,7 +12,7 @@ export class AgentsService {
     private realtimeService: RealtimeService,
     @InjectQueue('idea-parser') private ideaParserQueue: Queue,
     @InjectQueue('build') private buildQueue: Queue,
-    @InjectQueue('deploy') private deployQueue: Queue,
+    @InjectQueue('deploy') private deployQueue: Queue
   ) {}
 
   async parseIdea(idea: Idea): Promise<any> {
@@ -54,7 +54,9 @@ export class AgentsService {
     });
   }
 
-  async deployProject(deployment: Deployment & { project: Project & { idea: Idea } }): Promise<void> {
+  async deployProject(
+    deployment: Deployment & { project: Project & { idea: Idea } }
+  ): Promise<void> {
     await this.deployQueue.add('deploy', {
       deploymentId: deployment.id,
       projectId: deployment.projectId,
@@ -102,4 +104,3 @@ export class AgentsService {
     };
   }
 }
-

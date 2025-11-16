@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Param, Res, HttpCode, HttpStatus, Body, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Res,
+  HttpCode,
+  HttpStatus,
+  Body,
+  Logger,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as path from 'path';
@@ -18,7 +28,7 @@ export class ScaffoldController {
   @HttpCode(HttpStatus.OK)
   async generateScaffold(
     @Param('ideaId') ideaId: string,
-    @Body('projectName') projectName?: string,
+    @Body('projectName') projectName?: string
   ) {
     const filePath = await this.scaffoldService.generateScaffold(ideaId, projectName);
     const filename = path.basename(filePath);
@@ -38,10 +48,10 @@ export class ScaffoldController {
   async downloadScaffold(@Param('filename') filename: string, @Res() res: Response) {
     try {
       const stream = await this.scaffoldService.getScaffoldStream(filename);
-      
+
       res.setHeader('Content-Type', 'application/gzip');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      
+
       stream.pipe(res);
     } catch (error: any) {
       this.logger.error(`Error downloading scaffold ${filename}:`, error);
@@ -62,4 +72,3 @@ export class ScaffoldController {
     };
   }
 }
-

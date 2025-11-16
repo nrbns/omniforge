@@ -9,4 +9,3 @@ import { CommonModule } from '../common/common.module';
   exports: [HuggingFaceService],
 })
 export class HuggingFaceModule {}
-

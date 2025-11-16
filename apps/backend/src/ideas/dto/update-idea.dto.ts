@@ -13,4 +13,3 @@ export class UpdateIdeaDto {
   @IsOptional()
   rawInput?: string;
 }
-

@@ -7,4 +7,3 @@ import { DemoService } from './services/demo.service';
   exports: [DemoService],
 })
 export class CommonModule {}
-

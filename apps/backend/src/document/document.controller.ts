@@ -11,7 +11,7 @@ export class DocumentController {
   async upload(
     @UploadedFile() file: Express.Multer.File,
     @Body('type') type: 'pdf' | 'image' | 'audio' | 'text',
-    @Body('ideaId') ideaId?: string,
+    @Body('ideaId') ideaId?: string
   ) {
     return this.documentService.processDocument(file, type, ideaId);
   }
@@ -21,9 +21,8 @@ export class DocumentController {
   async uploadForIdea(
     @Param('ideaId') ideaId: string,
     @UploadedFile() file: Express.Multer.File,
-    @Body('type') type: 'pdf' | 'image' | 'audio' | 'text',
+    @Body('type') type: 'pdf' | 'image' | 'audio' | 'text'
   ) {
     return this.documentService.processDocument(file, type, ideaId);
   }
 }
-

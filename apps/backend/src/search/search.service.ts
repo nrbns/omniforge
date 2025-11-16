@@ -8,7 +8,7 @@ export class SearchService {
   constructor(
     private retrieval: RetrievalService,
     private rag: RAGService,
-    private prisma: PrismaService,
+    private prisma: PrismaService
   ) {}
 
   /**
@@ -28,10 +28,6 @@ export class SearchService {
 
     // Vector search
     const vectorResults = await this.retrieval.retrieve(query, 'omniforge', limit, true);
-
-    // Knowledge base search
-    const knowledgeBase = require('@omniforge/knowledge-base').KnowledgeBaseService;
-    // This would need proper injection, simplified here
 
     return {
       ideas,
@@ -55,8 +51,8 @@ export class SearchService {
   async ragSearch(query: string, limit: number = 10) {
     // First retrieve documents
     const queryResult = await this.retrieval.retrieve(query, 'omniforge', limit);
-    const retrievedDocs = queryResult.results?.map(r => r.document) || [];
-    
+    const retrievedDocs = queryResult.results?.map((r) => r.document) || [];
+
     const response = await this.rag.generate({
       query,
       retrievedDocs,
@@ -70,4 +66,3 @@ export class SearchService {
     };
   }
 }
-

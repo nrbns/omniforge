@@ -21,4 +21,3 @@ export class CreateProjectDto {
   @IsOptional()
   config?: Record<string, any>;
 }
-

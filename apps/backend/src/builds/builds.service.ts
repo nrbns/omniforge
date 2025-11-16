@@ -8,7 +8,7 @@ export class BuildsService {
   constructor(
     private prisma: PrismaService,
     private agentsService: AgentsService,
-    private scaffoldService: ScaffoldService,
+    private scaffoldService: ScaffoldService
   ) {}
 
   async create(projectId: string) {
@@ -110,4 +110,3 @@ export class BuildsService {
     };
   }
 }
-

@@ -8,4 +8,3 @@ import { TokensService } from './tokens.service';
   exports: [TokensService],
 })
 export class TokensModule {}
-

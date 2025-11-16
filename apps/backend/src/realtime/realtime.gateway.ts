@@ -47,4 +47,3 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
     return { event: 'pong', data: 'pong' };
   }
 }
-

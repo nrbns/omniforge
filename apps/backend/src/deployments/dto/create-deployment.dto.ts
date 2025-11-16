@@ -21,4 +21,3 @@ export class CreateDeploymentDto {
   @IsOptional()
   config?: Record<string, any>;
 }
-

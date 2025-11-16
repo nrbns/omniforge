@@ -52,7 +52,11 @@ export class ScaffoldService {
         completedAt: new Date(),
         outputPath: tarPath,
         logs: JSON.stringify([
-          { timestamp: new Date().toISOString(), level: 'info', message: 'Scaffold generated successfully' },
+          {
+            timestamp: new Date().toISOString(),
+            level: 'info',
+            message: 'Scaffold generated successfully',
+          },
         ]),
       },
     });
@@ -67,7 +71,7 @@ export class ScaffoldService {
    */
   async getScaffoldStream(filename: string): Promise<NodeJS.ReadableStream> {
     const fullPath = path.join(this.outputDir, filename);
-    
+
     try {
       const stats = await fs.stat(fullPath);
       if (!stats.isFile()) {
@@ -95,4 +99,3 @@ export class ScaffoldService {
     }
   }
 }
-

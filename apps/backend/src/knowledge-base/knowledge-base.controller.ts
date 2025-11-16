@@ -7,7 +7,7 @@ import { KnowledgeEntry } from '@omniforge/knowledge-base';
 export class KnowledgeBaseController {
   constructor(
     private readonly knowledgeBase: KnowledgeBaseService,
-    private readonly templateRetrieval: TemplateRetrievalService,
+    private readonly templateRetrieval: TemplateRetrievalService
   ) {}
 
   @Get()
@@ -22,10 +22,7 @@ export class KnowledgeBaseController {
   }
 
   @Get('templates')
-  async findTemplates(
-    @Query('idea') idea: string,
-    @Query('limit') limit: string = '5',
-  ) {
+  async findTemplates(@Query('idea') idea: string, @Query('limit') limit: string = '5') {
     return this.templateRetrieval.findTemplates(idea, parseInt(limit));
   }
 
@@ -34,4 +31,3 @@ export class KnowledgeBaseController {
     return this.templateRetrieval.getBestTemplate(idea);
   }
 }
-

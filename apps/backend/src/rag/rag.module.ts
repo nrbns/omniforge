@@ -4,7 +4,7 @@ import { RetrievalService } from '@omniforge/rag';
 import { VectorStoreService } from '@omniforge/rag';
 import { ContextManagerService } from '@omniforge/rag';
 import { HuggingFaceService } from '../huggingface/huggingface.service';
-import { LLMService } from '@omniforge/llm';
+import { LLMService, HuggingFaceProvider } from '@omniforge/llm';
 import { ConfigService } from '@nestjs/config';
 
 @Global()
@@ -32,7 +32,7 @@ import { ConfigService } from '@nestjs/config';
       provide: 'LLMService',
       useFactory: (config: ConfigService, huggingFace: HuggingFaceService) => {
         const providers = [];
-        
+
         // OpenAI
         if (config.get<string>('OPENAI_API_KEY')) {
           providers.push({
@@ -58,9 +58,8 @@ import { ConfigService } from '@nestjs/config';
         }
 
         const llmService = new LLMService(providers, providers[0]?.provider);
-        
+
         // Add Hugging Face provider
-        const { HuggingFaceProvider } = require('@omniforge/llm');
         const hfProvider = new HuggingFaceProvider(huggingFace);
         llmService.setHuggingFaceProvider(hfProvider);
 
@@ -82,7 +81,12 @@ import { ConfigService } from '@nestjs/config';
       },
     },
   ],
-  exports: ['RAGService', 'RetrievalService', 'LLMService', 'VectorStoreService', 'ContextManagerService'],
+  exports: [
+    'RAGService',
+    'RetrievalService',
+    'LLMService',
+    'VectorStoreService',
+    'ContextManagerService',
+  ],
 })
 export class RAGModule {}
-

@@ -17,4 +17,3 @@ export class CreateIdeaDto {
   @IsOptional()
   rawInput?: string;
 }
-

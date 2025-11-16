@@ -5,4 +5,3 @@ export class BranchIdeaDto {
   @IsNotEmpty()
   branchName: string;
 }
-

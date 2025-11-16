@@ -9,3 +9,8 @@ export * from './package.agent';
 export * from './code-review.agent';
 export * from './optimization.agent';
 export * from './performance.agent';
+export * from './marketing.agent';
+export * from './sales.agent';
+export * from './workflow.agent';
+export * from './crm.agent';
+export * from './store.agent';
