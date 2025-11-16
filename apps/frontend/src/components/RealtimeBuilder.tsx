@@ -10,6 +10,7 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { debounce } from 'lodash';
 import { toast } from 'sonner';
+import SandboxEditor from './SandboxEditor';
 
 interface RealtimeBuilderProps {
   roomId: string;
@@ -39,6 +40,7 @@ export default function RealtimeBuilder({
   const [connected, setConnected] = useState(false);
   const [awarenessUsers, setAwarenessUsers] = useState<AwarenessUser[]>([]);
   const [aiStreaming, setAiStreaming] = useState(false);
+  const [activeTab, setActiveTab] = useState<'code' | 'sandbox' | 'ideas'>('code');
 
   const ydocRef = useRef<Y.Doc | null>(null);
   const indexeddbRef = useRef<IndexeddbPersistence | null>(null);
@@ -328,15 +330,72 @@ export default function RealtimeBuilder({
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Code Editor (Monaco) */}
+        {/* Left Panel - Tabs */}
         <div className="w-1/2 border-r border-gray-700 flex flex-col">
-          <div className="bg-gray-800 px-4 py-2 border-b border-gray-700">
-            <h2 className="text-sm font-medium">Code Editor</h2>
+          {/* Tab Navigation */}
+          <div className="bg-gray-800 border-b border-gray-700 flex">
+            <button
+              onClick={() => setActiveTab('code')}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'code'
+                  ? 'bg-gray-700 text-white border-b-2 border-purple-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              aria-label="Code Editor"
+            >
+              💻 Code
+            </button>
+            <button
+              onClick={() => setActiveTab('sandbox')}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'sandbox'
+                  ? 'bg-gray-700 text-white border-b-2 border-purple-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              aria-label="Code Sandbox"
+            >
+              🚀 Sandbox
+            </button>
+            <button
+              onClick={() => setActiveTab('ideas')}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'ideas'
+                  ? 'bg-gray-700 text-white border-b-2 border-purple-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              aria-label="Ideas"
+            >
+              💡 Ideas
+            </button>
           </div>
-          <div ref={monacoContainerRef} className="flex-1" />
+
+          {/* Tab Content */}
+          <div className="flex-1 overflow-hidden">
+            {activeTab === 'code' && (
+              <div className="h-full">
+                <div ref={monacoContainerRef} className="h-full" />
+              </div>
+            )}
+            {activeTab === 'sandbox' && ydocRef.current && (
+              <SandboxEditor
+                roomId={roomId}
+                userId={userId}
+                ideaId={ideaId}
+                initialCode={ydocRef.current.getText('code')?.toString() || ''}
+                initialLang="typescript"
+              />
+            )}
+            {activeTab === 'ideas' && (
+              <div className="h-full flex flex-col bg-white text-gray-900">
+                <div className="flex-1 overflow-y-auto p-4">
+                  {tiptapEditor && <EditorContent editor={tiptapEditor} />}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Rich Text Editor (Tiptap) */}
+        {/* Right Panel - Always Ideas/Description */}
         <div className="w-1/2 flex flex-col bg-white text-gray-900">
           <div className="bg-gray-100 px-4 py-2 border-b border-gray-200">
             <h2 className="text-sm font-medium">Idea / UI Description</h2>
