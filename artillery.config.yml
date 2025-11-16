@@ -1,0 +1,91 @@
+# Artillery.io Load Testing Configuration
+# Tests: 100-user rooms, BullMQ queues, WebSocket connections
+
+config:
+  target: 'http://localhost:3001'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 10
+      name: "Ramp up"
+    - duration: 180
+      arrivalRate: 20
+      name: "Sustained load"
+    - duration: 60
+      arrivalRate: 5
+      name: "Cool down"
+  plugins:
+    expect: {}
+  processor: './tests/load/processor.js'
+
+scenarios:
+  - name: "Create idea and build"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/ideas"
+          json:
+            title: "Load Test Idea"
+            description: "Testing load"
+            rawInput: "Build a test app"
+          capture:
+            - json: "$.id"
+              as: "ideaId"
+      - think: 2
+      - post:
+          url: "/api/ideas/{{ ideaId }}/parse"
+      - think: 5
+      - post:
+          url: "/api/projects"
+          json:
+            ideaId: "{{ ideaId }}"
+            name: "Load Test Project"
+          capture:
+            - json: "$.id"
+              as: "projectId"
+      - think: 2
+      - post:
+          url: "/api/projects/{{ projectId }}/build"
+
+  - name: "WebSocket real-time collaboration"
+    weight: 40
+    engine: ws
+    flow:
+      - connect:
+          url: "ws://localhost:3001/realtime"
+      - send:
+          payload: '{"type":"joinRoom","roomId":"load-test-room","userId":"user-{{ $randomNumber() }}"}'
+      - think: 10
+      - send:
+          payload: '{"type":"updateDoc","roomId":"load-test-room","update":[1,2,3]}'
+      - think: 5
+
+  - name: "Workflow execution"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/workflows/business/test-business"
+      - post:
+          url: "/api/workflows"
+          json:
+            businessId: "test-business"
+            name: "Load Test Workflow"
+            trigger: "webhook"
+            steps:
+              nodes: []
+              edges: []
+          capture:
+            - json: "$.id"
+              as: "workflowId"
+      - think: 2
+      - post:
+          url: "/api/workflows/{{ workflowId }}/execute"
+
+  - name: "Analytics queries"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/analytics/unified/test-business"
+
