@@ -61,9 +61,9 @@
   - Node/edge suggestions
 
 #### 🚧 In Progress
-- [ ] Integrate E-Comm Agent into build pipeline
-- [ ] Test workflow generation with real LLM
-- [ ] Add more node types (database, API, conditionals)
+- [x] Integrate E-Comm Agent into build pipeline
+- [x] Test workflow generation with real LLM
+- [x] Add more node types (database, API, conditionals)
 
 ---
 
@@ -72,28 +72,28 @@
 **Goal**: Connect to external services and add engagement popups.
 
 #### E-Commerce Integrations
-- [ ] Stripe webhook handler
-- [ ] PayPal integration
-- [ ] Product import/export (CSV)
-- [ ] Inventory management
+- [x] Stripe webhook handler
+- [x] PayPal integration
+- [x] Product import/export (CSV)
+- [x] Inventory management
 
 #### CRM/Marketing Integrations
-- [ ] Supabase Auth for contacts
-- [ ] Email service (SendGrid/Mailgun mock)
-- [ ] Lead scoring algorithm
-- [ ] A/B testing framework
+- [x] Supabase Auth for contacts
+- [x] Email service (SendGrid/Mailgun mock)
+- [x] Lead scoring algorithm
+- [x] A/B testing framework
 
 #### Engagement Popups (Taku-style)
-- [ ] Exit-intent detection
-- [ ] Cart abandonment popups
-- [ ] AI-generated popup content
-- [ ] Trigger system (time, scroll, event)
+- [x] Exit-intent detection
+- [x] Cart abandonment popups
+- [x] AI-generated popup content
+- [x] Trigger system (time, scroll, event)
 
 #### Workflow Execution
-- [ ] BullMQ job queue for workflows
-- [ ] Node execution engine
-- [ ] Error handling and retries
-- [ ] Workflow monitoring
+- [x] BullMQ job queue for workflows
+- [x] Node execution engine
+- [x] Error handling and retries
+- [x] Workflow monitoring
 
 ---
 
@@ -102,22 +102,22 @@
 **Goal**: Unified analytics dashboard and export capabilities.
 
 #### Analytics Dashboard
-- [ ] Cross-tool metrics aggregation
-- [ ] Charts (Recharts integration)
-- [ ] Real-time updates
-- [ ] Export (CSV/JSON)
+- [x] Cross-tool metrics aggregation
+- [x] Charts (Recharts integration)
+- [x] Real-time updates
+- [x] Export (CSV/JSON)
 
 #### Data Visualization
-- [ ] Python matplotlib → React charts (via sandbox)
-- [ ] Sales funnels
-- [ ] Email campaign performance
-- [ ] Workflow execution stats
+- [x] Python matplotlib → React charts (via sandbox)
+- [x] Sales funnels
+- [x] Email campaign performance
+- [x] Workflow execution stats
 
 #### Export/Interop Layer
-- [ ] Shopify API export
-- [ ] HubSpot API export
-- [ ] Webhook endpoints
-- [ ] CSV/JSON dumps
+- [x] Shopify API export
+- [x] HubSpot API export
+- [x] Webhook endpoints
+- [x] CSV/JSON dumps
 
 ---
 
