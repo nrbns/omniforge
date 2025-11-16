@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import SandboxEditor from './SandboxEditor';
 import WorkflowBuilder from './WorkflowBuilder';
 import PopupBuilder from './PopupBuilder';
+import { ResponsiveSandbox } from './ResponsiveSandbox';
+import { AgentStreamingAnimation, AgentSwarm } from './AgentStreamingAnimation';
 
 interface RealtimeBuilderProps {
   roomId: string;
@@ -401,13 +403,15 @@ export default function RealtimeBuilder({
               </div>
             )}
             {activeTab === 'sandbox' && ydocRef.current && (
-              <SandboxEditor
-                roomId={roomId}
-                userId={userId}
-                ideaId={ideaId}
-                initialCode={ydocRef.current.getText('code')?.toString() || ''}
-                initialLang="typescript"
-              />
+              <ResponsiveSandbox>
+                <SandboxEditor
+                  roomId={roomId}
+                  userId={userId}
+                  ideaId={ideaId}
+                  initialCode={ydocRef.current.getText('code')?.toString() || ''}
+                  initialLang="typescript"
+                />
+              </ResponsiveSandbox>
             )}
             {activeTab === 'workflow' && (
               <WorkflowBuilder roomId={roomId} userId={userId} ideaId={ideaId} />
