@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CrmService } from './crm.service';
+import { LeadScoringService } from './lead-scoring.service';
 import { CreateCrmDto, CreateContactDto, UpdateContactDto } from './dto';
 
 @ApiTags('crm')

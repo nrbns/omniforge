@@ -2,6 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpsertStoreDto, CreateProductDto } from './dto';
 
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  stock?: number;
+}
+
 @Injectable()
 export class StoreService {
   constructor(private readonly prisma: PrismaService) {}
@@ -96,5 +104,23 @@ export class StoreService {
       where: { storeId },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  /**
+   * Get products for business
+   */
+  async getProducts(businessId: string): Promise<Product[]> {
+    const products = await this.prisma.$queryRaw`
+      SELECT * FROM "Product"
+      WHERE "businessId" = ${businessId}
+    `.catch(() => []);
+
+    return (products as any[]).map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: parseFloat(p.price || 0),
+      description: p.description,
+      stock: parseInt(p.stock || '0', 10),
+    }));
   }
 }
