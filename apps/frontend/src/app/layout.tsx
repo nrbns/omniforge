@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { ConditionalAuthProvider } from '../components/ConditionalAuthProvider';
+import { ClientProviders } from '../components/ClientProviders';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'OmniForge - AI-Powered Idea to App Builder',
-  description: 'World\'s first open-source, end-to-end Idea → App → Deployment → App Store AI Builder',
+  title: 'OmniForge - AI-Powered App Builder',
+  description: 'Build full-stack apps from ideas with AI agents and real-time collaboration',
 };
 
 export default function RootLayout({
@@ -16,10 +16,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ConditionalAuthProvider>
-      <html lang="en">
-        <body className={inter.className}>{children}</body>
-      </html>
-    </ConditionalAuthProvider>
+    <html lang="en">
+      <body className={inter.className}>
+        <ClientProviders>{children}</ClientProviders>
+      </body>
+    </html>
   );
 }

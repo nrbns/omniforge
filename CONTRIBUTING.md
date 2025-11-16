@@ -1,85 +1,62 @@
 # Contributing to OmniForge
 
-Thank you for your interest in contributing to OmniForge! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to OmniForge! 🚀
 
-## Table of Contents
-
-- [Code of Conduct](#code-of-conduct)
-- [How Can I Contribute?](#how-can-i-contribute)
-- [Development Setup](#development-setup)
-- [Development Workflow](#development-workflow)
-- [Code Style Guide](#code-style-guide)
-- [Testing Guidelines](#testing-guidelines)
-- [Pull Request Process](#pull-request-process)
-- [Agent Development](#agent-development)
+OmniForge is the world's first open-source, end-to-end **Idea → App → Deployment → App Store** AI Builder. We're building a community-driven platform that makes app development accessible to everyone.
 
 ---
 
-## Code of Conduct
-
-We are committed to providing a welcoming and inclusive environment. Please read and follow our Code of Conduct.
-
----
-
-## How Can I Contribute?
+## 🎯 How to Contribute
 
 ### Reporting Bugs
 
-1. Check if the bug has already been reported in [Issues](https://github.com/omniforge/omniforge/issues)
-2. If not, create a new issue with:
-   - Clear title and description
+1. **Check existing issues**: Search [GitHub Issues](https://github.com/nrbns/omniforge/issues) to see if the bug is already reported.
+2. **Create a new issue**: Use the [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.md) with:
+   - Clear description
    - Steps to reproduce
    - Expected vs actual behavior
-   - Environment details (OS, Node version, etc.)
-   - Screenshots if applicable
+   - Environment (OS, Node version, etc.)
 
 ### Suggesting Features
 
-1. Check existing feature requests
-2. Open an issue with:
-   - Use case description
-   - Proposed solution
-   - Benefits to users
-   - Mockups/wireframes if applicable
+1. **Check existing issues**: Search for similar feature requests.
+2. **Create a feature request**: Use the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.md) with:
+   - Clear description
+   - Use case / problem it solves
+   - Proposed solution (if any)
 
 ### Contributing Code
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Write/update tests
-5. Ensure all tests pass
-6. Submit a pull request
+1. **Fork the repository**
+2. **Create a branch**: `git checkout -b feature/your-feature-name`
+3. **Make your changes**: Follow our coding standards (see below)
+4. **Test your changes**: Run `npm test` and `npm run build`
+5. **Commit**: Use conventional commits (see below)
+6. **Push**: `git push origin feature/your-feature-name`
+7. **Open a Pull Request**: Use the [PR template](.github/pull_request_template.md)
 
 ---
 
-## Development Setup
+## 📋 Development Setup
 
 ### Prerequisites
 
-- Node.js 18+ and npm 9+
-- Docker and Docker Compose
+- Node.js 18+ and npm
+- Docker (for PostgreSQL, Redis, Neo4j, Qdrant)
 - Git
 
-### Initial Setup
+### Quick Start
 
 ```bash
 # Clone your fork
 git clone https://github.com/YOUR_USERNAME/omniforge.git
 cd omniforge
 
-# Add upstream remote
-git remote add upstream https://github.com/omniforge/omniforge.git
-
 # Install dependencies
 npm install
 
-# Start infrastructure services
-npm run docker:up
-
-# Set up environment variables
-cp apps/backend/.env.example apps/backend/.env
-# Edit apps/backend/.env with your configuration
+# Start Docker services
+docker-compose up -d
 
 # Run database migrations
 npm run db:migrate
@@ -88,332 +65,291 @@ npm run db:migrate
 npm run dev
 ```
 
-### Verify Setup
+**Access**:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001/api
+- API Docs: http://localhost:3001/api/docs
 
-1. Frontend: `http://localhost:3000`
-2. Backend API: `http://localhost:3001/api`
-3. Database: `postgresql://localhost:5432/omniforge`
-
----
-
-## Development Workflow
-
-### Branch Naming
-
-- `feature/description` - New features
-- `fix/description` - Bug fixes
-- `docs/description` - Documentation updates
-- `refactor/description` - Code refactoring
-- `test/description` - Test additions/updates
-
-### Commit Messages
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-
-**Examples**:
-```
-feat(ideas): add idea branching support
-
-fix(backend): resolve build status update race condition
-
-docs(readme): update installation instructions
-```
-
-### Syncing with Upstream
+### Demo Mode (No API Keys)
 
 ```bash
-# Fetch upstream changes
-git fetch upstream
+npm run demo:setup
+```
 
-# Checkout main branch
-git checkout main
+This sets up everything automatically with demo data.
 
-# Merge upstream changes
-git merge upstream/main
+---
 
-# Push to your fork
-git push origin main
+## 🏗️ Project Structure
+
+```
+omniforge/
+├── apps/
+│   ├── backend/          # NestJS API server
+│   │   ├── src/
+│   │   │   ├── ideas/     # Idea management
+│   │   │   ├── projects/  # Project management
+│   │   │   ├── agents/    # Agent orchestration
+│   │   │   └── realtime/  # WebSocket gateway
+│   │   └── prisma/        # Database schema
+│   └── frontend/          # Next.js frontend
+│       └── src/app/       # Next.js App Router
+├── packages/
+│   ├── agents/            # Multi-agent build engine
+│   ├── redix/             # Redix Idea Layer
+│   ├── ui/                # Shared UI components
+│   └── shared/            # Shared types
+└── design-tokens/          # Design token definitions
 ```
 
 ---
 
-## Code Style Guide
+## 📝 Coding Standards
 
 ### TypeScript
 
-- Use TypeScript strict mode
-- Prefer interfaces over types for public APIs
-- Use explicit return types for functions
-- Avoid `any` - use `unknown` or proper types
+- **Strict mode**: Always use TypeScript strict mode
+- **Types**: Prefer explicit types over `any`
+- **Interfaces**: Use interfaces for object shapes
+- **Naming**: Use PascalCase for components, camelCase for functions
 
 ```typescript
-// Good
+// ✅ Good
 interface User {
   id: string;
-  email: string;
+  name: string;
 }
 
-function getUser(id: string): Promise<User> {
+function getUserById(id: string): Promise<User> {
   // ...
 }
 
-// Bad
+// ❌ Bad
 function getUser(id: any): any {
   // ...
 }
 ```
 
-### NestJS Backend
+### React/Next.js
 
-- Follow NestJS conventions
-- Use DTOs for all API endpoints
-- Inject dependencies via constructor
-- Use modules for feature organization
+- **Components**: Use functional components with hooks
+- **Props**: Define prop types with TypeScript interfaces
+- **State**: Prefer `useState` and `useReducer` over class components
+- **Performance**: Use `React.memo` for expensive components
+
+```tsx
+// ✅ Good
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+}
+
+export const Button = React.memo(({ label, onClick }: ButtonProps) => {
+  return <button onClick={onClick}>{label}</button>;
+});
+```
+
+### NestJS
+
+- **Modules**: One module per feature
+- **Services**: Business logic in services, not controllers
+- **DTOs**: Use DTOs for request/response validation
+- **Error Handling**: Use NestJS exception filters
 
 ```typescript
-// Good
+// ✅ Good
 @Injectable()
 export class IdeasService {
-  constructor(
-    private prisma: PrismaService,
-    private realtime: RealtimeService,
-  ) {}
-
   async create(dto: CreateIdeaDto): Promise<Idea> {
-    // ...
+    // Business logic here
   }
 }
 ```
 
-### React/Next.js Frontend
+### Git Commits
 
-- Use functional components with hooks
-- Keep components small and focused
-- Use TypeScript for props
-- Prefer composition over inheritance
+Use [Conventional Commits](https://www.conventionalcommits.org/):
 
-```typescript
-// Good
-interface ButtonProps {
-  variant?: 'primary' | 'secondary';
-  onClick: () => void;
-  children: React.ReactNode;
-}
-
-export const Button: React.FC<ButtonProps> = ({ variant = 'primary', onClick, children }) => {
-  return <button className={variant} onClick={onClick}>{children}</button>;
-};
+```
+feat: Add onboarding tour
+fix: Resolve Yjs sync issue
+docs: Update README with demo mode
+refactor: Simplify agent orchestration
+test: Add unit tests for IdeasService
+chore: Update dependencies
 ```
 
-### Naming Conventions
-
-- **Files**: `kebab-case.ts` (e.g., `idea-parser.agent.ts`)
-- **Classes**: `PascalCase` (e.g., `IdeaParserAgent`)
-- **Functions/Variables**: `camelCase` (e.g., `parseIdea`)
-- **Constants**: `UPPER_SNAKE_CASE` (e.g., `API_BASE_URL`)
+**Types**:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `refactor`: Code refactoring
+- `test`: Tests
+- `chore`: Maintenance
 
 ---
 
-## Testing Guidelines
-
-### Unit Tests
-
-- Write tests for all business logic
-- Use descriptive test names
-- Follow AAA pattern (Arrange, Act, Assert)
-- Aim for >80% code coverage
-
-```typescript
-describe('IdeaParserAgent', () => {
-  it('should parse idea with title and description', async () => {
-    // Arrange
-    const agent = new IdeaParserAgent();
-    const idea = { title: 'Test App', description: 'A test app' };
-
-    // Act
-    const spec = await agent.parseIdea(idea);
-
-    // Assert
-    expect(spec.name).toBe('Test App');
-    expect(spec.pages).toHaveLength(1);
-  });
-});
-```
-
-### Integration Tests
-
-- Test API endpoints
-- Test database operations
-- Test agent workflows
-- Use test database
-
-### E2E Tests
-
-- Test critical user flows
-- Use Playwright for browser automation
-- Keep tests maintainable
+## 🧪 Testing
 
 ### Running Tests
 
 ```bash
-# Run all tests
-npm run test
+# All tests
+npm test
 
-# Run tests in watch mode
-npm run test:watch
+# Backend only
+cd apps/backend && npm test
 
-# Run tests with coverage
-npm run test:cov
+# Frontend only
+cd apps/frontend && npm test
 
-# Run E2E tests
+# E2E tests (Playwright)
 npm run test:e2e
 ```
 
----
+### Writing Tests
 
-## Pull Request Process
-
-### Before Submitting
-
-1. **Update documentation** if needed
-2. **Add tests** for new features
-3. **Ensure all tests pass**
-4. **Check linting**: `npm run lint`
-5. **Type check**: `npm run type-check`
-6. **Build succeeds**: `npm run build`
-
-### PR Checklist
-
-- [ ] Code follows style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex code
-- [ ] Documentation updated
-- [ ] Tests added/updated
-- [ ] All tests pass
-- [ ] No breaking changes (or documented)
-
-### PR Description Template
-
-```markdown
-## Description
-Brief description of changes
-
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Testing
-How was this tested?
-
-## Checklist
-- [ ] Code follows style guidelines
-- [ ] Self-review completed
-- [ ] Tests added/updated
-- [ ] Documentation updated
-```
-
-### Review Process
-
-1. Maintainers review within 48 hours
-2. Address feedback promptly
-3. Keep PR focused and small if possible
-4. Squash commits before merge (unless requested otherwise)
-
----
-
-## Agent Development
-
-### Creating a New Agent
-
-1. Create agent file in `packages/agents/src/`
-2. Export from `packages/agents/src/index.ts`
-3. Add to `AgentsService` in backend
-4. Create queue in `agents.module.ts`
-5. Write tests
-6. Document usage
-
-### Agent Template
+- **Unit tests**: Test individual functions/components
+- **Integration tests**: Test API endpoints
+- **E2E tests**: Test user flows (Playwright)
 
 ```typescript
-export class MyAgent {
-  /**
-   * Brief description of what the agent does
-   */
-  async process(input: InputType): Promise<OutputType> {
-    // Implementation
-  }
-
-  private helperMethod(): void {
-    // Private helper methods
-  }
-}
+// Example unit test
+describe('IdeasService', () => {
+  it('should create an idea', async () => {
+    const idea = await ideasService.create({
+      userId: 'test-user',
+      title: 'Test Idea',
+      rawInput: 'Build a todo app',
+    });
+    expect(idea.title).toBe('Test Idea');
+  });
+});
 ```
-
-### Agent Best Practices
-
-- Single Responsibility Principle
-- Idempotent operations when possible
-- Error handling and logging
-- Progress reporting for long-running tasks
-- Use job queue for async operations
 
 ---
 
-## Documentation
+## 🎨 UI/UX Guidelines
+
+### Design Tokens
+
+Use design tokens from `design-tokens/tokens.json`:
+
+```tsx
+// ✅ Good
+<button className="bg-primary-600 text-white rounded-lg">
+  Click me
+</button>
+
+// ❌ Bad
+<button style={{ backgroundColor: '#7c3aed', color: 'white' }}>
+  Click me
+</button>
+```
+
+### Accessibility
+
+- **ARIA labels**: Add `aria-label` to interactive elements
+- **Keyboard navigation**: Ensure all features work with keyboard
+- **Screen readers**: Test with screen reader software
+- **Color contrast**: Follow WCAG AA standards
+
+```tsx
+// ✅ Good
+<button aria-label="Create new idea" onClick={handleClick}>
+  New Idea
+</button>
+```
+
+---
+
+## 📚 Documentation
 
 ### Code Comments
 
-- Use JSDoc for public APIs
-- Explain "why" not "what"
-- Keep comments up to date
+- **Public APIs**: Document all public functions/classes
+- **Complex logic**: Explain why, not what
+- **JSDoc**: Use JSDoc for TypeScript functions
 
 ```typescript
 /**
- * Parses raw idea input and extracts structured specification.
- * Uses LLM to identify pages, data models, and API requirements.
+ * Streams AI-generated improvements to idea description in real-time.
+ * Uses RealtimeGateway to inject text directly into Yjs document.
  *
- * @param idea - The idea to parse
- * @returns Parsed application specification
+ * @param ideaId - The ID of the idea to improve
+ * @param prompt - Optional custom prompt for AI
+ * @returns Promise with success status and chunk count
  */
-async parseIdea(idea: Idea): Promise<AppSpec> {
+async streamAIImprovements(ideaId: string, prompt?: string) {
   // ...
 }
 ```
 
 ### README Updates
 
-- Update README for new features
-- Keep examples current
-- Document breaking changes
+- Update README.md when adding features
+- Include examples and screenshots
+- Keep installation instructions current
 
 ---
 
-## Getting Help
+## 🐛 Debugging
 
-- **Discord**: [Join our Discord](https://discord.gg/omniforge)
-- **GitHub Issues**: For bug reports and feature requests
-- **Discussions**: For questions and ideas
+### Backend
+
+```bash
+# Enable debug logs
+DEBUG=* npm run dev
+
+# Check Prisma migrations
+cd apps/backend && npx prisma migrate status
+
+# View database
+npx prisma studio
+```
+
+### Frontend
+
+```bash
+# Enable React DevTools
+# Install browser extension
+
+# Check build errors
+npm run build
+
+# Lint errors
+npm run lint
+```
 
 ---
 
-## Recognition
+## 🚀 Release Process
 
-Contributors will be:
-- Listed in CONTRIBUTORS.md
-- Thanked in release notes
-- Given appropriate credit in code
+1. **Update version**: `npm version patch|minor|major`
+2. **Update CHANGELOG.md**: Document changes
+3. **Create GitHub release**: Tag and release notes
+4. **Deploy**: Automatic via CI/CD (GitHub Actions)
 
-Thank you for contributing to OmniForge! 🚀
+---
 
+## 💬 Community
+
+- **Discord**: [Join our Discord](https://discord.gg/omniforge) (coming soon)
+- **Twitter/X**: [@omniforge](https://twitter.com/omniforge) (coming soon)
+- **GitHub Discussions**: Use for Q&A and ideas
+
+---
+
+## 📄 License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
+
+---
+
+## 🙏 Thank You!
+
+Every contribution, no matter how small, helps make OmniForge better. Thank you for being part of our community! 🎉
+
+---
+
+**Questions?** Open an issue or reach out to maintainers.

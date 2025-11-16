@@ -8,6 +8,8 @@ import * as monaco from 'monaco-editor';
 import { io, Socket } from 'socket.io-client';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { debounce } from 'lodash';
+import { toast } from 'sonner';
 
 interface RealtimeBuilderProps {
   roomId: string;
@@ -117,14 +119,22 @@ export default function RealtimeBuilder({
       }
     });
 
-    // Send local Yjs updates to server
+    // Send local Yjs updates to server (debounced for performance)
+    const debouncedEmitUpdate = debounce(
+      (update: Uint8Array) => {
+        if (!isApplyingRemoteUpdateRef.current && socket.connected) {
+          socket.emit('applyUpdate', {
+            roomId,
+            update: Array.from(update),
+          });
+        }
+      },
+      100, // 100ms debounce for sub-100ms perceived latency
+      { leading: false, trailing: true },
+    );
+
     const updateHandler = (update: Uint8Array) => {
-      if (!isApplyingRemoteUpdateRef.current && socket.connected) {
-        socket.emit('applyUpdate', {
-          roomId,
-          update: Array.from(update),
-        });
-      }
+      debouncedEmitUpdate(update);
     };
     ydoc.on('update', updateHandler);
 
@@ -200,6 +210,7 @@ export default function RealtimeBuilder({
 
     return () => {
       clearTimeout(monacoTimeout);
+      debouncedEmitUpdate.cancel(); // Cancel pending debounced calls
       ydoc.off('update', updateHandler);
       bindingRef.current?.destroy();
       monacoEditorRef.current?.dispose();
@@ -221,10 +232,23 @@ export default function RealtimeBuilder({
           body: JSON.stringify({ prompt }),
         },
       );
+      if (!response.ok) {
+        throw new Error('AI streaming failed');
+      }
       await response.json();
+      toast.success('AI improvements streaming', {
+        description: 'Watch the code update in real-time!',
+      });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error triggering AI stream:', error);
+      toast.error('AI streaming failed', {
+        description: error instanceof Error ? error.message : 'Please try again',
+        action: {
+          label: 'Retry',
+          onClick: () => triggerAIStream(prompt),
+        },
+      });
     } finally {
       setAiStreaming(false);
     }
