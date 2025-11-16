@@ -39,35 +39,58 @@ export class WorkflowExecutionService {
   ) {}
 
   /**
-   * Execute a workflow
+   * Execute a workflow with error handling and retries
    */
   async executeWorkflow(workflow: Workflow, triggerData?: Record<string, any>): Promise<void> {
     this.logger.log(`Executing workflow ${workflow.id}`);
 
-    // Find start nodes (nodes with no incoming edges)
-    const startNodes = workflow.nodes.filter(
-      (node) => !workflow.edges.some((edge) => edge.target === node.id),
-    );
+    const maxRetries = 3;
+    let retries = 0;
 
-    // Execute each start node
-    for (const node of startNodes) {
-      await this.executeNode(node, workflow, triggerData);
+    while (retries < maxRetries) {
+      try {
+        // Find start nodes (nodes with no incoming edges)
+        const startNodes = workflow.nodes.filter(
+          (node) => !workflow.edges.some((edge) => edge.target === node.id),
+        );
+
+        // Execute each start node
+        for (const node of startNodes) {
+          await this.executeNode(node, workflow, triggerData);
+        }
+
+        // Success - break retry loop
+        break;
+      } catch (error) {
+        retries++;
+        this.logger.warn(`Workflow execution failed (attempt ${retries}/${maxRetries}):`, error);
+
+        if (retries >= maxRetries) {
+          this.logger.error(`Workflow ${workflow.id} failed after ${maxRetries} retries`);
+          throw error;
+        }
+
+        // Exponential backoff
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, retries) * 1000));
+      }
     }
   }
 
   /**
-   * Execute a single node
+   * Execute a single node with error handling
    */
   private async executeNode(
     node: WorkflowNode,
     workflow: Workflow,
     inputData?: Record<string, any>,
   ): Promise<any> {
+    const startTime = Date.now();
     this.logger.log(`Executing node ${node.id} (${node.type})`);
 
-    let output: any;
+    try {
+      let output: any;
 
-    switch (node.type) {
+      switch (node.type) {
       case 'webhook':
         // Webhook nodes receive data from external sources
         output = inputData || {};
@@ -106,18 +129,26 @@ export class WorkflowExecutionService {
       default:
         this.logger.warn(`Unknown node type: ${node.type}`);
         output = inputData;
-    }
-
-    // Find next nodes (nodes connected from this node)
-    const nextEdges = workflow.edges.filter((edge) => edge.source === node.id);
-    for (const edge of nextEdges) {
-      const nextNode = workflow.nodes.find((n) => n.id === edge.target);
-      if (nextNode) {
-        await this.executeNode(nextNode, workflow, output);
       }
-    }
 
-    return output;
+      const duration = Date.now() - startTime;
+      this.logger.log(`Node ${node.id} completed in ${duration}ms`);
+
+      // Find next nodes (nodes connected from this node)
+      const nextEdges = workflow.edges.filter((edge) => edge.source === node.id);
+      for (const edge of nextEdges) {
+        const nextNode = workflow.nodes.find((n) => n.id === edge.target);
+        if (nextNode) {
+          await this.executeNode(nextNode, workflow, output);
+        }
+      }
+
+      return output;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`Node ${node.id} failed after ${duration}ms:`, error);
+      throw error;
+    }
   }
 
   private async executeAINode(node: WorkflowNode, inputData?: Record<string, any>): Promise<any> {

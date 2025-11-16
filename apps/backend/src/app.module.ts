@@ -33,6 +33,8 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { ExportModule } from './export/export.module';
 import { MetricsModule } from './metrics/metrics.module';
 import { BillingModule } from './billing/billing.module';
+import { PayPalModule } from './integrations/paypal/paypal.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -72,6 +74,8 @@ import { BillingModule } from './billing/billing.module';
     ExportModule,
     MetricsModule,
     BillingModule,
+    PayPalModule,
+    WebhooksModule,
     IdeasModule,
     ProjectsModule,
     BuildsModule,

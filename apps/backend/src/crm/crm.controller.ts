@@ -6,7 +6,10 @@ import { CreateCrmDto, CreateContactDto, UpdateContactDto } from './dto';
 @ApiTags('crm')
 @Controller('crm')
 export class CrmController {
-  constructor(private readonly crmService: CrmService) {}
+  constructor(
+    private readonly crmService: CrmService,
+    private readonly leadScoringService: LeadScoringService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -77,5 +80,34 @@ export class CrmController {
   @ApiResponse({ status: 200, description: 'Contact deleted' })
   async deleteContact(@Param('id') id: string) {
     return this.crmService.deleteContact(id);
+  }
+
+  @Post('leads/:leadId/score')
+  @ApiOperation({ summary: 'Calculate lead score' })
+  @ApiResponse({ status: 200, description: 'Lead score calculated' })
+  async calculateLeadScore(
+    @Param('leadId') leadId: string,
+    @Body() body: {
+      emailOpened?: boolean;
+      emailClicked?: boolean;
+      websiteVisited?: boolean;
+      formSubmitted?: boolean;
+      timeOnSite?: number;
+      pagesViewed?: number;
+      source?: string;
+      companySize?: string;
+      industry?: string;
+    },
+  ) {
+    const score = await this.leadScoringService.calculateLeadScore(leadId, body);
+    const qualified = await this.leadScoringService.autoQualifyLead(leadId, score);
+    return { score, qualified };
+  }
+
+  @Get('leads/:leadId/scoring')
+  @ApiOperation({ summary: 'Get lead scoring breakdown' })
+  @ApiResponse({ status: 200, description: 'Scoring breakdown' })
+  async getScoringBreakdown(@Param('leadId') leadId: string) {
+    return this.leadScoringService.getScoringBreakdown(leadId);
   }
 }

@@ -10,6 +10,7 @@ export class WorkflowsController {
   constructor(
     private readonly workflowsService: WorkflowsService,
     private readonly executionService: WorkflowExecutionService,
+    private readonly monitoringService: WorkflowMonitoringService,
   ) {}
 
   @Post()
@@ -63,5 +64,46 @@ export class WorkflowsController {
       body.triggerData,
     );
     return { success: true, message: 'Workflow execution queued' };
+  }
+
+  @Get(':id/monitoring')
+  @ApiOperation({
+    summary: 'Get workflow monitoring stats',
+  })
+  @ApiParam({ name: 'id', description: 'Workflow ID' })
+  @ApiResponse({ status: 200, description: 'Monitoring stats' })
+  async getMonitoring(
+    @Param('id') id: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    const dateRange =
+      startDate && endDate
+        ? {
+            start: new Date(startDate),
+            end: new Date(endDate),
+          }
+        : undefined;
+
+    return this.monitoringService.getExecutionStats(id, dateRange);
+  }
+
+  @Get(':id/logs')
+  @ApiOperation({
+    summary: 'Get workflow execution logs',
+  })
+  @ApiParam({ name: 'id', description: 'Workflow ID' })
+  @ApiResponse({ status: 200, description: 'Execution logs' })
+  async getLogs(@Param('id') id: string, @Query('limit') limit?: string) {
+    return this.monitoringService.getExecutionLogs(id, parseInt(limit || '50', 10));
+  }
+
+  @Get('queue/status')
+  @ApiOperation({
+    summary: 'Get workflow queue status',
+  })
+  @ApiResponse({ status: 200, description: 'Queue status' })
+  async getQueueStatus() {
+    return this.monitoringService.getQueueStatus();
   }
 }

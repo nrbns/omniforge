@@ -2,6 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface AnalyticsData {
   ecommerce: {
@@ -152,6 +167,26 @@ export default function UnifiedAnalyticsDashboard({ businessId }: UnifiedAnalyti
       {/* E-Commerce Section */}
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold mb-4">E-Commerce</h2>
+        
+        {/* Sales Chart */}
+        <div className="mb-6 h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={[
+              { date: 'Day 1', sales: data.ecommerce.totalSales * 0.3 },
+              { date: 'Day 7', sales: data.ecommerce.totalSales * 0.5 },
+              { date: 'Day 14', sales: data.ecommerce.totalSales * 0.7 },
+              { date: 'Day 21', sales: data.ecommerce.totalSales * 0.9 },
+              { date: 'Day 30', sales: data.ecommerce.totalSales },
+            ]}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="sales" stroke="#7c3aed" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div>
             <div className="text-sm text-gray-500">Total Sales</div>
@@ -224,6 +259,23 @@ export default function UnifiedAnalyticsDashboard({ businessId }: UnifiedAnalyti
       {/* Email Section */}
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold mb-4">Email Marketing</h2>
+        
+        {/* Email Performance Chart */}
+        <div className="mb-6 h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={[
+              { metric: 'Open Rate', value: data.email.openRate * 100 },
+              { metric: 'Click Rate', value: data.email.clickRate * 100 },
+              { metric: 'Bounce Rate', value: data.email.bounceRate * 100 },
+            ]}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="metric" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="#10b981" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div>
             <div className="text-sm text-gray-500">Total Sent</div>

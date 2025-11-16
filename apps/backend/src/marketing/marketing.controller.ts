@@ -6,7 +6,10 @@ import { CreateMarketingAssetDto } from './dto';
 @ApiTags('marketing')
 @Controller('marketing')
 export class MarketingController {
-  constructor(private readonly marketingService: MarketingService) {}
+  constructor(
+    private readonly marketingService: MarketingService,
+    private readonly abTestingService: ABTestingService,
+  ) {}
 
   @Post()
   @ApiOperation({
