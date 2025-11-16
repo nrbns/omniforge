@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AgentsService } from '../agents/agents.service';
 import { RealtimeService } from '../realtime/realtime.service';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { CreateIdeaDto, UpdateIdeaDto, CommitIdeaDto, BranchIdeaDto } from './dto';
 
 @Injectable()
@@ -9,7 +10,8 @@ export class IdeasService {
   constructor(
     private prisma: PrismaService,
     private agentsService: AgentsService,
-    private realtimeService: RealtimeService
+    private realtimeService: RealtimeService,
+    private realtimeGateway: RealtimeGateway,
   ) {}
 
   async create(dto: CreateIdeaDto) {
@@ -176,5 +178,43 @@ export class IdeasService {
     await this.realtimeService.emit(`idea:${id}`, 'idea.parsed', updated);
 
     return updated;
+  }
+
+  /**
+   * Stream AI-generated improvements to idea description in real-time.
+   * Uses RealtimeGateway to inject text directly into Yjs document.
+   */
+  async streamAIImprovements(ideaId: string, prompt?: string) {
+    const idea = await this.findOne(ideaId);
+    const currentDescription = idea.description || idea.rawInput || '';
+
+    // Simple AI prompt (in production, use actual LLM streaming)
+    const aiPrompt = prompt || `Improve and expand this idea description: "${currentDescription}"`;
+    
+    // Simulate streaming AI response (in production, use actual LLM streaming)
+    const improvements = [
+      'This idea has great potential. ',
+      'Here are some key enhancements: ',
+      '1. Add user authentication for security\n',
+      '2. Implement real-time notifications\n',
+      '3. Include analytics dashboard\n',
+      '4. Add mobile app support\n',
+    ];
+
+    // Stream chunks into Yjs document
+    const roomId = `idea:${ideaId}`;
+    let position = currentDescription.length;
+    for (const chunk of improvements) {
+      const result = await this.realtimeGateway.injectAIContent(roomId, 'description', chunk, position);
+      position = result.position;
+      // Small delay to simulate streaming
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+
+    return {
+      success: true,
+      message: 'AI improvements streamed to document',
+      chunks: improvements.length,
+    };
   }
 }

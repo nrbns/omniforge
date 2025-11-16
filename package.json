@@ -47,5 +47,18 @@
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
   },
-  "packageManager": "npm@9.8.1"
+  "packageManager": "npm@9.8.1",
+  "dependencies": {
+    "@tiptap/react": "^3.10.7",
+    "@tiptap/starter-kit": "^3.10.7",
+    "rxjs": "^7.8.2",
+    "yjs": "^13.6.27"
+  },
+  "overrides": {
+    "js-yaml": "^4.1.1",
+    "tmp": "^0.2.1",
+    "@istanbuljs/load-nyc-config": {
+      "js-yaml": "^4.1.1"
+    }
+  }
 }

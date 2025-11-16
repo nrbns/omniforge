@@ -66,9 +66,9 @@
 
 ## 🚀 Quick Start
 
-### Demo Mode (No API Keys Required!)
+### ⚡ Recommended: Demo Mode (No API Keys Required)
 
-The fastest way to try OmniForge:
+The single fastest way to try OmniForge:
 
 ```bash
 # Clone the repository
@@ -77,6 +77,7 @@ cd omniforge
 
 # Install dependencies
 npm install
+
 
 # Run demo setup (handles everything automatically)
 npm run demo:setup
@@ -94,7 +95,7 @@ This will:
 - Backend API: http://localhost:3001/api
 - API Docs: http://localhost:3001/api/docs
 
-**Test the API:**
+**Smoke test the API:**
 ```bash
 # Health check
 curl http://localhost:3001/api/health
@@ -111,50 +112,45 @@ curl -X POST http://localhost:3001/api/ideas \
 
 For detailed testing instructions, see [QUICK_TEST.md](./QUICK_TEST.md).
 
-### Manual Setup (Production)
+### 🔧 Manual Setup (Advanced / Production)
 
-### ⚡ **Fastest Way (Demo Mode - No API Keys Required!)**
+For a step-by-step manual flow (including real API keys, custom env, and full setup), see:
 
-Get OmniForge running in **under 5 minutes** without any API keys:
+- [QUICKSTART.md](./QUICKSTART.md)
+- [INSTALL_AND_RUN.md](./INSTALL_AND_RUN.md)
 
-```bash
-# Clone the repository
-git clone https://github.com/nrbns/omniforge.git
-cd omniforge
+---
 
-# Install dependencies
-npm install
+## 📌 Project Status & Roadmap
 
-# Start infrastructure (PostgreSQL, Redis, Neo4j, Qdrant)
-npm run docker:up
+OmniForge is currently **ALPHA**. We are actively stabilizing the core and building out the Business Engine.
 
-# Run database migrations
-npm run db:migrate
+### ✅ Implemented
 
-# Seed demo data (optional)
-npm run db:seed
+- Demo mode (no external API keys required)
+- Idea ingestion + basic Redix idea storage and parsing
+- Next.js frontend + NestJS backend, Prisma + PostgreSQL
+- Multi-agent build engine (Planner, UI, Frontend, Backend, Realtime, Test, Deploy, Package)
+- Design tokens and shared UI component library
+- Dockerized infrastructure and CI build workflows
 
-# Start in demo mode (no API keys needed!)
-npm run dev:demo
-```
+### 🚧 In Progress
 
-**That's it!** 🎉
+- Real-time collaboration (presence, comments, idea diffing) surfaced in the UI
+- Full Redix branches/merges/knowledge graph exploration
+- Business Engine: CRM, marketing, store, workflows (backend implemented, UX in progress)
+- App Store packaging (Fastlane automation) and deployment flows
+- Drag-and-drop visual builder integration
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:3001/api
-- **API Documentation**: http://localhost:3001/api/docs
+### ❌ Not Yet
 
-### 📝 **Create Your First Idea (Demo Mode)**
+- Hosted multi-tenant SaaS environment
+- Production-ready auth/SSO and advanced RBAC
+- Hardening for compliance/security (SOC2, etc.)
 
-1. Open http://localhost:3000
-2. Click "New Idea"
-3. Enter your idea: `"A task management app with kanban boards"`
-4. Click "Parse Idea" → **AI extracts specification** (using demo mode)
-5. Click "Build Project" → **Agents generate code** (using demo mode)
+For a more detailed roadmap and December beta milestones, see [ROADMAP.md](./ROADMAP.md).
 
-### 🔧 **With Real API Keys (Production Mode)**
-
-For better quality with real AI models:
+---
 
 ```bash
 # 1. Copy environment files

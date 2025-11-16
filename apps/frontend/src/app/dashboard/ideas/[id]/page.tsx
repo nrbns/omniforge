@@ -1,8 +1,9 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Idea } from '@omniforge/shared';
+import { useIdeaRealtimeDoc } from '../../../../hooks/useIdeaRealtimeDoc';
 
 export default function IdeaDetailPage() {
   const params = useParams();
@@ -11,18 +12,42 @@ export default function IdeaDetailPage() {
   const [idea, setIdea] = useState<Idea | null>(null);
   const [loading, setLoading] = useState(true);
   const [parsing, setParsing] = useState(false);
+  const [aiStreaming, setAiStreaming] = useState(false);
+  const [liveDescription, setLiveDescription] = useState('');
+  const [presenceData, setPresenceData] = useState<Map<string, { cursor?: { line: number; column: number }; selection?: { start: number; end: number } }>>(new Map());
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Real-time collaborative editing
+  const { ytext, connected, users, sendPresence, triggerAIStream } = useIdeaRealtimeDoc({
+    ideaId: id,
+    userId: 'demo-user', // TODO: Get from auth
+    initialContent: idea?.description || '',
+    onContentChange: (content) => {
+      setLiveDescription(content);
+      // Debounced save to database
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      saveTimeoutRef.current = setTimeout(() => {
+        saveDescription(content);
+      }, 2000); // Save after 2 seconds of inactivity
+    },
+    onPresenceUpdate: (userId, cursor, selection) => {
+      setPresenceData((prev) => {
+        const next = new Map(prev);
+        if (cursor || selection) {
+          next.set(userId, { cursor, selection });
+        } else {
+          next.delete(userId);
+        }
+        return next;
+      });
+    },
+  });
 
   useEffect(() => {
     fetchIdea();
-    // Subscribe to real-time updates
-    const eventSource = new EventSource(`http://localhost:3001/api/ideas/${id}/stream`);
-    eventSource.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.type === 'idea.updated' || data.type === 'idea.parsed') {
-        setIdea(data.payload);
-      }
-    };
-    return () => eventSource.close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchIdea = async () => {
@@ -30,12 +55,77 @@ export default function IdeaDetailPage() {
       const response = await fetch(`http://localhost:3001/api/ideas/${id}`);
       const data = await response.json();
       setIdea(data);
+      setLiveDescription(data.description || '');
     } catch (error) {
       console.error('Error fetching idea:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const saveDescription = async (description: string) => {
+    try {
+      await fetch(`http://localhost:3001/api/ideas/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description }),
+      });
+    } catch (error) {
+      console.error('Error saving description:', error);
+    }
+  };
+
+  // Sync Yjs text with textarea and track cursor for presence
+  useEffect(() => {
+    if (!ytext) return;
+
+    const textarea = document.getElementById('idea-description-editor') as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    // Update textarea when Yjs changes
+    const updateTextarea = () => {
+      const content = ytext.toString();
+      if (textarea.value !== content) {
+        const cursorPos = textarea.selectionStart;
+        textarea.value = content;
+        // Restore cursor position
+        textarea.setSelectionRange(cursorPos, cursorPos);
+      }
+    };
+    ytext.observe(updateTextarea);
+
+    // Update Yjs when textarea changes
+    const handleInput = (e: Event) => {
+      const target = e.target as HTMLTextAreaElement;
+      const current = ytext.toString();
+      if (target.value !== current) {
+        ytext.delete(0, current.length);
+        ytext.insert(0, target.value);
+      }
+    };
+    textarea.addEventListener('input', handleInput);
+
+    // Track cursor position for presence
+    const handleSelectionChange = () => {
+      const text = textarea.value;
+      const cursorPos = textarea.selectionStart;
+      const lines = text.substring(0, cursorPos).split('\n');
+      const line = lines.length - 1;
+      const column = lines[lines.length - 1].length;
+      sendPresence({ line, column }, { start: textarea.selectionStart, end: textarea.selectionEnd });
+    };
+    textarea.addEventListener('keyup', handleSelectionChange);
+    textarea.addEventListener('click', handleSelectionChange);
+    textarea.addEventListener('select', handleSelectionChange);
+
+    return () => {
+      ytext.unobserve(updateTextarea);
+      textarea.removeEventListener('input', handleInput);
+      textarea.removeEventListener('keyup', handleSelectionChange);
+      textarea.removeEventListener('click', handleSelectionChange);
+      textarea.removeEventListener('select', handleSelectionChange);
+    };
+  }, [ytext, sendPresence]);
 
   const handleParse = async () => {
     setParsing(true);
@@ -79,6 +169,17 @@ export default function IdeaDetailPage() {
     }
   };
 
+  const handleAIStream = async () => {
+    setAiStreaming(true);
+    try {
+      await triggerAIStream();
+    } catch (error) {
+      console.error('Error streaming AI improvements:', error);
+    } finally {
+      setAiStreaming(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -117,25 +218,31 @@ export default function IdeaDetailPage() {
             ← Back
           </button>
           <h1 className="text-2xl font-bold text-gray-900">{idea.title}</h1>
-          <div className="flex gap-2">
-            {idea.status === 'DRAFT' && (
-              <button
-                onClick={handleParse}
-                disabled={parsing}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {parsing ? 'Parsing...' : 'Parse Idea'}
-              </button>
-            )}
-            {idea.status === 'PARSED' && (
-              <button
-                onClick={handleBuild}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                Build Project
-              </button>
-            )}
-          </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => router.push(`/realtime-builder?roomId=idea:${id}&ideaId=${id}&userId=demo-user`)}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                >
+                  🚀 Open Realtime Builder
+                </button>
+                {idea.status === 'DRAFT' && (
+                  <button
+                    onClick={handleParse}
+                    disabled={parsing}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {parsing ? 'Parsing...' : 'Parse Idea'}
+                  </button>
+                )}
+                {idea.status === 'PARSED' && (
+                  <button
+                    onClick={handleBuild}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  >
+                    Build Project
+                  </button>
+                )}
+              </div>
         </div>
       </header>
 
@@ -166,13 +273,77 @@ export default function IdeaDetailPage() {
               </p>
             </div>
 
-            {/* Description */}
-            {idea.description && (
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Description</h2>
-                <p className="text-gray-700 whitespace-pre-wrap">{idea.description}</p>
+            {/* Description - Live Collaborative Editor */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Description</h2>
+                <div className="flex items-center gap-3">
+                  {connected && (
+                    <span className="flex items-center gap-1 text-xs text-green-600">
+                      <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                      Live
+                    </span>
+                  )}
+                  {users.length > 1 && (
+                    <div className="flex items-center gap-2">
+                      <div className="flex -space-x-2">
+                        {users.slice(0, 3).map((userId) => (
+                          <div
+                            key={userId}
+                            className="w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center border-2 border-white"
+                            title={userId}
+                          >
+                            {userId.charAt(0).toUpperCase()}
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {users.length} {users.length === 1 ? 'user' : 'users'}
+                      </span>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleAIStream}
+                    disabled={aiStreaming}
+                    className="px-3 py-1.5 text-xs bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  >
+                    {aiStreaming ? (
+                      <>
+                        <span className="animate-spin">⚡</span>
+                        AI Writing...
+                      </>
+                    ) : (
+                      <>
+                        <span>✨</span>
+                        AI Improve
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-            )}
+              <div className="relative">
+                <textarea
+                  id="idea-description-editor"
+                  className="w-full min-h-[200px] p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                  placeholder="Describe your idea... (changes sync in real-time with other users)"
+                  defaultValue={liveDescription || idea?.description || ''}
+                />
+                {/* Presence indicators overlay (simplified - would need absolute positioning for real cursors) */}
+                {Array.from(presenceData.entries()).map(([userId, data]) => (
+                  <div
+                    key={userId}
+                    className="absolute top-2 right-2 text-xs text-gray-400 flex items-center gap-1"
+                    style={{ display: data.cursor ? 'flex' : 'none' }}
+                  >
+                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    {userId}
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-gray-500">
+                Changes are saved automatically and synced in real-time • Click &quot;AI Improve&quot; to get AI suggestions
+              </p>
+            </div>
 
             {/* Raw Input */}
             {idea.rawInput && (

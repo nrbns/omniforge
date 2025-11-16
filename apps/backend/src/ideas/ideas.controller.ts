@@ -88,4 +88,12 @@ export class IdeasController {
   async parseIdea(@Param('id') id: string) {
     return this.ideasService.parseIdea(id);
   }
+
+  @Post(':id/ai-stream')
+  @ApiOperation({ summary: 'Stream AI-generated improvements to idea description' })
+  @ApiParam({ name: 'id', description: 'Idea ID' })
+  @ApiResponse({ status: 200, description: 'AI streaming started' })
+  async streamAIImprovements(@Param('id') id: string, @Body() body: { prompt?: string }) {
+    return this.ideasService.streamAIImprovements(id, body.prompt);
+  }
 }

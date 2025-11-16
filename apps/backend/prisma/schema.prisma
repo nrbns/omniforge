@@ -538,3 +538,18 @@ model WorkflowExecution {
   @@index([status])
   @@map("workflow_executions")
 }
+
+model YjsState {
+  id            String   @id @default(cuid())
+  roomId        String   @unique // e.g., "idea:abc123" or "project:xyz789"
+  ideaId        String?  // Optional link to idea
+  projectId     String?  // Optional link to project
+  yjsState      Bytes    // Binary Yjs document state
+  lastSyncedAt  DateTime @default(now()) @updatedAt
+  createdAt     DateTime @default(now())
+
+  @@index([roomId])
+  @@index([ideaId])
+  @@index([projectId])
+  @@map("yjs_states")
+}
