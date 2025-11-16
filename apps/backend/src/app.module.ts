@@ -31,6 +31,8 @@ import { StripeModule } from './integrations/stripe/stripe.module';
 import { EmailModule } from './email/email.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ExportModule } from './export/export.module';
+import { MetricsModule } from './metrics/metrics.module';
+import { BillingModule } from './billing/billing.module';
 
 @Module({
   imports: [
@@ -68,6 +70,8 @@ import { ExportModule } from './export/export.module';
     EmailModule,
     AnalyticsModule,
     ExportModule,
+    MetricsModule,
+    BillingModule,
     IdeasModule,
     ProjectsModule,
     BuildsModule,

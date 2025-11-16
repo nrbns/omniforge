@@ -1,119 +1,179 @@
-# 🗺️ OmniForge Roadmap (December Beta Focus)
+# 🗺️ OmniForge Roadmap
 
-This roadmap focuses on getting OmniForge to a **solid December beta** with a killer demo and a stable Business Engine.
-
----
-
-## 🎯 Milestone 1 – Demo Rock Solid (DONE / POLISH)
-
-**Goal:** Idea → Spec → Build → Preview works smoothly in demo mode.
-
-- ✅ Demo mode (no API keys)
-- ✅ Backend + frontend build cleanly (`npm run build`)
-- ✅ Basic idea → spec → project → build pipeline
-- ✅ Health checks and API docs
-- ✅ Docker-based infra for local dev
-
-**Polish (nice-to-have):**
-- [ ] Add more example ideas / projects
-- [ ] Improve build logs UX in dashboard
+**Last Updated**: November 2025  
+**Status**: Alpha → Beta (Q1 2026)
 
 ---
 
-## 🎯 Milestone 2 – Redix v1 (In Progress)
+## 🎯 Vision
 
-**Goal:** Redix Idea Layer is visible and useful in the UI.
+Build the world's first open-source, all-in-one AI builder that combines:
+- **Shopify** (e-commerce)
+- **HubSpot** (CRM)
+- **Mailchimp** (email)
+- **n8n** (workflows)
+- **Taku** (engagement)
+- **Replit** (code sandbox)
+- **Cursor** (AI coding)
 
-- ✅ Idea storage with branches and commits
-- ✅ RAG-enhanced IdeaParserAgent
-- ✅ Qdrant + Neo4j wired into the backend
-
-**Still to do:**
-- [ ] UI for idea history (commits, branches)
-- [ ] “Related ideas” / semantic search panel
-- [ ] Basic KG visualization or relationship view
-
----
-
-## 🎯 Milestone 3 – Business Engine v1 (Backend DONE, UX In Progress)
-
-**Goal:** A single idea can produce not just an app, but a **business scaffold**.
-
-**Backend (implemented):**
-- ✅ `Business` model and API
-- ✅ `CRM` + `Contact` + `Lead` + `SalesFunnel` models and APIs
-- ✅ `MarketingAsset` model and API
-- ✅ `Store` + `Product` + `Order` models and APIs
-- ✅ `Workflow` + `WorkflowExecution` models and APIs
-- ✅ Marketing/Sales/CRM/Store/Workflow agents in `packages/agents`
-
-**Frontend / UX (to do):**
-- [ ] Business overview dashboard (`/dashboard/business/[projectId]`)
-- [ ] Marketing assets view (list + detail)
-- [ ] CRM view (contacts + basic pipeline)
-- [ ] Funnels view (list + basic stats)
-- [ ] Store view (products + orders)
-- [ ] Workflows list (status, last run)
+All in one platform, AI-orchestrated, real-time collaborative, and zero vendor lock-in.
 
 ---
 
-## 🎯 Milestone 4 – Hosted Demo + Beta Flow
+## 📅 Q4 2025 (Current)
 
-**Goal:** Anyone can try OmniForge without cloning the repo.
+### ✅ Completed
+- [x] E2E tests (Playwright)
+- [x] Security scanning (Snyk, OWASP ZAP)
+- [x] Load testing (Artillery.io)
+- [x] Enhanced onboarding tour
+- [x] Skeleton loaders
+- [x] Export templates (Figma, Shopify, Next.js, React)
+- [x] E-Commerce agent integration
+- [x] CRM agent integration
+- [x] Workflow builder
+- [x] Popup builder
+- [x] Unified analytics dashboard
+- [x] Export/Interop layer
 
-- [ ] Single-tenant hosted instance (e.g. Fly.io, Render, Railway, or self-host)
-- [ ] “Try the demo” route with:
-  - Pre-seeded ideas & projects
-  - Safe, anonymous demo users
-- [ ] Rate limiting + basic safety for demo
-- [ ] Beta sign-up flow:
-  - [ ] Simple landing page (could be powered by OmniForge itself)
-  - [ ] Email capture for early access
-
----
-
-## 🎯 Milestone 5 – December Public Beta
-
-**Goal:** Announce OmniForge as an **ALPHA/BETA** and onboard early users.
-
-- [ ] GitHub release: `v0.1.0-alpha`
-- [ ] Polished README with:
-  - Status / roadmap (this file)
-  - Limitations / known issues
-  - Demo GIFs / screenshots
-- [ ] Blog post / launch doc:
-  - “Idea → Business Engine” story
-  - How OmniForge is different from Dualite / Cursor / etc.
-- [ ] Initial Issues / Projects board with:
-  - `good-first-issue`
-  - `help-wanted`
-  - `beta-feedback`
+### 🚧 In Progress
+- [ ] Framer Motion animations
+- [ ] Responsive mobile overhaul
+- [ ] Metrics dashboard (Mixpanel/GA4)
+- [ ] Monetization MVP ($9/mo)
 
 ---
 
-## 🧩 After December (Beyond Beta)
+## 🚀 Q1 2026: Beta Launch
 
-These are important but **not required** for a successful December beta:
+### Sprint 2: UI Polish (Dec 2025)
+- [ ] Framer Motion animations for agent streaming
+- [ ] Responsive mobile overhaul
+- [ ] Dark mode improvements
+- [ ] Component library expansion
 
-- Multi-tenant SaaS + billing
-- SSO / SAML and enterprise auth
-- Fine-grained RBAC
-- Advanced observability (metrics, tracing, structured logs)
-- App packaging pipelines fully automated (iOS/Android store submission)
+### Sprint 3: PM & Metrics (Jan 2026)
+- [ ] Public roadmap (GitHub Projects)
+- [ ] Metrics dashboard (Mixpanel/GA4)
+- [ ] User feedback loops (Hotjar)
+- [ ] A/B testing framework
+
+### Sprint 4: Monetization (Feb 2026)
+- [ ] Stripe integration ($9/mo plans)
+- [ ] Usage tracking
+- [ ] Billing dashboard
+- [ ] Freemium limits
+
+### Beta Launch (Mar 2026)
+- [ ] 50 beta users
+- [ ] Case studies
+- [ ] Product Hunt launch
+- [ ] HN launch
 
 ---
 
-## ✅ How to Help
+## 🎯 Q2 2026: Growth
 
-If you want to contribute to the beta:
+### Features
+- [ ] Native mobile app exports (iOS/Android)
+- [ ] Advanced workflow nodes (100+)
+- [ ] AI model fine-tuning
+- [ ] Multi-language support (i18n)
+- [ ] Advanced analytics (funnels, cohorts)
 
-- Pick an item from the milestones above
-- Open an issue referencing the milestone
-- Submit a PR with:
-  - Clear description
-  - Screenshots/GIFs where relevant
-  - Tests where possible
+### Integrations
+- [ ] Zapier integration
+- [ ] Slack integration
+- [ ] Discord bot
+- [ ] GitHub Actions templates
+- [ ] Vercel/Netlify auto-deploy
 
-OmniForge is meant to be the **world’s first AI Business Engine** – this roadmap is how we get there together.
+### Community
+- [ ] Community agent marketplace
+- [ ] Template library (100+ templates)
+- [ ] Video tutorials
+- [ ] Discord community
+- [ ] Contributor program
 
+---
 
+## 🔮 Q3-Q4 2026: Scale
+
+### Enterprise Features
+- [ ] SSO (SAML, OAuth)
+- [ ] Advanced RBAC
+- [ ] Audit logs
+- [ ] SOC2 compliance
+- [ ] White-label options
+
+### AI Enhancements
+- [ ] Custom model training
+- [ ] Fine-tuned agents per business
+- [ ] Multi-modal AI (images, voice)
+- [ ] AI code review
+- [ ] AI security scanning
+
+### Platform
+- [ ] Multi-tenant SaaS
+- [ ] Self-hosted option
+- [ ] API marketplace
+- [ ] Plugin system
+- [ ] GraphQL API
+
+---
+
+## 📊 Success Metrics
+
+### Q1 2026 (Beta)
+- **Users**: 50 beta users
+- **Stars**: 500+ GitHub stars
+- **MRR**: $500 (50 users × $9/mo)
+- **NPS**: 50+
+
+### Q2 2026 (Growth)
+- **Users**: 500 active users
+- **Stars**: 2,000+ GitHub stars
+- **MRR**: $5,000
+- **NPS**: 60+
+
+### Q3-Q4 2026 (Scale)
+- **Users**: 5,000 active users
+- **Stars**: 10,000+ GitHub stars
+- **MRR**: $50,000
+- **NPS**: 70+
+
+---
+
+## 🎯 Competitive Positioning
+
+| Feature | OmniForge | Shopify | HubSpot | n8n | Replit |
+|---------|-----------|---------|---------|-----|--------|
+| **E-Commerce** | ✅ AI-auto | ✅ | ❌ | ❌ | ❌ |
+| **CRM** | ✅ Unified | ❌ | ✅ | ❌ | ❌ |
+| **Workflows** | ✅ Visual | ❌ | ⚠️ | ✅ | ❌ |
+| **Code Sandbox** | ✅ Multi-lang | ❌ | ❌ | ❌ | ✅ |
+| **Real-time** | ✅ Yjs | ❌ | ❌ | ❌ | ⚠️ |
+| **OSS** | ✅ MIT | ❌ | ❌ | ✅ | ✅ |
+| **AI-Orchestrated** | ✅ | ❌ | ❌ | ❌ | ❌ |
+
+**OmniForge Wins**: All-in-one + AI + Real-time + OSS
+
+---
+
+## 🤝 Contributing
+
+Want to help? Check out:
+- [CONTRIBUTING.md](./CONTRIBUTING.md)
+- [GitHub Issues](https://github.com/nrbns/omniforge/issues)
+- [Discord Community](https://discord.gg/omniforge) (coming soon)
+
+---
+
+## 📝 Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
+
+---
+
+**Last Updated**: November 2025  
+**Next Review**: December 2025
