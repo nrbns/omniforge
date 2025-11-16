@@ -14,3 +14,5 @@ export * from './sales.agent';
 export * from './workflow.agent';
 export * from './crm.agent';
 export * from './store.agent';
+export * from './ecomm-agent';
+export * from './crm-agent';
