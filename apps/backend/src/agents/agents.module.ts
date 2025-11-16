@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AgentsService } from './agents.service';
+import { WorkflowController } from './workflow.controller';
 import { BullModule } from '@nestjs/bullmq';
 import { IdeaParserProcessor } from './processors/idea-parser.processor';
 import { BuildProcessor } from './processors/build.processor';
@@ -15,6 +16,7 @@ import { ScaffoldModule } from '../scaffold/scaffold.module';
     KnowledgeBaseModule,
     ScaffoldModule,
   ],
+  controllers: [WorkflowController],
   providers: [AgentsService, IdeaParserProcessor, BuildProcessor, DeployProcessor],
   exports: [AgentsService],
 })

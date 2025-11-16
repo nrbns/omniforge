@@ -79,6 +79,50 @@ export class AgentsService {
     });
   }
 
+  async generateWorkflow(prompt: string, ideaId?: string): Promise<{
+    nodes: any[];
+    edges: any[];
+    metadata: any;
+  }> {
+    // Generate workflow using AI (simplified - in production, use actual LLM)
+    // This would call a WorkflowAgent that suggests nodes based on prompt
+    const suggestedNodes = [
+      {
+        id: '1',
+        type: 'webhook',
+        position: { x: 100, y: 100 },
+        data: { label: 'Stripe Webhook', description: 'Payment received' },
+      },
+      {
+        id: '2',
+        type: 'ai',
+        position: { x: 300, y: 100 },
+        data: { label: 'AI Classify', description: 'Classify payment data' },
+      },
+      {
+        id: '3',
+        type: 'email',
+        position: { x: 500, y: 100 },
+        data: { label: 'Send Email', description: 'Send confirmation email' },
+      },
+    ];
+
+    const suggestedEdges = [
+      { id: 'e1-2', source: '1', target: '2' },
+      { id: 'e2-3', source: '2', target: '3' },
+    ];
+
+    return {
+      nodes: suggestedNodes,
+      edges: suggestedEdges,
+      metadata: {
+        prompt,
+        ideaId,
+        generatedAt: new Date().toISOString(),
+      },
+    };
+  }
+
   private generateMockSpec(idea: Idea): any {
     return {
       version: '1.0.0',
