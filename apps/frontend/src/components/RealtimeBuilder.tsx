@@ -12,6 +12,7 @@ import { debounce } from 'lodash';
 import { toast } from 'sonner';
 import SandboxEditor from './SandboxEditor';
 import WorkflowBuilder from './WorkflowBuilder';
+import PopupBuilder from './PopupBuilder';
 
 interface RealtimeBuilderProps {
   roomId: string;
@@ -41,7 +42,7 @@ export default function RealtimeBuilder({
   const [connected, setConnected] = useState(false);
   const [awarenessUsers, setAwarenessUsers] = useState<AwarenessUser[]>([]);
   const [aiStreaming, setAiStreaming] = useState(false);
-  const [activeTab, setActiveTab] = useState<'code' | 'sandbox' | 'workflow' | 'ideas'>('code');
+  const [activeTab, setActiveTab] = useState<'code' | 'sandbox' | 'workflow' | 'popup' | 'ideas'>('code');
 
   const ydocRef = useRef<Y.Doc | null>(null);
   const indexeddbRef = useRef<IndexeddbPersistence | null>(null);
@@ -369,6 +370,17 @@ export default function RealtimeBuilder({
               🔄 Workflow
             </button>
             <button
+              onClick={() => setActiveTab('popup')}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'popup'
+                  ? 'bg-gray-700 text-white border-b-2 border-purple-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              aria-label="Popup Builder"
+            >
+              🎯 Popup
+            </button>
+            <button
               onClick={() => setActiveTab('ideas')}
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 activeTab === 'ideas'
@@ -399,6 +411,9 @@ export default function RealtimeBuilder({
             )}
             {activeTab === 'workflow' && (
               <WorkflowBuilder roomId={roomId} userId={userId} ideaId={ideaId} />
+            )}
+            {activeTab === 'popup' && (
+              <PopupBuilder roomId={roomId} ideaId={ideaId} />
             )}
             {activeTab === 'ideas' && (
               <div className="h-full flex flex-col bg-white text-gray-900">

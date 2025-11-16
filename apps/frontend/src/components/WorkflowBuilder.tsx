@@ -28,26 +28,44 @@ interface WorkflowBuilderProps {
 // Custom node types
 const nodeTypes: NodeTypes = {
   webhook: ({ data }: { data: any }) => (
-    <div className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg">
+    <div className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg min-w-[150px]">
       <div className="font-semibold">🔗 {data.label}</div>
       <div className="text-xs mt-1">{data.description}</div>
     </div>
   ),
   ai: ({ data }: { data: any }) => (
-    <div className="px-4 py-2 bg-purple-600 text-white rounded-lg shadow-lg">
+    <div className="px-4 py-2 bg-purple-600 text-white rounded-lg shadow-lg min-w-[150px]">
       <div className="font-semibold">🤖 {data.label}</div>
       <div className="text-xs mt-1">{data.description}</div>
     </div>
   ),
   email: ({ data }: { data: any }) => (
-    <div className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-lg">
+    <div className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-lg min-w-[150px]">
       <div className="font-semibold">📧 {data.label}</div>
       <div className="text-xs mt-1">{data.description}</div>
     </div>
   ),
   action: ({ data }: { data: any }) => (
-    <div className="px-4 py-2 bg-orange-600 text-white rounded-lg shadow-lg">
+    <div className="px-4 py-2 bg-orange-600 text-white rounded-lg shadow-lg min-w-[150px]">
       <div className="font-semibold">⚡ {data.label}</div>
+      <div className="text-xs mt-1">{data.description}</div>
+    </div>
+  ),
+  database: ({ data }: { data: any }) => (
+    <div className="px-4 py-2 bg-cyan-600 text-white rounded-lg shadow-lg min-w-[150px]">
+      <div className="font-semibold">💾 {data.label}</div>
+      <div className="text-xs mt-1">{data.description}</div>
+    </div>
+  ),
+  api: ({ data }: { data: any }) => (
+    <div className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-lg min-w-[150px]">
+      <div className="font-semibold">🌐 {data.label}</div>
+      <div className="text-xs mt-1">{data.description}</div>
+    </div>
+  ),
+  conditional: ({ data }: { data: any }) => (
+    <div className="px-4 py-2 bg-yellow-600 text-white rounded-lg shadow-lg min-w-[150px]">
+      <div className="font-semibold">❓ {data.label}</div>
       <div className="text-xs mt-1">{data.description}</div>
     </div>
   ),
@@ -266,6 +284,24 @@ export default function WorkflowBuilder({ roomId, userId, ideaId }: WorkflowBuil
           className="px-3 py-1.5 bg-orange-600 text-white rounded text-sm hover:bg-orange-700"
         >
           + Action
+        </button>
+        <button
+          onClick={() => addNode('database', 'Database', 'Query database')}
+          className="px-3 py-1.5 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-700"
+        >
+          + Database
+        </button>
+        <button
+          onClick={() => addNode('api', 'API Call', 'Call external API')}
+          className="px-3 py-1.5 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700"
+        >
+          + API
+        </button>
+        <button
+          onClick={() => addNode('conditional', 'Condition', 'If/else logic')}
+          className="px-3 py-1.5 bg-yellow-600 text-white rounded text-sm hover:bg-yellow-700"
+        >
+          + Condition
         </button>
 
         <div className="flex-1" />

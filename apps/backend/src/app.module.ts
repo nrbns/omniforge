@@ -27,6 +27,8 @@ import { CrmModule } from './crm/crm.module';
 import { StoreModule } from './store/store.module';
 import { WorkflowsModule } from './workflows/workflows.module';
 import { LeadsModule } from './leads/leads.module';
+import { StripeModule } from './integrations/stripe/stripe.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { LeadsModule } from './leads/leads.module';
     StoreModule,
     WorkflowsModule,
     LeadsModule,
+    StripeModule,
+    EmailModule,
     IdeasModule,
     ProjectsModule,
     BuildsModule,

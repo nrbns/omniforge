@@ -11,8 +11,11 @@ import {
   BackendAgent,
   RealtimeAgent,
   TestAgent,
+  ECommAgent,
+  CRMAgent,
 } from '@omniforge/agents';
-import { Logger } from '@nestjs/common';
+import { LLMService } from '@omniforge/llm';
+import { Logger, Inject } from '@nestjs/common';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs/promises';
@@ -38,13 +41,22 @@ export class BuildProcessor extends WorkerHost {
   private readonly realtimeAgent = new RealtimeAgent();
   private readonly testAgent = new TestAgent();
 
+  private ecommAgent: ECommAgent | null = null;
+  private crmAgent: CRMAgent | null = null;
+
   constructor(
     private prisma: PrismaService,
     private realtime: RealtimeService,
     private huggingFace: HuggingFaceService,
-    private scaffoldService: ScaffoldService
+    private scaffoldService: ScaffoldService,
+    @Inject('LLMService') private llmService?: LLMService
   ) {
     super();
+    // Initialize E-Comm and CRM agents if LLMService is available
+    if (this.llmService) {
+      this.ecommAgent = new ECommAgent(this.llmService);
+      this.crmAgent = new CRMAgent(this.llmService);
+    }
   }
 
   async process(job: Job<BuildJob>): Promise<any> {
@@ -60,6 +72,35 @@ export class BuildProcessor extends WorkerHost {
       await this.updateBuildLog(buildId, 'Planning application architecture...');
       const plannedSpec = await this.plannerAgent.plan(spec);
       await this.updateProgress(buildId, 10);
+
+      // Step 1b: Check if e-commerce or CRM features are needed
+      const isECommerce = this.detectECommerce(plannedSpec);
+      const needsCRM = this.detectCRM(plannedSpec);
+
+      if (isECommerce && this.ecommAgent) {
+        await this.updateBuildLog(buildId, 'Generating e-commerce store...');
+        const ecommOutput = await this.ecommAgent.generate({
+          title: plannedSpec.name || spec.title || 'Store',
+          description: plannedSpec.description || '',
+          products: plannedSpec.products || [],
+          paymentMethods: ['stripe'],
+          shipping: { enabled: true },
+        });
+        // Merge e-commerce code into planned spec
+        plannedSpec.ecommerce = ecommOutput;
+        await this.updateProgress(buildId, 12);
+      }
+
+      if (needsCRM && this.crmAgent) {
+        await this.updateBuildLog(buildId, 'Generating CRM and marketing...');
+        const crmOutput = await this.crmAgent.generate({
+          businessType: plannedSpec.businessType || 'General',
+          audience: plannedSpec.audience || 'General',
+        });
+        // Merge CRM code into planned spec
+        plannedSpec.crm = crmOutput;
+        await this.updateProgress(buildId, 14);
+      }
 
       // Step 2: Generate design tokens
       await this.updateBuildLog(buildId, 'Generating design tokens...');
@@ -224,5 +265,17 @@ export class BuildProcessor extends WorkerHost {
     } catch (error) {
       this.logger.warn(`Failed to install dependencies: ${error.message}`);
     }
+  }
+
+  private detectECommerce(spec: any): boolean {
+    const keywords = ['store', 'shop', 'ecommerce', 'e-commerce', 'cart', 'checkout', 'product', 'payment'];
+    const specStr = JSON.stringify(spec).toLowerCase();
+    return keywords.some((keyword) => specStr.includes(keyword));
+  }
+
+  private detectCRM(spec: any): boolean {
+    const keywords = ['crm', 'lead', 'contact', 'pipeline', 'deal', 'email', 'campaign', 'marketing'];
+    const specStr = JSON.stringify(spec).toLowerCase();
+    return keywords.some((keyword) => specStr.includes(keyword));
   }
 }

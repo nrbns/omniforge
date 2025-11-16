@@ -1,12 +1,16 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { WorkflowsService } from './workflows.service';
+import { WorkflowExecutionService } from './workflow-execution.service';
 import { CreateWorkflowDto } from './dto';
 
 @ApiTags('workflows')
 @Controller('workflows')
 export class WorkflowsController {
-  constructor(private readonly workflowsService: WorkflowsService) {}
+  constructor(
+    private readonly workflowsService: WorkflowsService,
+    private readonly executionService: WorkflowExecutionService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -36,5 +40,28 @@ export class WorkflowsController {
   @ApiResponse({ status: 200, description: 'Workflow details' })
   async get(@Param('id') id: string) {
     return this.workflowsService.get(id);
+  }
+
+  @Post(':id/execute')
+  @ApiOperation({
+    summary: 'Execute a workflow',
+  })
+  @ApiParam({ name: 'id', description: 'Workflow ID' })
+  @ApiResponse({ status: 200, description: 'Workflow execution started' })
+  async execute(
+    @Param('id') id: string,
+    @Body() body: { triggerData?: Record<string, any> },
+  ) {
+    const workflow = await this.workflowsService.get(id);
+    await this.executionService.queueWorkflow(
+      id,
+      {
+        id,
+        nodes: (workflow.steps as any)?.nodes || [],
+        edges: (workflow.steps as any)?.edges || [],
+      },
+      body.triggerData,
+    );
+    return { success: true, message: 'Workflow execution queued' };
   }
 }
