@@ -16,6 +16,7 @@ import { CreateIdeaDto, UpdateIdeaDto, CommitIdeaDto, BranchIdeaDto } from './dt
 
 @ApiTags('ideas')
 @Controller('ideas')
+@UseGuards(OptionalAuthGuard) // Optional auth - user can be null
 export class IdeasController {
   constructor(private readonly ideasService: IdeasService) {}
 

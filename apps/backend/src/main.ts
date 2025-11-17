@@ -19,10 +19,31 @@ async function bootstrap() {
     logger.log('🚀 OmniForge running in DEMO MODE - No API keys required!');
   }
 
-  // Enable CORS
+  // Enable CORS with production-safe defaults
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : process.env.FRONTEND_URL
+    ? [process.env.FRONTEND_URL]
+    : process.env.NODE_ENV === 'production'
+    ? [] // No default origins in production - must be set
+    : ['http://localhost:3000']; // Dev default
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin) || process.env.DEMO_MODE === 'true') {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Global validation pipe

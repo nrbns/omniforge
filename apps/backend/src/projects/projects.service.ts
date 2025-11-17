@@ -112,7 +112,7 @@ export class ProjectsService {
 
     // Trigger build agents
     this.agentsService.buildProject(project, build.id).catch((error) => {
-      console.error('Build error:', error);
+      this.logger.error('Build error:', error);
       this.prisma.build.update({
         where: { id: build.id },
         data: {
@@ -176,7 +176,7 @@ export class ProjectsService {
     if (updates.content && project.previewUrl) {
       // TODO: Call preview deployment's hot patch endpoint
       // For now, just log
-      console.log('Hot patching content to:', project.previewUrl);
+      this.logger.log('Hot patching content to:', project.previewUrl);
     }
 
     return { success: true, message: 'Changes applied live' };

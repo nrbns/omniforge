@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { validate } from './config/env.validation';
 import { BullModule } from '@nestjs/bullmq';
 import { IdeasModule } from './ideas/ideas.module';
 import { ProjectsModule } from './projects/projects.module';
@@ -35,12 +36,22 @@ import { MetricsModule } from './metrics/metrics.module';
 import { BillingModule } from './billing/billing.module';
 import { PayPalModule } from './integrations/paypal/paypal.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { RateLimitMiddleware } from './common/middleware/rate-limit.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      validate,
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: false,
+      },
     }),
     BullModule.forRoot({
       connection: {
@@ -83,6 +94,17 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     TokensModule,
     RealtimeModule,
     AgentsModule,
+    AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard, // Protect all routes by default
+    },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RateLimitMiddleware).forRoutes('*');
+  }
+}

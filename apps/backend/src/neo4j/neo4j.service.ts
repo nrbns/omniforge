@@ -18,9 +18,9 @@ export class Neo4jService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     try {
       await this.driver.verifyConnectivity();
-      console.log('✅ Neo4j connected');
+      this.logger.log('✅ Neo4j connected');
     } catch (error) {
-      console.error('❌ Neo4j connection error:', error);
+      this.logger.error('❌ Neo4j connection error:', error);
     }
   }
 
