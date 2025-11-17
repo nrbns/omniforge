@@ -16,6 +16,9 @@ import {
 } from '@omniforge/agents';
 import { LLMService } from '@omniforge/llm';
 import { Logger, Inject } from '@nestjs/common';
+import { ErrorRecoveryService } from '../services/error-recovery.service';
+import { HallucinationDetectorService } from '../services/hallucination-detector.service';
+import { ParallelExecutorService, Task } from '../services/parallel-executor.service';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs/promises';
@@ -49,6 +52,9 @@ export class BuildProcessor extends WorkerHost {
     private realtime: RealtimeService,
     private huggingFace: HuggingFaceService,
     private scaffoldService: ScaffoldService,
+    private errorRecovery: ErrorRecoveryService,
+    private hallucinationDetector: HallucinationDetectorService,
+    private parallelExecutor: ParallelExecutorService,
     @Inject('LLMService') private llmService?: LLMService
   ) {
     super();
@@ -127,9 +133,43 @@ export class BuildProcessor extends WorkerHost {
         outputPath: scaffoldPath,
       });
 
-      // Step 4: Generate backend code
+      // Step 4: Generate backend code (with error recovery)
       await this.updateBuildLog(buildId, 'Generating backend code...');
-      const backendFiles = await this.backendAgent.generateBackend(plannedSpec);
+      let backendFiles;
+      let backendAttempt = 0;
+      while (backendAttempt < 3) {
+        try {
+          backendFiles = await this.backendAgent.generateBackend(plannedSpec);
+          
+          // Check for hallucinations
+          for (const file of backendFiles.files) {
+            const check = await this.hallucinationDetector.detect(file.content, plannedSpec, 'typescript');
+            if (check.isHallucination) {
+              this.logger.warn(`Hallucination detected in ${file.path}: ${check.issues[0]}`);
+            }
+          }
+          
+          break; // Success
+        } catch (error) {
+          backendAttempt++;
+          const recovery = await this.errorRecovery.analyzeError({
+            error,
+            spec: plannedSpec,
+            agent: 'BackendAgent',
+            attempt: backendAttempt,
+          });
+          
+          if (recovery.type === 'abort' || backendAttempt >= 3) {
+            throw error;
+          }
+          
+          if (recovery.type === 'retry') {
+            const delay = this.errorRecovery.getRetryDelay(backendAttempt - 1);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+        }
+      }
       await this.updateProgress(buildId, 60);
 
       // Step 5: Generate real-time code
