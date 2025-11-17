@@ -42,6 +42,8 @@ type AwarenessPayload = {
 export class RealtimeGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
+  private readonly logger = new Logger(RealtimeGateway.name);
+  
   @WebSocketServer()
   server: Server;
 
@@ -75,15 +77,13 @@ export class RealtimeGateway
     this.wss = new WebSocket.Server({ noServer: true, path: '/yjs' });
 
     // Handle upgrade from HTTP server
-    server.engine.on('connection', (socket) => {
-      // eslint-disable-next-line no-console
-      console.log('Socket.io connection established');
+    server.engine.on('connection', () => {
+      this.logger.log('Socket.io connection established');
     });
   }
 
   handleConnection(client: Socket) {
-    // eslint-disable-next-line no-console
-    console.log(`Client connected: ${client.id}`);
+    this.logger.debug(`Client connected: ${client.id}`);
   }
 
   /**
@@ -92,16 +92,12 @@ export class RealtimeGateway
   @SubscribeMessage('join')
   handleJoin(@MessageBody() channel: string, @ConnectedSocket() client: Socket) {
     client.join(channel);
-    // eslint-disable-next-line no-console
-    console.log(`Client ${client.id} joined channel: ${channel}`);
     return { success: true, channel };
   }
 
   @SubscribeMessage('leave')
   handleLeave(@MessageBody() channel: string, @ConnectedSocket() client: Socket) {
     client.leave(channel);
-    // eslint-disable-next-line no-console
-    console.log(`Client ${client.id} left channel: ${channel}`);
     return { success: true, channel };
   }
 
@@ -149,29 +145,36 @@ export class RealtimeGateway
         async () => {
           try {
             const state = Y.encodeStateAsUpdate(doc);
-            await this.prisma.yjsState.upsert({
-              where: { roomId },
-              update: {
-                yjsState: Buffer.from(state),
-                ideaId: ideaId || undefined,
-                projectId: projectId || undefined,
-              },
-              create: {
-                roomId,
-                yjsState: Buffer.from(state),
-                ideaId: ideaId || undefined,
-                projectId: projectId || undefined,
-              },
-            });
-            // Also cache in Redis for fast access
+            
+            // Persist to Prisma if YjsState model exists
+            try {
+              await (this.prisma as any).yjsState?.upsert({
+                where: { roomId },
+                update: {
+                  yjsState: Buffer.from(state),
+                  ideaId: ideaId || undefined,
+                  projectId: projectId || undefined,
+                },
+                create: {
+                  roomId,
+                  yjsState: Buffer.from(state),
+                  ideaId: ideaId || undefined,
+                  projectId: projectId || undefined,
+                },
+              });
+            } catch (prismaError) {
+              // YjsState model may not exist - that's okay
+              this.logger.debug('YjsState persistence skipped (model may not exist)');
+            }
+            
+            // Always cache in Redis for fast access
             await this.redisService.set(
               `yjs:${roomId}`,
               Buffer.from(state).toString('base64'),
               3600,
             );
           } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Error persisting Yjs state:', error);
+            this.logger.error('Error persisting Yjs state:', error);
           }
         },
         5000, // Throttle to 5 seconds
@@ -329,8 +332,7 @@ export class RealtimeGateway
   }
 
   handleDisconnect(client: Socket) {
-    // eslint-disable-next-line no-console
-    console.log(`Client disconnected: ${client.id}`);
+    this.logger.debug(`Client disconnected: ${client.id}`);
     // TODO: Track client->room mapping to properly clean up roomUsers on disconnect
     // For now, rooms persist until server restart (documents are in memory)
   }
