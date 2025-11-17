@@ -42,7 +42,7 @@ export class PayPalController {
       case 'PAYMENT.CAPTURE.COMPLETED':
         // Handle successful payment
         // eslint-disable-next-line no-console
-        console.log('Payment captured:', body.resource);
+        // Payment captured - log via service if needed
         break;
       case 'PAYMENT.CAPTURE.DENIED':
         // Handle failed payment
