@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { IdeasSearchService } from './ideas-search.service';
 import { AgentsService } from '../agents/agents.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
@@ -216,5 +217,42 @@ export class IdeasService {
       message: 'AI improvements streamed to document',
       chunks: improvements.length,
     };
+  }
+
+  /**
+   * Find similar ideas
+   */
+  async findSimilar(ideaId: string, limit: number = 10): Promise<any[]> {
+    if (!this.searchService) {
+      return [];
+    }
+    // Try knowledge graph first
+    const graphResults = await this.searchService.getSimilarFromGraph(ideaId, limit);
+    if (graphResults.length > 0) {
+      return graphResults;
+    }
+
+    // Fallback to semantic search
+    return this.searchService.searchSimilar(ideaId, limit);
+  }
+
+  /**
+   * Search ideas
+   */
+  async search(query: string, limit: number = 20): Promise<any[]> {
+    if (!this.searchService) {
+      // Fallback to basic text search
+      return this.prisma.idea.findMany({
+        where: {
+          OR: [
+            { title: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+          ],
+        },
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      });
+    }
+    return this.searchService.search(query, limit);
   }
 }

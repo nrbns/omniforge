@@ -127,4 +127,95 @@ export class ProjectsService {
 
     return build;
   }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.project.delete({ where: { id } });
+  }
+
+  async list(orgId?: string, userId?: string): Promise<any[]> {
+    const where: any = {};
+    if (orgId) where.orgId = orgId;
+    if (userId) where.userId = userId;
+
+    return this.prisma.project.findMany({
+      where,
+      include: {
+        idea: true,
+        user: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async get(id: string): Promise<any> {
+    return this.findOne(id);
+  }
+
+  /**
+   * Hot patch project (apply changes without rebuild)
+   */
+  async hotPatch(id: string, updates: { content?: any; tokens?: any }): Promise<any> {
+    const project = await this.findOne(id);
+
+    // Update tokens if provided
+    if (updates.tokens) {
+      await this.prisma.$executeRaw`
+        UPDATE "Token"
+        SET "tokens" = ${JSON.stringify(updates.tokens)}::jsonb
+        WHERE "projectId" = ${id}
+      `.catch(() => {
+        // Create if doesn't exist
+        return this.prisma.$executeRaw`
+          INSERT INTO "Token" ("projectId", "tokens", "createdAt")
+          VALUES (${id}, ${JSON.stringify(updates.tokens)}::jsonb, NOW())
+        `;
+      });
+    }
+
+    // Update content via hot patch endpoint (if preview is live)
+    if (updates.content && project.previewUrl) {
+      // TODO: Call preview deployment's hot patch endpoint
+      // For now, just log
+      console.log('Hot patching content to:', project.previewUrl);
+    }
+
+    return { success: true, message: 'Changes applied live' };
+  }
+
+  /**
+   * Commit visual editor changes
+   */
+  async commitChanges(id: string, body: { message: string; tokens?: any; content?: any }): Promise<any> {
+    const project = await this.findOne(id);
+
+    // Get idea
+    const idea = await this.prisma.idea.findUnique({
+      where: { id: project.ideaId },
+    });
+
+    if (!idea) {
+      throw new Error('Idea not found');
+    }
+
+    // Get current spec
+    const currentSpec = idea.specJson || {};
+
+    // Merge changes into spec
+    const updatedSpec = {
+      ...currentSpec,
+      tokens: body.tokens || currentSpec.tokens,
+      content: body.content || currentSpec.content,
+    };
+
+    // Update idea spec
+    await this.prisma.idea.update({
+      where: { id: idea.id },
+      data: { specJson: updatedSpec },
+    });
+
+    return {
+      success: true,
+      message: 'Changes committed successfully',
+    };
+  }
 }

@@ -96,4 +96,19 @@ export class IdeasController {
   async streamAIImprovements(@Param('id') id: string, @Body() body: { prompt?: string }) {
     return this.ideasService.streamAIImprovements(id, body.prompt);
   }
+
+  @Get(':id/similar')
+  @ApiOperation({ summary: 'Find similar ideas' })
+  @ApiParam({ name: 'id', description: 'Idea ID' })
+  @ApiResponse({ status: 200, description: 'Similar ideas' })
+  async findSimilar(@Param('id') id: string, @Query('limit') limit?: string) {
+    return this.ideasService.findSimilar(id, parseInt(limit || '10', 10));
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'Search ideas' })
+  @ApiResponse({ status: 200, description: 'Search results' })
+  async search(@Query('q') query: string, @Query('limit') limit?: string) {
+    return this.ideasService.search(query, parseInt(limit || '20', 10));
+  }
 }

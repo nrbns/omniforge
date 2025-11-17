@@ -45,4 +45,11 @@ export class Neo4jService implements OnModuleInit, OnModuleDestroy {
       await session.close();
     }
   }
+
+  /**
+   * Run a Cypher query and return records
+   */
+  async run(query: string, params: Record<string, any> = {}): Promise<any[]> {
+    return this.runQuery(query, params);
+  }
 }
