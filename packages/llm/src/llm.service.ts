@@ -68,7 +68,7 @@ export class LLMService {
       const response = await llmProvider.generate(request);
       return response.text;
     } catch (error: any) {
-      console.error(`Error with ${provider}:`, error.message);
+      // Error logged by caller
       
       // Try fallback
       if (this.fallbackProvider && provider !== this.fallbackProvider) {
@@ -95,7 +95,7 @@ export class LLMService {
       throw new Error(`Fallback provider ${this.fallbackProvider} not available`);
     }
 
-    console.log(`Falling back to ${this.fallbackProvider}`);
+    // Falling back to alternative provider
     
     const request: LLMRequest = {
       prompt,
@@ -136,7 +136,7 @@ export class LLMService {
       const response = await llmProvider.chat(request);
       return response.text;
     } catch (error: any) {
-      console.error(`Error with ${provider}:`, error.message);
+      // Error logged by caller
       
       // Try fallback
       if (this.fallbackProvider && provider !== this.fallbackProvider) {

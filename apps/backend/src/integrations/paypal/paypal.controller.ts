@@ -1,10 +1,12 @@
-import { Controller, Post, Body, Headers, Param } from '@nestjs/common';
+import { Controller, Post, Body, Headers, Param, Logger } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PayPalService } from './paypal.service';
 
 @ApiTags('integrations')
 @Controller('integrations/paypal')
 export class PayPalController {
+  private readonly logger = new Logger(PayPalController.name);
+
   constructor(private readonly paypalService: PayPalService) {}
 
   @Post('orders')
@@ -41,17 +43,14 @@ export class PayPalController {
     switch (body.event_type) {
       case 'PAYMENT.CAPTURE.COMPLETED':
         // Handle successful payment
-        // eslint-disable-next-line no-console
-        // Payment captured - log via service if needed
+        this.logger.log('Payment captured:', body.resource);
         break;
       case 'PAYMENT.CAPTURE.DENIED':
         // Handle failed payment
-        // eslint-disable-next-line no-console
-        console.log('Payment denied:', body.resource);
+        this.logger.warn('Payment denied:', body.resource);
         break;
       default:
-        // eslint-disable-next-line no-console
-        console.log(`Unhandled PayPal event: ${body.event_type}`);
+        this.logger.log(`Unhandled PayPal event: ${body.event_type}`);
     }
 
     return { received: true };
