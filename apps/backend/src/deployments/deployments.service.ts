@@ -91,4 +91,56 @@ export class DeploymentsService {
 
     return deployment;
   }
+
+  /**
+   * Rollback deployment to previous version
+   */
+  async rollback(deploymentId: string): Promise<any> {
+    const deployment = await this.prisma.deployment.findUnique({
+      where: { id: deploymentId },
+      include: { project: true },
+    });
+
+    if (!deployment) {
+      throw new NotFoundException(`Deployment with ID ${deploymentId} not found`);
+    }
+
+    // Find previous successful deployment
+    const previous = await this.prisma.deployment.findFirst({
+      where: {
+        projectId: deployment.projectId,
+        status: 'LIVE',
+        id: { not: deploymentId },
+      },
+      orderBy: { deployedAt: 'desc' },
+    });
+
+    if (!previous) {
+      throw new NotFoundException('No previous deployment to rollback to');
+    }
+
+    // Update current deployment status
+    await this.prisma.deployment.update({
+      where: { id: deploymentId },
+      data: { status: 'ROLLED_BACK' },
+    });
+
+    // Restore previous deployment
+    await this.prisma.deployment.update({
+      where: { id: previous.id },
+      data: { status: 'LIVE', deployedAt: new Date() },
+    });
+
+    // Emit realtime event
+    await this.realtimeService.emit(`deployment:${deploymentId}`, 'deployment.rolled_back', {
+      deploymentId,
+      previousDeploymentId: previous.id,
+    });
+
+    return {
+      success: true,
+      message: `Rolled back to deployment ${previous.id}`,
+      previousDeployment: previous,
+    };
+  }
 }
