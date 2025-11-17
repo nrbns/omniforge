@@ -37,6 +37,8 @@ import { BillingModule } from './billing/billing.module';
 import { PayPalModule } from './integrations/paypal/paypal.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { AuthModule } from './auth/auth.module';
+import { ShowcaseModule } from './showcase/showcase.module';
+import { FeedbackModule } from './feedback/feedback.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
@@ -95,6 +97,8 @@ import { RateLimitMiddleware } from './common/middleware/rate-limit.middleware';
     RealtimeModule,
     AgentsModule,
     AuthModule,
+    ShowcaseModule,
+    FeedbackModule,
   ],
   providers: [
     {
