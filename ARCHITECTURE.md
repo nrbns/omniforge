@@ -1,428 +1,770 @@
-# 🏗️ OmniForge Architecture
+# OmniForge Architecture
 
-This document provides a comprehensive overview of the OmniForge architecture, system design, and implementation details.
+> **The world's first open-source, end-to-end Idea → App → Deployment → App Store AI Builder**
 
 ## Table of Contents
 
-- [System Overview](#system-overview)
-- [Layer Architecture](#layer-architecture)
-- [AI & ML Integration](#ai--ml-integration)
-- [RAG System](#rag-system)
-- [Multi-LLM Support](#multi-llm-support)
-- [Data Flow](#data-flow)
-- [Component Details](#component-details)
-- [Technology Stack](#technology-stack)
-- [Deployment Architecture](#deployment-architecture)
+1. [System Overview](#1-system-overview)
+2. [Core Services](#2-core-services)
+3. [Experience Layer](#3-experience-layer)
+4. [Data Model](#4-data-model)
+5. [Core Flows](#5-core-flows)
+6. [Unique Features](#6-unique-features)
+7. [Implementation Priorities](#7-implementation-priorities)
+8. [Technology Stack](#8-technology-stack)
 
 ---
 
-## System Overview
+## 1. System Overview
 
-OmniForge is a comprehensive monorepo-based system featuring:
-
-1. **Frontend Application** (Next.js)
-2. **Backend API** (NestJS)
-3. **RAG System** (Retrieval-Augmented Generation)
-4. **Multi-LLM Service** (OpenAI, Anthropic, Hugging Face)
-5. **Vector Database** (Qdrant)
-6. **Knowledge Base** (Template & Pattern Retrieval)
-7. **Document Processing** (PDF, Images, Voice)
-8. **Real-time Infrastructure** (WebSocket)
-9. **Agent System** (Multi-agent orchestration)
-10. **Performance & Code Review** (Quality assurance)
-
----
-
-## AI & ML Integration
-
-### **Multi-LLM Support**
-
-OmniForge supports multiple LLM providers with automatic fallback:
-
-1. **OpenAI** (GPT-4, GPT-3.5)
-   - Primary for idea parsing and code generation
-   - High-quality outputs
-
-2. **Anthropic** (Claude)
-   - Alternative with excellent reasoning
-   - Long context windows
-
-3. **Hugging Face** (Mistral, StarCoder)
-   - Fallback provider
-   - Open-source models
-   - Cost-effective
-
-### **RAG System (Retrieval-Augmented Generation)**
-
-The RAG system enhances LLM responses with retrieved context:
+OmniForge is architected as **4 distinct layers** that work together to transform ideas into production-ready applications with built-in business capabilities.
 
 ```
-User Query → Embedding → Vector Search → Retrieve Documents → LLM with Context → Enhanced Response
+┌─────────────────────────────────────────────────────────────┐
+│                    EXPERIENCE LAYER                          │
+│  Studio Dashboard | Generated Apps | Marketing Console       │
+│                   | Public Playground                        │
+└─────────────────────────────────────────────────────────────┘
+                              ↕
+┌─────────────────────────────────────────────────────────────┐
+│                      BRAIN LAYER                             │
+│  Redix Idea Service | Multi-Agent Orchestrator | Model Adapters│
+└─────────────────────────────────────────────────────────────┘
+                              ↕
+┌─────────────────────────────────────────────────────────────┐
+│                    PLATFORM LAYER                            │
+│  Project Service | UI Registry | CRM/Lead | Marketing      │
+│  Auth | Billing | Tenant/Org                                │
+└─────────────────────────────────────────────────────────────┘
+                              ↕
+┌─────────────────────────────────────────────────────────────┐
+│                    INFRA LAYER                               │
+│  API Gateway | Job Queue | Databases | Storage | Deploy   │
+│  Observability (logs, metrics, tracing)                     │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-**Components**:
-- **Vector Store**: Qdrant for document embeddings
-- **Retrieval Service**: Hybrid search (vector + keyword)
-- **Context Manager**: Manages context window and multi-step reasoning
-- **RAG Service**: Orchestrates retrieval and generation
+### 1.1 Experience Layer (What Users See)
 
-### **Vector Database**
+- **Studio / Admin Dashboard**: Main builder UI for creating and managing projects
+- **Generated Apps**: Web/mobile applications produced by the system
+- **Marketing & CRM Console**: Built-in business tools for each project
+- **Public "Instant Demo" Playground**: Frictionless try-before-signup experience
 
-- **Storage**: Qdrant for efficient vector similarity search
-- **Embeddings**: Hugging Face sentence transformers
-- **Collections**: Separate collections for ideas, templates, knowledge base
+### 1.2 Brain Layer (Redix + AI Agents)
 
----
+- **Redix Idea Service**: Idea ingestion, versioning, knowledge graph, semantic search
+- **Multi-Agent Orchestrator**: Coordinates all AI agents (planner, UI, backend, marketing, workflows, deploy)
+- **Model Adapters**: Unified interface for OpenAI, Anthropic, Kimi, local models
 
-## Layer Architecture
+### 1.3 Platform Layer (Core Services)
 
-### Layer A: **Redix Idea Layer** (Enhanced with RAG)
+- **Project Service**: Manages repos, builds, deployments
+- **UI Component Registry**: Organized component library
+- **CRM/Lead Service**: Built-in customer relationship management
+- **Marketing/Workflow Service**: Automation and campaign management
+- **Auth, Billing, Tenant/Org**: Multi-tenancy and monetization
 
-**Purpose**: Version control and knowledge management for ideas
+### 1.4 Infra Layer
 
-**Components**:
-- `IdeaParserAgent`: Uses RAG + LLM for intelligent parsing
-- `CommitAgent`: Manages idea versioning
-- `KGAgent`: Knowledge graph operations in Neo4j
-- `SearchAgent`: Semantic search using vector embeddings
-
-**Features**:
-- **RAG-Enhanced Parsing**: Uses retrieved templates and knowledge
-- **Multi-LLM Support**: Automatically selects best provider
-- **Template Retrieval**: Finds similar app templates
-- **Semantic Search**: Vector-based idea discovery
+- **API Gateway**: Unified entry point
+- **Job Queue**: Redis + BullMQ for async processing
+- **Databases**: Postgres (primary), Redis (cache), Vector DB (embeddings), Neo4j (knowledge graph)
+- **Storage**: S3-compatible for assets
+- **Deployment**: OmniDeploy/Vercel/Docker
+- **Observability**: Structured logs, metrics, distributed tracing
 
 ---
 
-### Layer B: **Multi-Agent Build Engine** (Enhanced with AI)
+## 2. Core Services
 
-**Purpose**: Generate application code from specifications
+### 2.1 Redix Idea Service (Secret Weapon)
+
+**Purpose**: Convert messy ideas → structured, versioned, reusable "business spec"
+
+**Responsibilities**:
+
+- Store **ideas**, **commits**, **branches** (Git-like versioning for ideas)
+- Run **IdeaParserAgent** → produce canonical SPEC:
+  - App type, pages, flows
+  - Data models
+  - APIs
+  - Business layer (pricing, funnel, user personas)
+  - Marketing requirements (landing pages, channels)
+- Build **Knowledge Graph**:
+  - Concepts (User, Appointment, Subscription, etc.)
+  - Relationships (uses, depends_on, similar_to)
+- Build **semantic search**: "Find apps similar to this idea"
+- Provide version control: commit, branch, merge operations
+
+**APIs**:
+
+```
+POST   /api/ideas                    # Create new idea
+GET    /api/ideas/:id                 # Get idea details
+GET    /api/ideas/:id/spec            # Get parsed spec
+POST   /api/ideas/:id/commit          # Create new commit
+POST   /api/ideas/:id/branch          # Create branch
+POST   /api/ideas/:id/merge           # Merge branches
+GET    /api/ideas/:id/history         # Get commit history
+GET    /api/ideas/search?q=...        # Semantic search
+GET    /api/ideas/:id/similar         # Find similar ideas
+```
+
+**Data Stores**:
+
+- **Postgres**: Ideas, commits, branches, metadata
+- **Neo4j**: Knowledge graph nodes/edges
+- **Vector DB** (Qdrant/Milvus): Embeddings for semantic search
+
+**Uniqueness**: No other builder has proper **idea version control + knowledge graph**
+
+---
+
+### 2.2 Agent Orchestrator Service
+
+**Purpose**: Act like an internal engineering team, coordinating all AI agents
 
 **Agents**:
 
-1. **PlannerAgent** (RAG + LLM)
-   - Input: Idea spec + retrieved templates
-   - Output: Detailed application specification
-   - Uses: RAG for template matching, LLM for planning
+1. **PlannerAgent**
+   - Converts SPEC → ordered task graph
+   - Determines dependencies between tasks
+   - Outputs: UI tasks, backend tasks, marketing tasks, workflows, deploy tasks
 
-2. **UIDesignerAgent** (LLM)
-   - Input: App spec + design requirements
-   - Output: Design tokens and Figma exports
-   - Uses: LLM for design generation
+2. **UIDesignerAgent**
+   - Generates design tokens (colors, spacing, typography, shadows, radii)
+   - Creates component variants
+   - Designs page layouts
+   - Optional Figma API integration
 
-3. **FrontendAgent** (LLM + Code Review)
-   - Input: Spec + design tokens
-   - Output: Next.js pages and components
-   - Uses: StarCoder/Mistral for code generation
-   - Review: CodeReviewAgent for quality assurance
+3. **FrontendAgent**
+   - Generates Next.js/React + Tailwind pages/components
+   - Uses SPEC + design tokens
+   - Implements responsive layouts
+   - Adds accessibility features
 
-4. **BackendAgent** (LLM + Code Review)
-   - Input: Spec data models and APIs
-   - Output: Prisma schema + API endpoints
-   - Uses: LLM for schema and endpoint generation
-   - Review: CodeReviewAgent for security and best practices
+4. **BackendAgent**
+   - Generates Prisma schema
+   - Creates REST/GraphQL endpoints
+   - Implements auth, roles, basic rules
+   - Sets up realtime (WebSocket/SSE) channels
 
-5. **CodeReviewAgent** (NEW - LLM)
-   - Input: Generated code
-   - Output: Review with scores, issues, suggestions
-   - Features: Security analysis, performance checks, best practices
+5. **MarketingAgent**
+   - Generates landing page copy
+   - Creates email sequences (MJML templates)
+   - Writes blog posts
+   - Generates ad copy (FB/Google/IG)
+   - Creates social captions
+   - Designs lead magnets (PDF outlines, checklists)
 
-6. **OptimizationAgent** (NEW - LLM)
-   - Input: Code + review results
-   - Output: Optimized code
-   - Features: Performance optimization, bundle size reduction
+6. **WorkflowAgent**
+   - Creates CRM pipelines
+   - Defines automation rules (triggers + actions)
+   - Implements basic lead scoring logic
+   - Sets up n8n-like workflows
 
-7. **PerformanceAgent** (NEW - LLM)
-   - Input: Code
-   - Output: Performance analysis and monitoring code
-   - Features: Complexity analysis, bottleneck detection
+7. **TestAgent**
+   - Generates Jest unit tests
+   - Creates Playwright E2E tests for critical flows
+   - Sets up test coverage reporting
 
-8. **TestAgent** (LLM)
-   - Input: Generated code
-   - Output: Jest unit tests + Playwright E2E tests
+8. **DeployAgent**
+   - Sets up CI/CD config (GitHub Actions)
+   - Triggers deployments
+   - Manages preview/production environments
 
-9. **DeployAgent** (Template-based)
-   - Input: Platform selection
-   - Output: CI/CD pipelines, Dockerfiles
+9. **PackageAgent**
+   - Sets up mobile wrapper (Capacitor/React Native)
+   - Generates Fastlane configs
+   - Creates metadata files (app name, description, screenshots placeholders)
 
-10. **PackageAgent** (Template-based)
-    - Input: Mobile platform
-    - Output: Fastlane configurations
+**Mechanics**:
 
----
+- **Job Queue**: Redis + BullMQ
+- Each job has: ID, type, status, logs, result payload
+- Orchestrator sequences jobs based on Planner's task graph
+- Emits events to WebSockets → frontend shows **live build timeline**
+- Supports retries, error handling, parallel execution where possible
 
-### Layer C: **Document Processing**
-
-**Purpose**: Process various input formats for idea ingestion
-
-**Processors**:
-- **PDFProcessor**: Extract text, images, tables from PDFs
-- **ImageProcessor**: OCR, image description, structured data extraction
-- **VoiceProcessor**: Speech-to-text, speaker diarization, key points
-
-**Integration**:
-- Documents are processed and indexed in vector database
-- Used as context for idea parsing
-
----
-
-### Layer D: **Knowledge Base**
-
-**Purpose**: Template and pattern retrieval system
-
-**Features**:
-- **Template Retrieval**: Find similar app templates
-- **Pattern Matching**: Match ideas to known patterns
-- **Best Practices**: Retrieve coding best practices
-- **Examples**: Code examples and snippets
-
-**Storage**:
-- Vector database for semantic search
-- Metadata filtering by category
-- Usage tracking and ranking
-
----
-
-### Layer E: **Context Management**
-
-**Purpose**: Manage context windows for multi-step reasoning
-
-**Features**:
-- Context window management
-- Document prioritization
-- Conversation history management
-- Entity extraction
-
----
-
-## RAG System
-
-### Architecture
+**APIs**:
 
 ```
-┌─────────────┐
-│ User Query  │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────────┐
-│ Embedding Model │ (Hugging Face)
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Vector Search   │ (Qdrant)
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Document Filter │ (Metadata)
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Reranking       │ (Optional)
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Context Builder │
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ LLM Generation  │ (Multi-provider)
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Response        │
-└─────────────────┘
+POST   /api/agents/orchestrate       # Start agent orchestration
+GET    /api/agents/jobs/:id          # Get job status
+GET    /api/agents/jobs/:id/logs     # Stream job logs
+POST   /api/agents/jobs/:id/retry    # Retry failed job
 ```
-
-### Collections
-
-1. **omniforge**: Main ideas and documents
-2. **knowledge_base**: Templates, patterns, best practices
-3. **code_examples**: Code snippets and examples
 
 ---
 
-## Multi-LLM Service
+### 2.3 Project Service
 
-### Provider Selection
+**Purpose**: Owns the concept of a **Project** (a generated app + its environment)
+
+**Responsibilities**:
+
+- Create project from idea + commit
+- Manage project settings (domain, env vars, secrets)
+- Connect to Git repo (GitHub/GitLab) if user wants export
+- Track builds and deployments
+- Manage preview URLs
+- Handle project lifecycle (create, update, archive, delete)
+
+**APIs**:
+
+```
+POST   /api/projects                 # Create project from idea
+GET    /api/projects                 # List projects (filtered by org/user)
+GET    /api/projects/:id             # Get project details
+PUT    /api/projects/:id              # Update project settings
+DELETE /api/projects/:id             # Archive/delete project
+POST   /api/projects/:id/build       # Trigger new build
+GET    /api/projects/:id/builds      # List builds
+GET    /api/builds/:id                # Get build details
+GET    /api/builds/:id/logs          # Stream build logs
+POST   /api/projects/:id/deploy       # Deploy (preview/prod)
+GET    /api/projects/:id/deployments  # List deployments
+```
+
+**Entities**:
+
+- Project (id, org_id, idea_id, idea_commit_id, name, status, repo_url, preview_url)
+- Build (id, project_id, status, agent_steps_json, logs_url, started_at, completed_at)
+- Deployment (id, project_id, env, status, url, created_at)
+
+---
+
+### 2.4 CRM & Lead Service (Built-in Business Layer)
+
+**Purpose**: Turn each generated app into a **working business**
+
+**Entities**:
+
+- **Contacts**: People in the system
+- **Leads**: Potential customers
+- **Deals / Pipelines**: Sales opportunities
+- **Companies**: Organizations (optional)
+- **Events**: Page views, conversions, interactions
+
+**Capabilities**:
+
+- Auto-create **basic CRM schema** per project
+- Lead forms / CTAs created on landing page
+- Leads automatically flow to CRM
+- Simple UI in Dashboard:
+  - Leads table with filters
+  - Pipeline stages (New → Qualified → Customer)
+  - Contact detail view with timeline
+- Lead scoring algorithm
+- Integration with Supabase for contact storage
+
+**APIs**:
+
+```
+POST   /api/crm                      # Create/update CRM for project
+GET    /api/crm/business/:id         # Get CRM for business
+POST   /api/crm/contacts              # Create contact
+GET    /api/crm/contacts              # List contacts (with filters)
+GET    /api/crm/contacts/:id         # Get contact details
+PUT    /api/crm/contacts/:id         # Update contact
+POST   /api/crm/leads/:id/score      # Calculate lead score
+GET    /api/crm/leads/:id/scoring    # Get scoring breakdown
+```
+
+---
+
+### 2.5 Marketing & Workflow Service
+
+**Purpose**: Auto-generate and execute marketing + automation
+
+**Responsibilities**:
+
+- Store generated content:
+  - Landing copy
+  - Ad campaigns
+  - Email templates (MJML)
+  - Social media posts
+- Manage **Workflows**:
+  - Trigger types: "lead created", "purchase completed", "campaign started"
+  - Actions: send email, call webhook, tag contact, create task, send WhatsApp/Telegram, schedule followup
+- Integrations:
+  - SendGrid/Mailgun for email
+  - WhatsApp API (future)
+  - Meta/Google Ads API (future)
+- A/B testing framework
+- Campaign analytics
+
+**APIs**:
+
+```
+POST   /api/marketing                 # Create marketing asset
+GET    /api/marketing/business/:id    # List marketing assets
+POST   /api/workflows                 # Create workflow
+GET    /api/workflows/business/:id    # List workflows
+POST   /api/workflows/:id/execute    # Execute workflow
+GET    /api/workflows/:id/monitoring # Get workflow stats
+POST   /api/marketing/ab-tests        # Create A/B test
+POST   /api/marketing/ab-tests/:id/assign # Assign variant
+POST   /api/marketing/ab-tests/:id/conversion # Track conversion
+```
+
+---
+
+### 2.6 UI Component Registry
+
+**Purpose**: Keep all generated + curated components organized & reusable
+
+**Component Schema**:
 
 ```typescript
-1. Try primary provider (OpenAI)
-2. If fails, try fallback (Anthropic)
-3. If fails, try Hugging Face
-4. If all fail, return error
+{
+  id: string;
+  name: string;
+  version: string;
+  props_schema: JSONSchema;  // Type-safe props
+  category: 'layout' | 'form' | 'display' | 'navigation' | 'feedback';
+  source_path: string;        // File path in generated code
+  preview_image?: string;
+  tags: string[];
+  dependencies: string[];      // Other component IDs
+}
 ```
 
-### Usage Examples
+**Usage**:
 
-```typescript
-// Direct LLM call
-const response = await llmService.generate(prompt, {
-  provider: 'openai',
-  temperature: 0.7,
-  maxTokens: 2048,
-});
+- Builder UI (drag/drop)
+- Agents (choose existing components instead of generating from scratch)
+- Template marketplace (future)
 
-// RAG-enhanced call
-const response = await ragService.generate({
-  query: 'Parse this idea...',
-  retrievedDocs: [...],
-});
-```
-
----
-
-## Data Flow
-
-### Idea to App Flow (Enhanced)
+**APIs**:
 
 ```
-1. User submits idea (text/voice/image/PDF)
-   ↓
-2. Document Processor extracts content
-   ↓
-3. Vector Store indexes idea
-   ↓
-4. Template Retrieval finds similar templates
-   ↓
-5. RAG System retrieves relevant context
-   ↓
-6. IdeaParserAgent (RAG + LLM) extracts spec
-   ↓
-7. Spec stored in PostgreSQL + Neo4j + Qdrant
-   ↓
-8. PlannerAgent expands spec with templates
-   ↓
-9. FrontendAgent generates code (LLM)
-   ↓
-10. CodeReviewAgent reviews code
-    ↓
-11. OptimizationAgent optimizes code
-    ↓
-12. PerformanceAgent analyzes performance
-    ↓
-13. Build process compiles code
-    ↓
-14. DeployAgent deploys to platform
-    ↓
-15. PackageAgent packages for app stores
+GET    /api/components                # List components (with filters)
+GET    /api/components/:id            # Get component details
+POST   /api/components                # Register new component
+GET    /api/components/search?q=...   # Search components
 ```
 
 ---
 
-## Technology Stack
+## 3. Experience Layer
 
-### AI/ML
-- **LLM**: OpenAI (GPT-4), Anthropic (Claude), Hugging Face (Mistral, StarCoder)
-- **Embeddings**: Hugging Face Sentence Transformers
-- **Vector DB**: Qdrant
-- **RAG**: Custom RAG service
+### 3.1 Studio / Admin Dashboard (Main App)
 
-### Backend
-- **Framework**: NestJS
-- **Database**: PostgreSQL (Prisma)
-- **Graph DB**: Neo4j
-- **Cache**: Redis
-- **Job Queue**: BullMQ
-- **Real-time**: Socket.io
+**Sections**:
+
+1. **Home / Projects**
+   - List of all projects
+   - Status badges, last build time, preview link
+   - Quick actions: Build, Deploy, Edit
+
+2. **Ideas**
+   - List of ideas with status
+   - Button: "Convert idea → project"
+   - View Redix spec + commit history
+   - Search similar ideas
+
+3. **Build Timeline**
+   - Per-project pipeline visualization:
+     * Planner → UI → Backend → Tests → Deploy → Marketing → Workflows → Package
+   - Each step shows: logs, success/failure, retry button
+   - Real-time updates via WebSocket
+
+4. **Visual Editor / Studio**
+   - Left: Pages & component tree
+   - Center: Live preview (iframe)
+   - Right: Inspector (props, data bindings, design tokens)
+   - Bottom: Commit / publish area
+   - Real-time collaboration (Yjs)
+
+5. **Marketing & Funnels**
+   - Landing page settings
+   - Campaigns overview
+   - A/B variants
+   - Generated content list (emails, ads, posts)
+   - Analytics dashboard
+
+6. **Leads & CRM**
+   - Leads table with filters
+   - Pipeline/funnel view
+   - Contact detail (timeline of events)
+   - Lead scoring breakdown
+
+7. **Automations**
+   - Simple "if this then that" UI
+   - Rule list with enable/disable
+   - Examples:
+     * If `lead.source = 'Landing'` → send welcome email + assign tag `MQL`
+     * If `purchase.completed` → create deal + send receipt
+
+8. **Settings**
+   - Domains
+   - Integrations (Stripe, PayPal, email provider)
+   - App Store credentials
+   - Billing & subscription
+
+**Instant Feeling**: User can click **"New Idea → Build"** and see a **live preview** with functioning landing page and capture form in a single flow.
+
+---
+
+### 3.2 Generated Apps (Runtime)
+
+Each project outputs:
+
+- **Web App**
+  - Next.js frontend
+  - Pre-wired analytics events (page view, CTA clicks, forms)
+  - Responsive design
+  - SEO optimized
+
+- **API Backend**
+  - Auth (JWT)
+  - CRUD for main models
+  - Lead endpoints
+  - Events endpoint
+  - WebSocket support
+
+- **Optional Mobile Wrapper**
+  - React Native or Capacitor build
+  - Targets iOS & Android
+  - Fastlane configs included
+
+These apps talk to Project APIs & CRM service.
+
+---
+
+### 3.3 Instant "Try It" Experience
+
+**Public Playground** (no login required):
+
+- Simple UI: "Describe your idea"
+- Behind the scenes:
+  * Call Redix with demo user
+  * Run Planner + UI + Backend in "lite" mode
+  * Show read-only live preview
+- If user likes it → ask to sign up to save/export project
+
+**Requirements**:
+
+- "Demo tenant" isolation
+- Time-limited or auto-cleanup of demo projects
+- Rate limiting to prevent abuse
+
+**Route**: `/playground` (public)
+
+---
+
+## 4. Data Model
+
+### Core Tables
+
+```sql
+-- Users & Organizations
+User(id, email, name, org_id, role, created_at)
+Org(id, name, plan, settings_json, created_at)
+
+-- Redix Idea Service
+Idea(id, org_id, title, description, raw_input, created_by, current_commit_id, created_at)
+IdeaCommit(id, idea_id, parent_ids[], author_id, spec_json, message, created_at)
+IdeaBranch(id, idea_id, name, commit_id, created_at)
+
+-- Projects & Builds
+Project(id, org_id, idea_id, idea_commit_id, name, status, repo_url, preview_url, settings_json, created_at)
+BuildJob(id, project_id, idea_commit_id, status, agent_steps_json, logs_url, started_at, completed_at, error_message)
+
+-- CRM & Leads
+Lead(id, project_id, email, name, status, source, score, meta_json, created_at)
+Contact(id, lead_id, email, name, phone, company, tags[], created_at)
+ContactEvent(id, lead_id, type, payload_json, created_at)
+Deal(id, project_id, contact_id, name, value, stage, probability, created_at)
+
+-- Marketing & Workflows
+MarketingAsset(id, project_id, type, content_json, channel, status, created_at)
+Workflow(id, project_id, trigger_type, condition_json, actions_json, is_enabled, created_at)
+WorkflowExecution(id, workflow_id, status, input_json, output_json, started_at, completed_at)
+
+-- Components
+Component(id, name, version, props_schema_json, category, source_path, preview_image, tags[], created_at)
+
+-- Deployments
+Deployment(id, project_id, env, status, url, config_json, created_at)
+AppStoreConfig(id, project_id, platform, credentials_ref, last_build_status, metadata_json)
+
+-- Knowledge Graph (Neo4j)
+Node(id, type, properties_json)
+Edge(id, source_id, target_id, type, properties_json)
+```
+
+---
+
+## 5. Core Flows
+
+### 5.1 Idea → Real-time Project (Core Magic)
+
+```
+1. User enters idea in Studio
+   ↓
+2. Redix stores idea + runs IdeaParserAgent → SPEC
+   ↓
+3. User clicks "Create Project"
+   ↓
+4. PlannerAgent takes SPEC → task graph
+   ↓
+5. Agents run in order (with real-time updates):
+   - UIDesigner → tokens/components
+   - FrontendAgent → UI pages
+   - BackendAgent → schema + APIs
+   - TestAgent → tests
+   - DeployAgent → preview env
+   ↓
+6. Studio shows build timeline with logs
+   ↓
+7. Once done → Preview opens live
+```
+
+### 5.2 Admin Editing UI Directly
+
+```
+1. Admin opens Studio → Project → Visual Editor
+   ↓
+2. Editor loads current UI + tokens
+   ↓
+3. Admin changes:
+   - theme/colors
+   - text copy (hero headline, CTA)
+   - layout (swap component variant)
+   ↓
+4. Small changes → apply via HotPatch (no rebuild)
+   ↓
+5. Structural changes → Editor:
+   - updates SPEC
+   - creates new IdeaCommit
+   - triggers PlannerAgent for partial rebuild
+   ↓
+6. After tests pass → Admin hits Publish
+   ↓
+7. DeployAgent uses CI to update preview/prod
+```
+
+### 5.3 Built-in Marketing & Lead Flows
+
+```
+1. After project build, MarketingAgent runs:
+   - generates landing content
+   - email welcome sequence
+   - 3 social posts
+   - 2 ad variants
+   ↓
+2. App's landing page includes lead capture form
+   ↓
+3. When lead submits:
+   - LeadService stores record
+   - WorkflowEngine triggers welcome email
+   ↓
+4. Admin sees:
+   - new lead in CRM
+   - open rate / click rates in Marketing tab
+```
+
+---
+
+## 6. Unique Features
+
+### 6.1 Redix Idea Graph
+
+- Every idea + project is a node in knowledge graph
+- Query: "show similar apps to this telemedicine idea"
+- Reuse flows, components, patterns across projects
+- Semantic search powered by vector embeddings
+
+### 6.2 Business Engine Built-in
+
+Always generate:
+- App
+- Landing page
+- CRM
+- At least one automation
+
+**Tagline**: "AI builds a business, not just an app"
+
+### 6.3 Full Pipeline Transparency (Build Timeline)
+
+- Each agent = one visible step
+- Logs, retries, metrics all visible
+- Real-time WebSocket updates
+- No black box - users see exactly what's happening
+
+### 6.4 App Store Ready from Day 1
+
+- Scaffolds & metadata files always generated
+- Fastlane configs included
+- Even if uploads are manual at first, structure is ready
+
+### 6.5 Instant Playground (No Login)
+
+- Match or beat "instant usage" feel of Dualite/Rocket
+- Frictionless demo experience
+- Auto-cleanup of demo projects
+
+### 6.6 Template + Component Marketplace
+
+- Architecture of Component Registry & Templates
+- Future: community templates, paid bundles, vertical packs (fintech, healthcare, SaaS)
+
+---
+
+## 7. Implementation Priorities
+
+### Phase 1: Idea → Project Core ✅
+
+- [x] Redix SPEC
+- [x] Planner + UI + Backend agents
+- [x] Project + Build services
+- [x] Preview deployment
+
+### Phase 2: Studio (Admin Dashboard) MVP
+
+- [x] Projects list
+- [x] Build timeline
+- [ ] Visual Editor (tokens + copy editing)
+- [x] Preview
+
+### Phase 3: CRM + Leads ✅
+
+- [x] Lead model + APIs
+- [x] Basic Leads page in Studio
+- [x] Landing form wired to leads
+
+### Phase 4: MarketingAgent + Workflows v1 ✅
+
+- [x] Generate landing copy + welcome email
+- [x] Simple rule: "On new lead → send email"
+- [x] A/B testing framework
+
+### Phase 5: Instant Playground
+
+- [ ] Public "New Idea Demo" route
+- [ ] Demo tenant + auto cleanup
+
+### Phase 6: Packaging & App Store Scaffolds ✅
+
+- [x] Generate Fastlane config + wrapper for each project
+- [x] Docs + UI to show user how to run builds
+
+### Phase 7: Knowledge Graph + Search
+
+- [ ] Vector search + Neo4j graphs
+- [ ] "Similar ideas/templates" suggestions in UI
+
+---
+
+## 8. Technology Stack
 
 ### Frontend
 - **Framework**: Next.js 14 (App Router)
 - **UI**: React 18, Tailwind CSS
-- **State**: React hooks
-- **Auth**: Clerk
+- **State**: Zustand / React Query
+- **Real-time**: Socket.io, Yjs (collaboration)
+- **Charts**: Recharts
+- **Editor**: Monaco Editor (code), Tiptap (rich text)
+- **Animations**: Framer Motion
+
+### Backend
+- **Framework**: NestJS
+- **Language**: TypeScript
+- **ORM**: Prisma
+- **API**: REST + GraphQL (optional)
+- **Real-time**: Socket.io, WebSockets
+- **Job Queue**: BullMQ (Redis)
+
+### Databases
+- **Primary**: PostgreSQL (via Prisma)
+- **Cache**: Redis
+- **Vector DB**: Qdrant or Milvus
+- **Graph DB**: Neo4j
+
+### AI/ML
+- **LLM Service**: Unified interface for OpenAI, Anthropic, HuggingFace
+- **Embeddings**: OpenAI, HuggingFace
+- **Local Models**: Ollama (optional)
+
+### Infrastructure
+- **Deployment**: Vercel (frontend), Railway/Render (backend), Docker
+- **Storage**: S3-compatible (AWS S3, Cloudflare R2)
+- **CDN**: Cloudflare
+- **Monitoring**: Sentry, LogRocket
+- **Analytics**: PostHog (self-hosted)
+
+### Integrations
+- **Payments**: Stripe, PayPal
+- **Email**: SendGrid, Mailgun
+- **Auth**: Clerk (or self-hosted)
+- **Version Control**: GitHub API
 
 ---
 
-## Deployment Architecture
+## 9. Security & Compliance
 
-### Development
+### Authentication & Authorization
+- JWT-based auth
+- Role-based access control (RBAC)
+- Multi-tenant isolation
+- API key management
 
-```
-┌─────────────┐
-│   Next.js   │ → http://localhost:3000
-└─────────────┘
+### Data Protection
+- Encryption at rest
+- Encryption in transit (TLS)
+- PII handling compliance
+- GDPR-ready features
 
-┌─────────────┐
-│   NestJS    │ → http://localhost:3001
-└─────────────┘
-
-┌─────────────┐
-│  PostgreSQL │ → localhost:5432
-│    Redis    │ → localhost:6379
-│    Neo4j   │ → localhost:7687
-│   Qdrant    │ → localhost:6333
-└─────────────┘
-```
-
-### Production
-
-```
-┌─────────────────┐
-│  Load Balancer  │
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    │         │
-┌───▼───┐ ┌──▼────┐
-│Next.js│ │ NestJS│
-│(Vercel)│ │(K8s) │
-└───────┘ └───┬───┘
-              │
-    ┌─────────┼─────────┐
-    │         │         │
-┌───▼──┐ ┌───▼──┐ ┌───▼──┐
-│Postgres│ │ Redis │ │ Neo4j│
-│        │ │       │ │      │
-└────────┘ └───────┘ └──────┘
-              │
-         ┌────▼────┐
-         │ Qdrant  │
-         │ (Vector)│
-         └─────────┘
-```
+### API Security
+- Rate limiting
+- CORS policies
+- Input validation
+- SQL injection prevention (Prisma)
+- XSS protection
 
 ---
 
-## Performance Considerations
+## 10. Scalability Considerations
 
-1. **Caching**: Redis for frequently accessed data
-2. **Job Queue**: Asynchronous agent execution
-3. **Vector Search**: Optimized Qdrant queries
-4. **LLM Batching**: Batch similar requests
-5. **Context Window**: Smart truncation
-6. **CDN**: Static assets via CDN
-7. **Code Splitting**: Next.js automatic splitting
+### Horizontal Scaling
+- Stateless API servers
+- Job queue workers can scale independently
+- Database read replicas
 
----
+### Caching Strategy
+- Redis for session data
+- CDN for static assets
+- Query result caching
 
-## Security
-
-1. **Authentication**: Clerk-based auth
-2. **Authorization**: Role-based access control
-3. **API Keys**: Secure environment variable storage
-4. **Input Validation**: DTOs with validation
-5. **SQL Injection**: Prisma ORM prevents injection
-6. **Code Review**: AI-powered security checks
-7. **Rate Limiting**: Job queue rate limiting
+### Performance
+- Database indexing
+- Lazy loading
+- Code splitting
+- Image optimization
 
 ---
 
-## Future Enhancements
+## 11. Future Enhancements
 
-1. **Fine-tuned Models**: Custom models for specific domains
-2. **Active Learning**: Improve from user feedback
-3. **Multi-modal RAG**: Images and code in context
-4. **Collaborative Filtering**: Learn from user patterns
-5. **Auto-scaling**: Dynamic resource allocation
-6. **A/B Testing**: Compare agent outputs
+1. **Multi-language Support**: Generate apps in multiple languages
+2. **Advanced Analytics**: Custom dashboards, cohort analysis
+3. **Marketplace**: Component and template marketplace
+4. **White-label**: Allow users to white-label the builder
+5. **Enterprise Features**: SSO, advanced RBAC, audit logs
+6. **Mobile App Builder**: Native mobile app generation
+7. **AI Chat Assistant**: Help users build better apps
+8. **Version Control UI**: Visual Git-like interface for ideas
 
 ---
 
-This architecture makes OmniForge the most comprehensive AI-powered app builder available, combining RAG, multi-LLM support, document processing, and advanced agents for unparalleled code generation quality.
+## 12. Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on contributing to OmniForge.
+
+---
+
+**Last Updated**: 2025-01-XX
+**Version**: 1.0.0
