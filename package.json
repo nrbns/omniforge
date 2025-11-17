@@ -8,6 +8,16 @@
     "packages/*"
   ],
   "scripts": {
+    "test:all": "ts-node tests/run-all-tests.ts",
+    "test:smoke": "playwright test tests/e2e/smoke.spec.ts",
+    "test:functionality": "playwright test tests/e2e/functionality.spec.ts",
+    "test:regression": "playwright test tests/e2e/regression.spec.ts",
+    "test:uat": "playwright test tests/e2e/uat.spec.ts",
+    "test:user": "playwright test tests/user-testing/user-scenarios.spec.ts",
+    "test:integration": "playwright test tests/integration/",
+    "test:realtime": "playwright test tests/integration/realtime-integration.spec.ts",
+    "test:greybox": "playwright test tests/greybox/greybox.spec.ts",
+    "test:realtime-only": "playwright test tests/integration/realtime-integration.spec.ts --grep REALTIME",
     "dev": "turbo run dev",
     "dev:demo": "cross-env DEMO_MODE=true turbo run dev --filter=@omniforge/backend --filter=@omniforge/frontend",
     "build": "turbo run build",
