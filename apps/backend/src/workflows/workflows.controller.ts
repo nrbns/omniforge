@@ -11,7 +11,7 @@ export class WorkflowsController {
   constructor(
     private readonly workflowsService: WorkflowsService,
     private readonly executionService: WorkflowExecutionService,
-    private readonly monitoringService: WorkflowMonitoringService,
+    private readonly monitoringService: WorkflowMonitoringService
   ) {}
 
   @Post()
@@ -50,10 +50,7 @@ export class WorkflowsController {
   })
   @ApiParam({ name: 'id', description: 'Workflow ID' })
   @ApiResponse({ status: 200, description: 'Workflow execution started' })
-  async execute(
-    @Param('id') id: string,
-    @Body() body: { triggerData?: Record<string, any> },
-  ) {
+  async execute(@Param('id') id: string, @Body() body: { triggerData?: Record<string, any> }) {
     const workflow = await this.workflowsService.get(id);
     await this.executionService.queueWorkflow(
       id,
@@ -62,7 +59,7 @@ export class WorkflowsController {
         nodes: (workflow.steps as any)?.nodes || [],
         edges: (workflow.steps as any)?.edges || [],
       },
-      body.triggerData,
+      body.triggerData
     );
     return { success: true, message: 'Workflow execution queued' };
   }
@@ -76,7 +73,7 @@ export class WorkflowsController {
   async getMonitoring(
     @Param('id') id: string,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
+    @Query('endDate') endDate?: string
   ) {
     const dateRange =
       startDate && endDate

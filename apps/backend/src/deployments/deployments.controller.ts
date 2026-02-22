@@ -9,7 +9,7 @@ import { CreateDeploymentDto } from './dto';
 export class DeploymentsController {
   constructor(
     private readonly deploymentsService: DeploymentsService,
-    private readonly vercelService: VercelService,
+    private readonly vercelService: VercelService
   ) {}
 
   @Post()
@@ -21,9 +21,7 @@ export class DeploymentsController {
   @Post('quick')
   @ApiOperation({ summary: 'Quick deploy from builder layout (returns URL)' })
   @ApiResponse({ status: 200, description: 'Deployment URL' })
-  async quickDeploy(
-    @Body() body: { projectName?: string; layout: any },
-  ) {
+  async quickDeploy(@Body() body: { projectName?: string; layout: any }) {
     const { projectName = 'omniforge-app', layout } = body;
     return this.vercelService.deployFromLayout(projectName, layout);
   }

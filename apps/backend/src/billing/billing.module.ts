@@ -11,4 +11,3 @@ import { StripeModule } from '../integrations/stripe/stripe.module';
   exports: [BillingService],
 })
 export class BillingModule {}
-

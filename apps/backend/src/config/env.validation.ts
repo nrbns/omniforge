@@ -97,10 +97,9 @@ export function validate(config: Record<string, unknown>) {
 
     throw new Error(
       `Environment validation failed. Missing or invalid variables: ${missingVars}\n` +
-        'Please check your .env file or set DEMO_MODE=true for development.',
+        'Please check your .env file or set DEMO_MODE=true for development.'
     );
   }
 
   return validatedConfig;
 }
-

@@ -47,7 +47,7 @@ export class PayPalService {
             'Content-Type': 'application/x-www-form-urlencoded',
             Authorization: `Basic ${Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64')}`,
           },
-        },
+        }
       );
 
       const token = response.data.access_token;
@@ -114,7 +114,7 @@ export class PayPalService {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        },
+        }
       );
 
       return response.data;
@@ -147,7 +147,7 @@ export class PayPalService {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        },
+        }
       );
 
       return response.data;
@@ -166,4 +166,3 @@ export class PayPalService {
     return true;
   }
 }
-

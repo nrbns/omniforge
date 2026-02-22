@@ -10,7 +10,7 @@ export class IdeasSearchService {
   constructor(
     private prisma: PrismaService,
     private neo4j: Neo4jService,
-    private huggingFace: HuggingFaceService,
+    private huggingFace: HuggingFaceService
   ) {}
 
   /**
@@ -28,7 +28,7 @@ export class IdeasSearchService {
 
     // Generate embedding for the idea
     const embedding = await this.huggingFace.generateEmbedding(
-      `${idea.title} ${idea.description || ''}`,
+      `${idea.title} ${idea.description || ''}`
     );
 
     // Vector search (simplified - in production, use Qdrant/Milvus)
@@ -38,7 +38,12 @@ export class IdeasSearchService {
         id: { not: ideaId },
         OR: [
           { title: { contains: idea.title.split(' ')[0], mode: 'insensitive' } },
-          { description: { contains: idea.description?.substring(0, 50) || '', mode: 'insensitive' } },
+          {
+            description: {
+              contains: idea.description?.substring(0, 50) || '',
+              mode: 'insensitive',
+            },
+          },
         ],
       },
       take: limit,
@@ -124,7 +129,7 @@ export class IdeasSearchService {
           ideaId,
           title: idea.title,
           description: idea.description || '',
-        },
+        }
       );
 
       // Create concept nodes and relationships
@@ -138,7 +143,7 @@ export class IdeasSearchService {
           {
             concept,
             ideaId,
-          },
+          }
         );
       }
 
@@ -154,7 +159,7 @@ export class IdeasSearchService {
           RETURN other.name as name
           LIMIT 5
           `,
-          { concept },
+          { concept }
         );
 
         // Create relationships between ideas using similar concepts
@@ -172,7 +177,7 @@ export class IdeasSearchService {
               ideaId,
               concept,
               similarConcept: similarConcept.name,
-            },
+            }
           );
         }
       }
@@ -192,7 +197,7 @@ export class IdeasSearchService {
         RETURN i2.id as id, i2.title as title, i2.description as description
         LIMIT $limit
         `,
-        { ideaId, limit },
+        { ideaId, limit }
       );
 
       return result.map((r: any) => ({
@@ -207,4 +212,3 @@ export class IdeasSearchService {
     }
   }
 }
-

@@ -10,8 +10,7 @@ export class UrlImportService {
   async importFromUrl(url: string): Promise<AppSpec> {
     const response = await axios.get(url, {
       headers: {
-        'User-Agent':
-          'Mozilla/5.0 (compatible; OmniForge/1.0; +https://omniforge.dev)',
+        'User-Agent': 'Mozilla/5.0 (compatible; OmniForge/1.0; +https://omniforge.dev)',
       },
       timeout: 15000,
       maxRedirects: 5,
@@ -23,9 +22,7 @@ export class UrlImportService {
 
     const components: ComponentSpec[] = [];
     const title =
-      $('title').first().text().trim() ||
-      $('h1').first().text().trim() ||
-      new URL(url).hostname;
+      $('title').first().text().trim() || $('h1').first().text().trim() || new URL(url).hostname;
 
     const nav = $('nav').first().length ? $('nav').first() : $('header').first();
     if (nav?.length) {
@@ -150,23 +147,47 @@ export class UrlImportService {
           name: 'Home',
           path: '/',
           components: [
-            { id: 'nav-1', type: 'Navbar', props: { title: title.slice(0, 20), ctaLabel: 'Get Started' } },
+            {
+              id: 'nav-1',
+              type: 'Navbar',
+              props: { title: title.slice(0, 20), ctaLabel: 'Get Started' },
+            },
             {
               id: 'hero-1',
               type: 'Hero',
-              props: { title: title || 'Welcome', subtitle: `Content from ${url}`, ctaLabel: 'Learn More' },
+              props: {
+                title: title || 'Welcome',
+                subtitle: `Content from ${url}`,
+                ctaLabel: 'Learn More',
+              },
             },
             {
               id: 'fg-1',
               type: 'FeatureGrid',
               props: { title: 'Features', columns: 3 },
               children: [
-                { id: 'fc-1', type: 'FeatureCard', props: { icon: '🚀', title: 'Feature 1', description: 'Description.' } },
-                { id: 'fc-2', type: 'FeatureCard', props: { icon: '⚡', title: 'Feature 2', description: 'Description.' } },
-                { id: 'fc-3', type: 'FeatureCard', props: { icon: '✨', title: 'Feature 3', description: 'Description.' } },
+                {
+                  id: 'fc-1',
+                  type: 'FeatureCard',
+                  props: { icon: '🚀', title: 'Feature 1', description: 'Description.' },
+                },
+                {
+                  id: 'fc-2',
+                  type: 'FeatureCard',
+                  props: { icon: '⚡', title: 'Feature 2', description: 'Description.' },
+                },
+                {
+                  id: 'fc-3',
+                  type: 'FeatureCard',
+                  props: { icon: '✨', title: 'Feature 3', description: 'Description.' },
+                },
               ],
             },
-            { id: 'cta-1', type: 'CTA', props: { title: 'Ready to start?', buttonLabel: 'Get Started' } },
+            {
+              id: 'cta-1',
+              type: 'CTA',
+              props: { title: 'Ready to start?', buttonLabel: 'Get Started' },
+            },
             { id: 'footer-1', type: 'Footer', props: { brand: title.slice(0, 20) } },
           ],
         },

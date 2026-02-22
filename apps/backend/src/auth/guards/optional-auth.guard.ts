@@ -37,4 +37,3 @@ export class OptionalAuthGuard extends AuthGuard('jwt') {
     return user || null;
   }
 }
-

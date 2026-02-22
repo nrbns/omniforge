@@ -51,13 +51,16 @@ export class AnalyticsService {
   constructor(
     private prisma: PrismaService,
     private stripeService: StripeService,
-    private emailService: EmailService,
+    private emailService: EmailService
   ) {}
 
   /**
    * Get unified analytics across all tools
    */
-  async getUnifiedAnalytics(businessId: string, dateRange?: { start: Date; end: Date }): Promise<CrossToolMetrics> {
+  async getUnifiedAnalytics(
+    businessId: string,
+    dateRange?: { start: Date; end: Date }
+  ): Promise<CrossToolMetrics> {
     const startDate = dateRange?.start || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
     const endDate = dateRange?.end || new Date();
 
@@ -296,7 +299,8 @@ export class AnalyticsService {
       topWorkflows: (topWorkflows as any[]).map((w) => ({
         name: w.name || 'Unnamed',
         executions: Number(w.executions || 0),
-        successRate: Number(w.executions || 0) > 0 ? Number(w.successful || 0) / Number(w.executions || 0) : 0,
+        successRate:
+          Number(w.executions || 0) > 0 ? Number(w.successful || 0) / Number(w.executions || 0) : 0,
       })),
     };
   }
@@ -332,4 +336,3 @@ export class AnalyticsService {
     return (email.openRate + popups.conversionRate) / 2;
   }
 }
-

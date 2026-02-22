@@ -8,4 +8,3 @@ import { PayPalService } from './paypal.service';
   exports: [PayPalService],
 })
 export class PayPalModule {}
-

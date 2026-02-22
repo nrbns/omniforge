@@ -12,15 +12,21 @@ export class PayPalController {
   @Post('orders')
   @ApiOperation({ summary: 'Create PayPal order' })
   @ApiResponse({ status: 200, description: 'Order created' })
-  async createOrder(@Body() body: {
-    amount: number;
-    currency?: string;
-    description?: string;
-    returnUrl: string;
-    cancelUrl: string;
-  }) {
+  async createOrder(
+    @Body()
+    body: {
+      amount: number;
+      currency?: string;
+      description?: string;
+      returnUrl: string;
+      cancelUrl: string;
+    }
+  ) {
     const order = await this.paypalService.createOrder(body);
-    return { orderId: order.id, approvalUrl: order.links?.find((l: any) => l.rel === 'approve')?.href };
+    return {
+      orderId: order.id,
+      approvalUrl: order.links?.find((l: any) => l.rel === 'approve')?.href,
+    };
   }
 
   @Post('orders/:orderId/capture')
@@ -56,4 +62,3 @@ export class PayPalController {
     return { received: true };
   }
 }
-

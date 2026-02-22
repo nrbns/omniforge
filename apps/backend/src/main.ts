@@ -24,10 +24,10 @@ async function bootstrap() {
   const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')
     : process.env.FRONTEND_URL
-    ? [process.env.FRONTEND_URL]
-    : process.env.NODE_ENV === 'production'
-    ? [] // No default origins in production - must be set
-    : ['http://localhost:3000']; // Dev default
+      ? [process.env.FRONTEND_URL]
+      : process.env.NODE_ENV === 'production'
+        ? [] // No default origins in production - must be set
+        : ['http://localhost:3000']; // Dev default
 
   app.enableCors({
     origin: (origin, callback) => {

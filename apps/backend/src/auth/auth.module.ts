@@ -27,4 +27,3 @@ import { OptionalAuthGuard } from './guards/optional-auth.guard';
   exports: [AuthService, JwtAuthGuard, OptionalAuthGuard],
 })
 export class AuthModule {}
-

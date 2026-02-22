@@ -11,11 +11,7 @@ export class MetricsController {
   @ApiOperation({ summary: 'Track an event' })
   @ApiResponse({ status: 200, description: 'Event tracked' })
   async trackEvent(
-    @Body() body: {
-      userId: string;
-      eventName: string;
-      properties?: Record<string, any>;
-    },
+    @Body() body: { userId: string; eventName: string; properties?: Record<string, any> }
   ) {
     await this.metricsService.trackEvent(body.userId, body.eventName, body.properties);
     return { success: true };
@@ -25,11 +21,7 @@ export class MetricsController {
   @ApiOperation({ summary: 'Track a page view' })
   @ApiResponse({ status: 200, description: 'Page view tracked' })
   async trackPageView(
-    @Body() body: {
-      userId: string;
-      page: string;
-      properties?: Record<string, any>;
-    },
+    @Body() body: { userId: string; page: string; properties?: Record<string, any> }
   ) {
     await this.metricsService.trackPageView(body.userId, body.page, body.properties);
     return { success: true };
@@ -41,7 +33,7 @@ export class MetricsController {
   async getUserMetrics(
     @Param('userId') userId: string,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
+    @Query('endDate') endDate?: string
   ) {
     const dateRange =
       startDate && endDate
@@ -60,7 +52,7 @@ export class MetricsController {
   async getFunnelConversion(
     @Param('funnelName') funnelName: string,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
+    @Query('endDate') endDate?: string
   ) {
     const dateRange =
       startDate && endDate
@@ -73,4 +65,3 @@ export class MetricsController {
     return this.metricsService.getFunnelConversion(funnelName, dateRange);
   }
 }
-

@@ -16,7 +16,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {}
 
   /**
@@ -67,7 +67,7 @@ export class AuthService {
    */
   async verifyClerkToken(token: string): Promise<JwtPayload | null> {
     const clerkSecret = this.configService.get<string>('CLERK_SECRET_KEY');
-    
+
     if (!clerkSecret) {
       // In demo mode, allow requests without auth
       if (this.configService.get<string>('DEMO_MODE') === 'true') {
@@ -91,7 +91,7 @@ export class AuthService {
    */
   async getUserFromRequest(request: any) {
     const authHeader = request.headers?.authorization;
-    
+
     if (!authHeader) {
       // In demo mode, allow anonymous access
       if (this.configService.get<string>('DEMO_MODE') === 'true') {
@@ -116,4 +116,3 @@ export class AuthService {
     }
   }
 }
-

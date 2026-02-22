@@ -18,14 +18,14 @@ export class MetricsService {
   async trackEvent(
     userId: string,
     eventName: string,
-    properties?: Record<string, any>,
+    properties?: Record<string, any>
   ): Promise<void> {
     // Store in database for backup
     await this.prisma.$executeRaw`
       INSERT INTO "MetricEvent" ("userId", "eventName", "properties", "createdAt")
       VALUES (${userId}, ${eventName}, ${JSON.stringify(properties || {})}::jsonb, NOW())
       ON CONFLICT DO NOTHING
-    `.catch((err) => {
+    `.catch((err: unknown) => {
       this.logger.warn('Failed to store metric event:', err);
     });
 
@@ -43,7 +43,11 @@ export class MetricsService {
   /**
    * Track page view
    */
-  async trackPageView(userId: string, page: string, properties?: Record<string, any>): Promise<void> {
+  async trackPageView(
+    userId: string,
+    page: string,
+    properties?: Record<string, any>
+  ): Promise<void> {
     await this.trackEvent(userId, 'page_view', {
       page,
       ...properties,
@@ -57,7 +61,7 @@ export class MetricsService {
     userId: string,
     funnelName: string,
     step: string,
-    properties?: Record<string, any>,
+    properties?: Record<string, any>
   ): Promise<void> {
     await this.trackEvent(userId, 'funnel_step', {
       funnel: funnelName,
@@ -126,4 +130,3 @@ export class MetricsService {
     };
   }
 }
-

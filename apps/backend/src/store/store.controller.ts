@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags, ApiConsumes } from '@nestjs/swagger';
 import { StoreService } from './store.service';
@@ -11,7 +21,7 @@ import * as csv from 'csv-parse/sync';
 export class StoreController {
   constructor(
     private readonly storeService: StoreService,
-    private readonly inventoryService: InventoryService,
+    private readonly inventoryService: InventoryService
   ) {}
 
   @Post('products/import')
@@ -21,7 +31,7 @@ export class StoreController {
   @ApiResponse({ status: 200, description: 'Products imported' })
   async importProducts(
     @UploadedFile() file: Express.Multer.File,
-    @Body('businessId') businessId: string,
+    @Body('businessId') businessId: string
   ) {
     if (!file) {
       throw new Error('No file uploaded');
@@ -63,7 +73,7 @@ export class StoreController {
     const csvRows = ['name,price,description,stock'];
     for (const product of products) {
       csvRows.push(
-        `"${product.name}","${product.price}","${product.description || ''}","${product.stock || 0}"`,
+        `"${product.name}","${product.price}","${product.description || ''}","${product.stock || 0}"`
       );
     }
 
@@ -77,7 +87,7 @@ export class StoreController {
   @ApiResponse({ status: 200, description: 'Low stock products' })
   async getLowStock(
     @Param('businessId') businessId: string,
-    @Query('threshold') threshold: string,
+    @Query('threshold') threshold: string
   ) {
     return this.inventoryService.getLowStockProducts(businessId, parseInt(threshold || '10', 10));
   }

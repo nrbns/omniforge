@@ -50,11 +50,7 @@ export class ShowcaseService {
             },
           },
         },
-        orderBy: [
-          { featured: 'desc' },
-          { votes: 'desc' },
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ featured: 'desc' }, { votes: 'desc' }, { createdAt: 'desc' }],
       });
     } catch (error) {
       // If table doesn't exist yet, return empty array
@@ -192,4 +188,3 @@ export class ShowcaseService {
     }
   }
 }
-

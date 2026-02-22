@@ -9,7 +9,7 @@ import { CreateCrmDto, CreateContactDto, UpdateContactDto } from './dto';
 export class CrmController {
   constructor(
     private readonly crmService: CrmService,
-    private readonly leadScoringService: LeadScoringService,
+    private readonly leadScoringService: LeadScoringService
   ) {}
 
   @Post()
@@ -88,7 +88,8 @@ export class CrmController {
   @ApiResponse({ status: 200, description: 'Lead score calculated' })
   async calculateLeadScore(
     @Param('leadId') leadId: string,
-    @Body() body: {
+    @Body()
+    body: {
       emailOpened?: boolean;
       emailClicked?: boolean;
       websiteVisited?: boolean;
@@ -98,7 +99,7 @@ export class CrmController {
       source?: string;
       companySize?: string;
       industry?: string;
-    },
+    }
   ) {
     const score = await this.leadScoringService.calculateLeadScore(leadId, body);
     const qualified = await this.leadScoringService.autoQualifyLead(leadId, score);

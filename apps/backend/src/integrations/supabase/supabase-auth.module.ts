@@ -8,4 +8,3 @@ import { PrismaModule } from '../../prisma/prisma.module';
   exports: [SupabaseAuthService],
 })
 export class SupabaseAuthModule {}
-

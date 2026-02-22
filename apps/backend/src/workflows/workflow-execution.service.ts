@@ -35,7 +35,7 @@ export class WorkflowExecutionService {
     @InjectQueue('workflow') private workflowQueue: Queue,
     private prisma: PrismaService,
     private emailService: EmailService,
-    private stripeService: StripeService,
+    private stripeService: StripeService
   ) {}
 
   /**
@@ -51,7 +51,7 @@ export class WorkflowExecutionService {
       try {
         // Find start nodes (nodes with no incoming edges)
         const startNodes = workflow.nodes.filter(
-          (node) => !workflow.edges.some((edge) => edge.target === node.id),
+          (node) => !workflow.edges.some((edge) => edge.target === node.id)
         );
 
         // Execute each start node
@@ -82,7 +82,7 @@ export class WorkflowExecutionService {
   private async executeNode(
     node: WorkflowNode,
     workflow: Workflow,
-    inputData?: Record<string, any>,
+    inputData?: Record<string, any>
   ): Promise<any> {
     const startTime = Date.now();
     this.logger.log(`Executing node ${node.id} (${node.type})`);
@@ -91,44 +91,44 @@ export class WorkflowExecutionService {
       let output: any;
 
       switch (node.type) {
-      case 'webhook':
-        // Webhook nodes receive data from external sources
-        output = inputData || {};
-        break;
+        case 'webhook':
+          // Webhook nodes receive data from external sources
+          output = inputData || {};
+          break;
 
-      case 'ai':
-        // AI classification/processing
-        output = await this.executeAINode(node, inputData);
-        break;
+        case 'ai':
+          // AI classification/processing
+          output = await this.executeAINode(node, inputData);
+          break;
 
-      case 'email':
-        // Send email
-        output = await this.executeEmailNode(node, inputData);
-        break;
+        case 'email':
+          // Send email
+          output = await this.executeEmailNode(node, inputData);
+          break;
 
-      case 'database':
-        // Query database
-        output = await this.executeDatabaseNode(node, inputData);
-        break;
+        case 'database':
+          // Query database
+          output = await this.executeDatabaseNode(node, inputData);
+          break;
 
-      case 'api':
-        // Call external API
-        output = await this.executeAPINode(node, inputData);
-        break;
+        case 'api':
+          // Call external API
+          output = await this.executeAPINode(node, inputData);
+          break;
 
-      case 'conditional':
-        // If/else logic
-        output = await this.executeConditionalNode(node, inputData);
-        break;
+        case 'conditional':
+          // If/else logic
+          output = await this.executeConditionalNode(node, inputData);
+          break;
 
-      case 'action':
-        // Custom action
-        output = await this.executeActionNode(node, inputData);
-        break;
+        case 'action':
+          // Custom action
+          output = await this.executeActionNode(node, inputData);
+          break;
 
-      default:
-        this.logger.warn(`Unknown node type: ${node.type}`);
-        output = inputData;
+        default:
+          this.logger.warn(`Unknown node type: ${node.type}`);
+          output = inputData;
       }
 
       const duration = Date.now() - startTime;
@@ -159,7 +159,7 @@ export class WorkflowExecutionService {
 
   private async executeEmailNode(
     node: WorkflowNode,
-    inputData?: Record<string, any>,
+    inputData?: Record<string, any>
   ): Promise<any> {
     const config = node.data.config || {};
     await this.emailService.sendEmail({
@@ -172,7 +172,7 @@ export class WorkflowExecutionService {
 
   private async executeDatabaseNode(
     node: WorkflowNode,
-    inputData?: Record<string, any>,
+    inputData?: Record<string, any>
   ): Promise<any> {
     const config = node.data.config || {};
     // TODO: Execute database query
@@ -180,10 +180,7 @@ export class WorkflowExecutionService {
     return { ...inputData, queryResult: [] };
   }
 
-  private async executeAPINode(
-    node: WorkflowNode,
-    inputData?: Record<string, any>,
-  ): Promise<any> {
+  private async executeAPINode(node: WorkflowNode, inputData?: Record<string, any>): Promise<any> {
     const config = node.data.config || {};
     // TODO: Call external API
     this.logger.log(`API call: ${config.url || 'N/A'}`);
@@ -192,7 +189,7 @@ export class WorkflowExecutionService {
 
   private async executeConditionalNode(
     node: WorkflowNode,
-    inputData?: Record<string, any>,
+    inputData?: Record<string, any>
   ): Promise<any> {
     const config = node.data.config || {};
     const condition = config.condition || 'true';
@@ -203,7 +200,7 @@ export class WorkflowExecutionService {
 
   private async executeActionNode(
     node: WorkflowNode,
-    inputData?: Record<string, any>,
+    inputData?: Record<string, any>
   ): Promise<any> {
     const config = node.data.config || {};
     // TODO: Execute custom action
@@ -224,7 +221,11 @@ export class WorkflowExecutionService {
   /**
    * Queue workflow execution
    */
-  async queueWorkflow(workflowId: string, workflow: Workflow, triggerData?: Record<string, any>): Promise<void> {
+  async queueWorkflow(
+    workflowId: string,
+    workflow: Workflow,
+    triggerData?: Record<string, any>
+  ): Promise<void> {
     await this.workflowQueue.add('execute', {
       workflowId,
       workflow,
@@ -232,4 +233,3 @@ export class WorkflowExecutionService {
     });
   }
 }
-

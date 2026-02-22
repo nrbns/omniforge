@@ -19,7 +19,7 @@ export class RateLimitMiddleware implements NestMiddleware {
 
   constructor(
     private redis: RedisService,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -33,7 +33,7 @@ export class RateLimitMiddleware implements NestMiddleware {
 
     try {
       const count = await this.redis.incr(key);
-      
+
       if (count === 1) {
         // Set expiration on first request
         await this.redis.expire(key, Math.ceil(config.windowMs / 1000));
@@ -51,7 +51,7 @@ export class RateLimitMiddleware implements NestMiddleware {
             message: config.message,
             retryAfter: Math.ceil(config.windowMs / 1000),
           },
-          HttpStatus.TOO_MANY_REQUESTS,
+          HttpStatus.TOO_MANY_REQUESTS
         );
       }
 
@@ -67,7 +67,8 @@ export class RateLimitMiddleware implements NestMiddleware {
 
   private getKey(req: Request): string {
     // Use IP address or user ID if authenticated
-    const identifier = (req as Request & { user?: { id: string } }).user?.id || req.ip || 'anonymous';
+    const identifier =
+      (req as Request & { user?: { id: string } }).user?.id || req.ip || 'anonymous';
     const path = req.path.replace(/\//g, ':');
     return `rate_limit:${path}:${identifier}`;
   }
@@ -93,4 +94,3 @@ export class RateLimitMiddleware implements NestMiddleware {
     return this.defaultConfig;
   }
 }
-

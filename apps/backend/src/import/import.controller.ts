@@ -22,7 +22,7 @@ export class ImportController {
   constructor(
     private readonly urlImport: UrlImportService,
     private readonly imageImport: ImageImportService,
-    private readonly figmaImport: FigmaImportService,
+    private readonly figmaImport: FigmaImportService
   ) {}
 
   @Post('url')

@@ -9,7 +9,7 @@ import { Response } from 'express';
 export class ExportController {
   constructor(
     private readonly exportService: ExportService,
-    private readonly templatesService: ExportTemplatesService,
+    private readonly templatesService: ExportTemplatesService
   ) {}
 
   @Post('shopify/:businessId')
@@ -17,7 +17,7 @@ export class ExportController {
   @ApiResponse({ status: 200, description: 'Products exported to Shopify format' })
   async exportToShopify(
     @Param('businessId') businessId: string,
-    @Body() body?: { apiKey?: string; store?: string },
+    @Body() body?: { apiKey?: string; store?: string }
   ) {
     return this.exportService.exportToShopify(businessId, body?.apiKey, body?.store);
   }
@@ -27,7 +27,7 @@ export class ExportController {
   @ApiResponse({ status: 200, description: 'Contacts exported to HubSpot format' })
   async exportToHubSpot(
     @Param('businessId') businessId: string,
-    @Body() body?: { apiKey?: string },
+    @Body() body?: { apiKey?: string }
   ) {
     return this.exportService.exportToHubSpot(businessId, body?.apiKey);
   }
@@ -38,7 +38,7 @@ export class ExportController {
   async exportToCSV(
     @Param('businessId') businessId: string,
     @Param('type') type: 'products' | 'contacts' | 'orders',
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     const csv = await this.exportService.exportToCSV(businessId, type);
     res.setHeader('Content-Type', 'text/csv');
@@ -51,7 +51,7 @@ export class ExportController {
   @ApiResponse({ status: 200, description: 'JSON data' })
   async exportToJSON(
     @Param('businessId') businessId: string,
-    @Param('type') type: 'products' | 'contacts' | 'orders',
+    @Param('type') type: 'products' | 'contacts' | 'orders'
   ) {
     return this.exportService.exportToJSON(businessId, type);
   }
@@ -61,7 +61,7 @@ export class ExportController {
   @ApiResponse({ status: 200, description: 'Figma variables JSON' })
   async exportToFigma(
     @Param('businessId') businessId: string,
-    @Body() body?: { apiKey?: string; fileKey?: string },
+    @Body() body?: { apiKey?: string; fileKey?: string }
   ) {
     return this.templatesService.exportToFigma(businessId, body?.apiKey, body?.fileKey);
   }
@@ -69,13 +69,13 @@ export class ExportController {
   @Get('shopify-template/:businessId')
   @ApiOperation({ summary: 'Export Shopify Liquid template' })
   @ApiResponse({ status: 200, description: 'Shopify template code' })
-  async exportShopifyTemplate(
-    @Param('businessId') businessId: string,
-    @Res() res: Response,
-  ) {
+  async exportShopifyTemplate(@Param('businessId') businessId: string, @Res() res: Response) {
     const template = await this.templatesService.exportProductsToShopifyTemplate(businessId);
     res.setHeader('Content-Type', 'text/plain');
-    res.setHeader('Content-Disposition', `attachment; filename="shopify-template-${businessId}.liquid"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="shopify-template-${businessId}.liquid"`
+    );
     res.send(template);
   }
 
@@ -93,4 +93,3 @@ export class ExportController {
     return this.templatesService.exportToReactTemplate(businessId);
   }
 }
-

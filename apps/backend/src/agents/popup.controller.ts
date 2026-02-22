@@ -16,10 +16,11 @@ export class PopupController {
       type: 'exit-intent' as const,
       trigger: {},
       content: {
-        title: 'Wait! Don\'t miss out',
-        message: body.context === 'cart abandonment'
-          ? 'Complete your purchase and get 10% off!'
-          : 'Get exclusive offers delivered to your inbox',
+        title: "Wait! Don't miss out",
+        message:
+          body.context === 'cart abandonment'
+            ? 'Complete your purchase and get 10% off!'
+            : 'Get exclusive offers delivered to your inbox',
         cta: 'Claim Offer',
         ctaUrl: '#',
         discount: 10,
@@ -33,4 +34,3 @@ export class PopupController {
     return popup;
   }
 }
-

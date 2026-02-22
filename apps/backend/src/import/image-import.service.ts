@@ -30,7 +30,7 @@ export class ImageImportService {
 
       const captionRes = await client.post<string | { generated_text: string }[]>(
         'Salesforce/blip-image-captioning-base',
-        { inputs: imageBase64 },
+        { inputs: imageBase64 }
       );
 
       let description = '';
@@ -68,7 +68,7 @@ Use only: Navbar, Hero, FeatureGrid, FeatureCard, CTA, Footer.`;
     try {
       const res = await client.post<{ generated_text: string }[]>(
         'mistralai/Mistral-7B-Instruct-v0.2',
-        { inputs: prompt, parameters: { max_new_tokens: 800, temperature: 0.2 } },
+        { inputs: prompt, parameters: { max_new_tokens: 800, temperature: 0.2 } }
       );
       const text = Array.isArray(res.data) ? res.data[0]?.generated_text : '';
       const jsonMatch = text?.match(/\{[\s\S]*\}/);
@@ -105,15 +105,31 @@ Use only: Navbar, Hero, FeatureGrid, FeatureCard, CTA, Footer.`;
           path: '/',
           components: [
             { id: 'nav-1', type: 'Navbar', props: { title: 'App', ctaLabel: 'Get Started' } },
-            { id: 'hero-1', type: 'Hero', props: { title: 'Welcome', subtitle: 'From your image', ctaLabel: 'Learn More' } },
+            {
+              id: 'hero-1',
+              type: 'Hero',
+              props: { title: 'Welcome', subtitle: 'From your image', ctaLabel: 'Learn More' },
+            },
             {
               id: 'fg-1',
               type: 'FeatureGrid',
               props: { title: 'Features', columns: 3 },
               children: [
-                { id: 'fc-1', type: 'FeatureCard', props: { icon: '🚀', title: 'Fast', description: 'Quick.' } },
-                { id: 'fc-2', type: 'FeatureCard', props: { icon: '⚡', title: 'Simple', description: 'Easy.' } },
-                { id: 'fc-3', type: 'FeatureCard', props: { icon: '✨', title: 'Modern', description: 'Today.' } },
+                {
+                  id: 'fc-1',
+                  type: 'FeatureCard',
+                  props: { icon: '🚀', title: 'Fast', description: 'Quick.' },
+                },
+                {
+                  id: 'fc-2',
+                  type: 'FeatureCard',
+                  props: { icon: '⚡', title: 'Simple', description: 'Easy.' },
+                },
+                {
+                  id: 'fc-3',
+                  type: 'FeatureCard',
+                  props: { icon: '✨', title: 'Modern', description: 'Today.' },
+                },
               ],
             },
             { id: 'cta-1', type: 'CTA', props: { title: 'Ready?', buttonLabel: 'Get Started' } },

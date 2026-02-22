@@ -12,10 +12,7 @@ export class ShowcaseController {
   @Get()
   @ApiOperation({ summary: 'Get all showcase apps' })
   @ApiResponse({ status: 200, description: 'List of showcase apps' })
-  async findAll(
-    @Query('category') category?: string,
-    @Query('search') search?: string,
-  ) {
+  async findAll(@Query('category') category?: string, @Query('search') search?: string) {
     return this.showcaseService.findAll(category, search);
   }
 
@@ -47,4 +44,3 @@ export class ShowcaseController {
     return this.showcaseService.vote(id, body?.userId);
   }
 }
-

@@ -9,7 +9,7 @@ export interface HallucinationCheck {
 
 /**
  * Detects AI hallucinations in generated code
- * 
+ *
  * Checks for:
  * - Missing imports
  * - Undefined variables
@@ -24,7 +24,11 @@ export class HallucinationDetectorService {
   /**
    * Detect hallucinations in generated code
    */
-  async detect(code: string, spec: any, language: 'typescript' | 'python' | 'javascript' = 'typescript'): Promise<HallucinationCheck> {
+  async detect(
+    code: string,
+    spec: any,
+    language: 'typescript' | 'python' | 'javascript' = 'typescript'
+  ): Promise<HallucinationCheck> {
     const issues: string[] = [];
     const suggestions: string[] = [];
     let confidence = 1.0;
@@ -33,7 +37,7 @@ export class HallucinationDetectorService {
     const missingImports = this.checkMissingImports(code, language);
     if (missingImports.length > 0) {
       issues.push(`Missing imports: ${missingImports.join(', ')}`);
-      suggestions.push(`Add imports: ${missingImports.map(i => `import ${i}`).join('; ')}`);
+      suggestions.push(`Add imports: ${missingImports.map((i) => `import ${i}`).join('; ')}`);
       confidence -= 0.2;
     }
 
@@ -49,7 +53,7 @@ export class HallucinationDetectorService {
     const syntaxErrors = this.checkSyntaxErrors(code, language);
     if (syntaxErrors.length > 0) {
       issues.push(`Syntax errors: ${syntaxErrors.join('; ')}`);
-      suggestions.push(`Fix syntax: ${syntaxErrors.map(e => `Fix ${e}`).join('; ')}`);
+      suggestions.push(`Fix syntax: ${syntaxErrors.map((e) => `Fix ${e}`).join('; ')}`);
       confidence -= 0.4;
     }
 
@@ -76,7 +80,7 @@ export class HallucinationDetectorService {
       const typeErrors = this.checkTypeErrors(code);
       if (typeErrors.length > 0) {
         issues.push(`Type errors: ${typeErrors.join('; ')}`);
-        suggestions.push(`Fix types: ${typeErrors.map(e => `Fix ${e}`).join('; ')}`);
+        suggestions.push(`Fix types: ${typeErrors.map((e) => `Fix ${e}`).join('; ')}`);
         confidence -= 0.2;
       }
     }
@@ -107,19 +111,12 @@ export class HallucinationDetectorService {
         /express\(/,
         /Router\(/,
       ],
-      javascript: [
-        /useState|useEffect|useRef/,
-        /fetch\(/,
-        /axios\./,
-      ],
-      python: [
-        /import\s+\w+/,
-        /from\s+\w+\s+import/,
-      ],
+      javascript: [/useState|useEffect|useRef/, /fetch\(/, /axios\./],
+      python: [/import\s+\w+/, /from\s+\w+\s+import/],
     };
 
     const langPatterns = patterns[language as keyof typeof patterns] || [];
-    
+
     for (const pattern of langPatterns) {
       const matches = code.match(pattern);
       if (matches && !code.includes('import') && !code.includes('from')) {
@@ -140,21 +137,68 @@ export class HallucinationDetectorService {
     const callPattern = /(\w+)\(/g;
     const varPattern = /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g;
 
-    const calls = [...code.matchAll(callPattern)].map(m => m[1]);
-    const vars = [...code.matchAll(varPattern)].map(m => m[1]);
+    const calls = [...code.matchAll(callPattern)].map((m) => m[1]);
+    const vars = [...code.matchAll(varPattern)].map((m) => m[1]);
 
     // Filter out common built-ins
     const builtins = {
-      typescript: ['console', 'document', 'window', 'Array', 'Object', 'String', 'Number', 'Boolean', 'Date', 'Math', 'JSON', 'Promise', 'setTimeout', 'setInterval'],
-      javascript: ['console', 'document', 'window', 'Array', 'Object', 'String', 'Number', 'Boolean', 'Date', 'Math', 'JSON', 'Promise', 'setTimeout', 'setInterval'],
-      python: ['print', 'len', 'str', 'int', 'float', 'list', 'dict', 'tuple', 'range', 'enumerate'],
+      typescript: [
+        'console',
+        'document',
+        'window',
+        'Array',
+        'Object',
+        'String',
+        'Number',
+        'Boolean',
+        'Date',
+        'Math',
+        'JSON',
+        'Promise',
+        'setTimeout',
+        'setInterval',
+      ],
+      javascript: [
+        'console',
+        'document',
+        'window',
+        'Array',
+        'Object',
+        'String',
+        'Number',
+        'Boolean',
+        'Date',
+        'Math',
+        'JSON',
+        'Promise',
+        'setTimeout',
+        'setInterval',
+      ],
+      python: [
+        'print',
+        'len',
+        'str',
+        'int',
+        'float',
+        'list',
+        'dict',
+        'tuple',
+        'range',
+        'enumerate',
+      ],
     };
 
     const langBuiltins = builtins[language as keyof typeof builtins] || [];
 
     // Check if variables are defined
     for (const call of calls) {
-      if (!langBuiltins.includes(call) && !code.includes(`function ${call}`) && !code.includes(`const ${call}`) && !code.includes(`let ${call}`) && !code.includes(`var ${call}`)) {
+      if (
+        !langBuiltins.includes(call) &&
+        !code.includes(`function ${call}`) &&
+        !code.includes(`const ${call}`) &&
+        !code.includes(`let ${call}`) &&
+        !code.includes(`var ${call}`)
+      ) {
         undefined.push(call);
       }
     }
@@ -198,7 +242,14 @@ export class HallucinationDetectorService {
       const lines = code.split('\n');
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
-        if (line && !line.endsWith(';') && !line.endsWith('{') && !line.endsWith('}') && !line.startsWith('//') && !line.startsWith('/*')) {
+        if (
+          line &&
+          !line.endsWith(';') &&
+          !line.endsWith('{') &&
+          !line.endsWith('}') &&
+          !line.startsWith('//') &&
+          !line.startsWith('/*')
+        ) {
           // Not necessarily an error, but could be
         }
       }
@@ -253,17 +304,19 @@ export class HallucinationDetectorService {
     const unused: string[] = [];
 
     // Extract function definitions
-    const funcPattern = language === 'python' 
-      ? /def\s+(\w+)\s*\(/g
-      : /(?:function|const|let|var)\s+(\w+)\s*[=:]\s*(?:async\s*)?\(/g;
+    const funcPattern =
+      language === 'python'
+        ? /def\s+(\w+)\s*\(/g
+        : /(?:function|const|let|var)\s+(\w+)\s*[=:]\s*(?:async\s*)?\(/g;
 
-    const functions = [...code.matchAll(funcPattern)].map(m => m[1]);
+    const functions = [...code.matchAll(funcPattern)].map((m) => m[1]);
 
     // Check if functions are called
     for (const func of functions) {
       const callPattern = new RegExp(`\\b${func}\\s*\\(`, 'g');
       const calls = code.match(callPattern);
-      if (!calls || calls.length <= 1) { // Only definition, no calls
+      if (!calls || calls.length <= 1) {
+        // Only definition, no calls
         unused.push(func);
       }
     }
@@ -285,7 +338,8 @@ export class HallucinationDetectorService {
     }
 
     // Check for missing return types
-    const funcPattern = /(?:function|const|let)\s+\w+\s*[=:]\s*(?:async\s*)?\([^)]*\)\s*(?::\s*\w+)?\s*=>/g;
+    const funcPattern =
+      /(?:function|const|let)\s+\w+\s*[=:]\s*(?:async\s*)?\([^)]*\)\s*(?::\s*\w+)?\s*=>/g;
     const functions = code.match(funcPattern);
     if (functions) {
       for (const func of functions) {
@@ -301,13 +355,16 @@ export class HallucinationDetectorService {
   /**
    * Validate generated code against requirements
    */
-  async validate(code: string, requirements: string[]): Promise<{ valid: boolean; missing: string[] }> {
+  async validate(
+    code: string,
+    requirements: string[]
+  ): Promise<{ valid: boolean; missing: string[] }> {
     const missing: string[] = [];
 
     for (const req of requirements) {
       const reqLower = req.toLowerCase();
       const codeLower = code.toLowerCase();
-      
+
       // Check if requirement is mentioned in code
       if (!codeLower.includes(reqLower)) {
         missing.push(req);
@@ -320,4 +377,3 @@ export class HallucinationDetectorService {
     };
   }
 }
-

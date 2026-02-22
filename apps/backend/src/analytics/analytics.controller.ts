@@ -13,7 +13,7 @@ export class AnalyticsController {
   async getUnifiedAnalytics(
     @Param('businessId') businessId: string,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
+    @Query('endDate') endDate?: string
   ): Promise<any> {
     const dateRange =
       startDate && endDate
@@ -26,4 +26,3 @@ export class AnalyticsController {
     return this.analyticsService.getUnifiedAnalytics(businessId, dateRange);
   }
 }
-

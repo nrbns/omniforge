@@ -9,7 +9,7 @@ import { CreateMarketingAssetDto } from './dto';
 export class MarketingController {
   constructor(
     private readonly marketingService: MarketingService,
-    private readonly abTestingService: ABTestingService,
+    private readonly abTestingService: ABTestingService
   ) {}
 
   @Post()
@@ -42,10 +42,7 @@ export class MarketingController {
   @Post('ab-tests/:testId/assign')
   @ApiOperation({ summary: 'Assign user to A/B test variant' })
   @ApiResponse({ status: 200, description: 'Variant assigned' })
-  async assignVariant(
-    @Param('testId') testId: string,
-    @Body() body: { userId: string },
-  ) {
+  async assignVariant(@Param('testId') testId: string, @Body() body: { userId: string }) {
     const variantId = await this.abTestingService.assignVariant(testId, body.userId);
     return { variantId };
   }
@@ -55,9 +52,14 @@ export class MarketingController {
   @ApiResponse({ status: 200, description: 'Conversion tracked' })
   async trackConversion(
     @Param('testId') testId: string,
-    @Body() body: { variantId: string; userId: string; conversionType: string },
+    @Body() body: { variantId: string; userId: string; conversionType: string }
   ) {
-    await this.abTestingService.trackConversion(testId, body.variantId, body.userId, body.conversionType);
+    await this.abTestingService.trackConversion(
+      testId,
+      body.variantId,
+      body.userId,
+      body.conversionType
+    );
     return { success: true };
   }
 

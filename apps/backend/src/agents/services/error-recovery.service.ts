@@ -19,7 +19,7 @@ export interface ErrorContext {
 
 /**
  * Error recovery service for AI agent failures
- * 
+ *
  * Handles:
  * - AI hallucinations
  * - Code generation errors
@@ -33,9 +33,7 @@ export class ErrorRecoveryService {
   private readonly maxRetries = 3;
   private readonly retryDelays = [1000, 2000, 5000]; // Exponential backoff
 
-  constructor(
-    private hallucinationDetector: HallucinationDetectorService,
-  ) {}
+  constructor(private hallucinationDetector: HallucinationDetectorService) {}
 
   /**
    * Analyze error and suggest recovery action
@@ -120,7 +118,7 @@ export class ErrorRecoveryService {
       /502/i,
     ];
 
-    return retryablePatterns.some(pattern => pattern.test(error.message));
+    return retryablePatterns.some((pattern) => pattern.test(error.message));
   }
 
   /**
@@ -136,7 +134,7 @@ export class ErrorRecoveryService {
       /type error/i,
     ];
 
-    return hallucinationPatterns.some(pattern => pattern.test(error.message));
+    return hallucinationPatterns.some((pattern) => pattern.test(error.message));
   }
 
   /**
@@ -151,7 +149,7 @@ export class ErrorRecoveryService {
       /generation failed/i,
     ];
 
-    return codeGenPatterns.some(pattern => pattern.test(error.message));
+    return codeGenPatterns.some((pattern) => pattern.test(error.message));
   }
 
   /**
@@ -194,10 +192,10 @@ export class ErrorRecoveryService {
    */
   private getFallbackAgent(agent: string): string | null {
     const fallbacks: Record<string, string> = {
-      'FrontendAgent': 'UIDesignerAgent',
-      'BackendAgent': 'PlannerAgent',
-      'RealtimeAgent': 'BackendAgent',
-      'TestAgent': 'CodeReviewAgent',
+      FrontendAgent: 'UIDesignerAgent',
+      BackendAgent: 'PlannerAgent',
+      RealtimeAgent: 'BackendAgent',
+      TestAgent: 'CodeReviewAgent',
     };
 
     return fallbacks[agent] || null;
@@ -226,7 +224,7 @@ export class ErrorRecoveryService {
       /permission denied/i,
     ];
 
-    if (nonRetryablePatterns.some(pattern => pattern.test(error.message))) {
+    if (nonRetryablePatterns.some((pattern) => pattern.test(error.message))) {
       return false;
     }
 
@@ -263,4 +261,3 @@ export class ErrorRecoveryService {
     return 'An unexpected error occurred. Our team has been notified and will investigate.';
   }
 }
-

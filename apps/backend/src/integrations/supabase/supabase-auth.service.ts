@@ -10,7 +10,7 @@ export class SupabaseAuthService {
 
   constructor(
     private configService: ConfigService,
-    private prisma: PrismaService,
+    private prisma: PrismaService
   ) {
     this.supabaseUrl = this.configService.get<string>('SUPABASE_URL');
     this.supabaseKey = this.configService.get<string>('SUPABASE_ANON_KEY');
@@ -73,4 +73,3 @@ export class SupabaseAuthService {
     return contacts as any[];
   }
 }
-

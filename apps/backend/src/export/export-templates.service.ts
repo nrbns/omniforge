@@ -14,7 +14,11 @@ export class ExportTemplatesService {
   /**
    * Export design tokens to Figma format
    */
-  async exportToFigma(businessId: string, figmaApiKey?: string, figmaFileKey?: string): Promise<any> {
+  async exportToFigma(
+    businessId: string,
+    figmaApiKey?: string,
+    figmaFileKey?: string
+  ): Promise<any> {
     // Get design tokens from database (Business -> Project -> DesignToken via projectId)
     const business = await this.prisma.business.findUnique({
       where: { id: businessId },
@@ -32,7 +36,7 @@ export class ExportTemplatesService {
         {
           name: 'OmniForge Design Tokens',
           modes: [{ name: 'Default' }],
-          variables: tokens.map((token) => ({
+          variables: tokens.map((token: { key: string; value: string }) => ({
             name: token.key.replace(/\./g, '/'),
             type: this.inferFigmaType(token.value),
             valuesByMode: {
@@ -336,4 +340,3 @@ export function ProductList() {
 `;
   }
 }
-

@@ -175,7 +175,9 @@ export class ProjectsService {
     }
 
     // Update content via hot patch endpoint (if preview is live)
-    const previewDeployment = project.deployments?.find((d) => d.status === 'LIVE');
+    const previewDeployment = project.deployments?.find(
+      (d: { status: string }) => d.status === 'LIVE'
+    );
     const previewUrl = previewDeployment?.url;
     if (updates.content && previewUrl) {
       // TODO: Call preview deployment's hot patch endpoint
@@ -189,7 +191,10 @@ export class ProjectsService {
   /**
    * Commit visual editor changes
    */
-  async commitChanges(id: string, body: { message: string; tokens?: any; content?: any }): Promise<any> {
+  async commitChanges(
+    id: string,
+    body: { message: string; tokens?: any; content?: any }
+  ): Promise<any> {
     const project = await this.findOne(id);
 
     // Get idea
@@ -203,7 +208,10 @@ export class ProjectsService {
 
     // Get current spec (Prisma JsonValue - cast for merge)
     const rawSpec = idea.specJson;
-    const currentSpec = (typeof rawSpec === 'object' && rawSpec !== null ? rawSpec : {}) as Record<string, unknown>;
+    const currentSpec = (typeof rawSpec === 'object' && rawSpec !== null ? rawSpec : {}) as Record<
+      string,
+      unknown
+    >;
 
     // Merge changes into spec
     const updatedSpec = {

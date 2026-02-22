@@ -9,7 +9,7 @@ export class WorkflowMonitoringService {
 
   constructor(
     private prisma: PrismaService,
-    @InjectQueue('workflow') private workflowQueue: Queue,
+    @InjectQueue('workflow') private workflowQueue: Queue
   ) {}
 
   /**
@@ -46,7 +46,8 @@ export class WorkflowMonitoringService {
       ...(stats as any)[0],
       successRate:
         Number((stats as any)[0]?.total_executions || 0) > 0
-          ? Number((stats as any)[0]?.successful || 0) / Number((stats as any)[0]?.total_executions || 0)
+          ? Number((stats as any)[0]?.successful || 0) /
+            Number((stats as any)[0]?.total_executions || 0)
           : 0,
     };
   }
@@ -94,4 +95,3 @@ export class WorkflowMonitoringService {
     this.logger.log(`Retrying execution ${executionId}`);
   }
 }
-

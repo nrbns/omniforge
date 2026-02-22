@@ -39,11 +39,9 @@ type AwarenessPayload = {
   namespace: '/realtime',
 })
 @Injectable()
-export class RealtimeGateway
-  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
-{
+export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   private readonly logger = new Logger(RealtimeGateway.name);
-  
+
   @WebSocketServer()
   server: Server;
 
@@ -69,7 +67,7 @@ export class RealtimeGateway
 
   constructor(
     private readonly redisService: RedisService,
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaService
   ) {}
 
   afterInit(server: Server) {
@@ -110,10 +108,7 @@ export class RealtimeGateway
    * Join a realtime room with Yjs document.
    */
   @SubscribeMessage('joinRoom')
-  async handleJoinRoom(
-    @MessageBody() payload: RoomJoinPayload,
-    @ConnectedSocket() client: Socket,
-  ) {
+  async handleJoinRoom(@MessageBody() payload: RoomJoinPayload, @ConnectedSocket() client: Socket) {
     const { roomId, userId, ideaId, projectId, userName, userColor } = payload;
     client.join(roomId);
 
@@ -147,7 +142,7 @@ export class RealtimeGateway
             const d = this.yDocs.get(roomId);
             if (!d) return;
             const state = Y.encodeStateAsUpdate(d);
-            
+
             // Persist to Prisma if YjsState model exists
             try {
               await (this.prisma as any).yjsState?.upsert({
@@ -168,19 +163,19 @@ export class RealtimeGateway
               // YjsState model may not exist - that's okay
               this.logger.debug('YjsState persistence skipped (model may not exist)');
             }
-            
+
             // Always cache in Redis for fast access
             await this.redisService.set(
               `yjs:${roomId}`,
               Buffer.from(state).toString('base64'),
-              3600,
+              3600
             );
           } catch (error) {
             this.logger.error('Error persisting Yjs state:', error);
           }
         },
         5000, // Throttle to 5 seconds
-        { leading: false, trailing: true },
+        { leading: false, trailing: true }
       );
       this.persistFunctions.set(roomId, persist as () => Promise<void>);
 
@@ -215,10 +210,7 @@ export class RealtimeGateway
    * Apply Yjs update from client and broadcast to others.
    */
   @SubscribeMessage('applyUpdate')
-  handleApplyUpdate(
-    @MessageBody() payload: YjsUpdatePayload,
-    @ConnectedSocket() client: Socket,
-  ) {
+  handleApplyUpdate(@MessageBody() payload: YjsUpdatePayload, @ConnectedSocket() client: Socket) {
     const { roomId, update } = payload;
     const doc = this.yDocs.get(roomId);
     if (!doc) {
@@ -241,10 +233,7 @@ export class RealtimeGateway
    * Handle awareness updates (cursors, selections, user state).
    */
   @SubscribeMessage('awareness')
-  handleAwareness(
-    @MessageBody() payload: AwarenessPayload,
-    @ConnectedSocket() client: Socket,
-  ) {
+  handleAwareness(@MessageBody() payload: AwarenessPayload, @ConnectedSocket() client: Socket) {
     const { roomId, userId, awareness } = payload;
     // Broadcast awareness to all other clients
     client.to(roomId).emit('awarenessUpdate', {
@@ -261,7 +250,7 @@ export class RealtimeGateway
   @SubscribeMessage('idea:join')
   async handleIdeaJoin(
     @MessageBody() payload: { ideaId: string; userId: string },
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     return this.handleJoinRoom(
       {
@@ -269,7 +258,7 @@ export class RealtimeGateway
         userId: payload.userId,
         ideaId: payload.ideaId,
       },
-      client,
+      client
     );
   }
 
@@ -279,7 +268,7 @@ export class RealtimeGateway
   @SubscribeMessage('idea:update')
   async handleIdeaUpdate(
     @MessageBody() payload: { ideaId: string; update: string },
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     const update = Buffer.from(payload.update, 'base64');
     return this.handleApplyUpdate(
@@ -287,7 +276,7 @@ export class RealtimeGateway
         roomId: `idea:${payload.ideaId}`,
         update: Array.from(update),
       },
-      client,
+      client
     );
   }
 
@@ -298,7 +287,7 @@ export class RealtimeGateway
     roomId: string,
     field: string,
     content: string,
-    position?: number,
+    position?: number
   ): Promise<{ success: boolean; position: number }> {
     let doc = this.yDocs.get(roomId);
     if (!doc) {

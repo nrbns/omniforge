@@ -14,9 +14,7 @@ import { MonitoringService } from '../services/monitoring.service';
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
 
-  constructor(
-    @Inject(MonitoringService) private monitoringService: MonitoringService,
-  ) {}
+  constructor(@Inject(MonitoringService) private monitoringService: MonitoringService) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -43,7 +41,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         `${request.method} ${request.url} ${status}`,
         exception instanceof Error ? exception.stack : JSON.stringify(exception)
       );
-      
+
       // Monitoring will be handled by MonitoringService if injected
       // For now, just log the error
     } else {

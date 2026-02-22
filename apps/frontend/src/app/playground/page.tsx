@@ -193,7 +193,7 @@ export default function PlaygroundPage() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Your app is building!</h2>
                 <p className="text-gray-600">
-                  We're generating your app. This usually takes 1-2 minutes.
+                  We&apos;re generating your app. This usually takes 1-2 minutes.
                 </p>
               </div>
 

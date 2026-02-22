@@ -17,7 +17,7 @@ export interface ExecutionResult {
 
 /**
  * Parallel executor service for running agent tasks in parallel
- * 
+ *
  * Features:
  * - Dependency resolution
  * - Parallel execution where possible
@@ -42,17 +42,17 @@ export class ParallelExecutorService {
     // Execute tasks
     while (completed.size < tasks.length) {
       // Find tasks ready to execute (dependencies met)
-      const ready = tasks.filter(task => {
+      const ready = tasks.filter((task) => {
         if (completed.has(task.id) || executing.has(task.id)) {
           return false;
         }
         const deps = task.dependencies || [];
-        return deps.every(dep => completed.has(dep));
+        return deps.every((dep) => completed.has(dep));
       });
 
       if (ready.length === 0) {
         // Deadlock detection
-        const remaining = tasks.filter(t => !completed.has(t.id));
+        const remaining = tasks.filter((t) => !completed.has(t.id));
         if (remaining.length > 0) {
           this.logger.error('Circular dependency or missing dependency detected');
           for (const task of remaining) {
@@ -69,7 +69,7 @@ export class ParallelExecutorService {
       }
 
       // Execute ready tasks in parallel
-      const promises = ready.map(task => this.executeTask(task, results));
+      const promises = ready.map((task) => this.executeTask(task, results));
       await Promise.allSettled(promises);
 
       // Mark as executing, then completed
@@ -181,9 +181,11 @@ export class ParallelExecutorService {
     return Promise.race([
       task.execute(),
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error(`Task ${task.name} timed out after ${timeoutMs}ms`)), timeoutMs)
+        setTimeout(
+          () => reject(new Error(`Task ${task.name} timed out after ${timeoutMs}ms`)),
+          timeoutMs
+        )
       ),
     ]);
   }
 }
-

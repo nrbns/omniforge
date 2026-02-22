@@ -10,7 +10,11 @@ export class InventoryService {
   /**
    * Update inventory after order
    */
-  async updateInventory(productId: string, quantity: number, operation: 'add' | 'subtract'): Promise<void> {
+  async updateInventory(
+    productId: string,
+    quantity: number,
+    operation: 'add' | 'subtract'
+  ): Promise<void> {
     // TODO: Update product stock in database
     this.logger.log(`Updating inventory for product ${productId}: ${operation} ${quantity}`);
   }
@@ -40,4 +44,3 @@ export class InventoryService {
     this.logger.log(`Triggering reorder for product ${productId}`);
   }
 }
-

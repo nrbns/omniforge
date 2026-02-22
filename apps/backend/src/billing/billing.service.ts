@@ -26,12 +26,7 @@ const PLANS: Record<PlanType, Plan> = {
     id: PlanType.FREE,
     name: 'Free',
     price: 0,
-    features: [
-      '5 ideas per month',
-      '10 builds per month',
-      'Basic agents',
-      'Community support',
-    ],
+    features: ['5 ideas per month', '10 builds per month', 'Basic agents', 'Community support'],
     limits: {
       ideas: 5,
       builds: 10,
@@ -84,7 +79,7 @@ export class BillingService {
 
   constructor(
     private prisma: PrismaService,
-    private stripeService: StripeService,
+    private stripeService: StripeService
   ) {}
 
   /**
@@ -106,7 +101,11 @@ export class BillingService {
   /**
    * Create subscription
    */
-  async createSubscription(userId: string, planId: PlanType, paymentMethodId?: string): Promise<any> {
+  async createSubscription(
+    userId: string,
+    planId: PlanType,
+    paymentMethodId?: string
+  ): Promise<any> {
     const plan = PLANS[planId];
     if (!plan) {
       throw new Error(`Invalid plan: ${planId}`);
@@ -141,9 +140,21 @@ export class BillingService {
   /**
    * Check if user can perform action (based on plan limits)
    */
-  async checkLimit(userId: string, action: 'idea' | 'build' | 'agent' | 'storage'): Promise<boolean> {
+  async checkLimit(
+    userId: string,
+    action: 'idea' | 'build' | 'agent' | 'storage'
+  ): Promise<boolean> {
     const plan = await this.getUserPlan(userId);
-    const limit = plan.limits[action === 'idea' ? 'ideas' : action === 'build' ? 'builds' : action === 'agent' ? 'agents' : 'storage'];
+    const limit =
+      plan.limits[
+        action === 'idea'
+          ? 'ideas'
+          : action === 'build'
+            ? 'builds'
+            : action === 'agent'
+              ? 'agents'
+              : 'storage'
+      ];
 
     if (limit === -1) {
       return true; // Unlimited
@@ -167,4 +178,3 @@ export class BillingService {
     };
   }
 }
-

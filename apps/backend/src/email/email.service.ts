@@ -75,4 +75,3 @@ export class EmailService {
     return mjml;
   }
 }
-

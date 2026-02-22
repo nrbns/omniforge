@@ -28,9 +28,8 @@ export class FeedbackController {
   @ApiResponse({ status: 200, description: 'Status updated' })
   async updateStatus(
     @Param('id') id: string,
-    @Body() body: { status: 'open' | 'in_progress' | 'resolved' | 'closed' },
+    @Body() body: { status: 'open' | 'in_progress' | 'resolved' | 'closed' }
   ) {
     return this.feedbackService.updateStatus(id, body.status);
   }
 }
-

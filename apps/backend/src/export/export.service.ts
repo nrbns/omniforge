@@ -11,7 +11,11 @@ export class ExportService {
   /**
    * Export products to Shopify format
    */
-  async exportToShopify(businessId: string, shopifyApiKey?: string, shopifyStore?: string): Promise<any> {
+  async exportToShopify(
+    businessId: string,
+    shopifyApiKey?: string,
+    shopifyStore?: string
+  ): Promise<any> {
     // Get products from database
     const products = await this.prisma.$queryRaw`
       SELECT * FROM "Product"
@@ -69,7 +73,7 @@ export class ExportService {
               'X-Shopify-Access-Token': shopifyApiKey,
               'Content-Type': 'application/json',
             },
-          },
+          }
         );
         results.push(response.data);
       }
@@ -122,12 +126,16 @@ export class ExportService {
       // Push to HubSpot API
       const results = [];
       for (const contact of hubspotContacts) {
-        const response = await axios.post('https://api.hubapi.com/crm/v3/objects/contacts', contact, {
-          headers: {
-            Authorization: `Bearer ${hubspotApiKey}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await axios.post(
+          'https://api.hubapi.com/crm/v3/objects/contacts',
+          contact,
+          {
+            headers: {
+              Authorization: `Bearer ${hubspotApiKey}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         results.push(response.data);
       }
 
@@ -176,7 +184,9 @@ export class ExportService {
     for (const row of data) {
       const values = headers.map((h) => {
         const value = row[h];
-        return value !== null && value !== undefined ? `"${String(value).replace(/"/g, '""')}"` : '';
+        return value !== null && value !== undefined
+          ? `"${String(value).replace(/"/g, '""')}"`
+          : '';
       });
       csvRows.push(values.join(','));
     }
@@ -216,4 +226,3 @@ export class ExportService {
     return { type, count: data.length, data };
   }
 }
-

@@ -61,7 +61,9 @@ export class FigmaImportService {
       const endpoint = nodeId
         ? `/files/${fileKey}/nodes?ids=${encodeURIComponent(nodeId)}`
         : `/files/${fileKey}`;
-      const res = await this.client.get<FigmaFileResponse | { nodes: Record<string, { document: FigmaNode }> }>(endpoint);
+      const res = await this.client.get<
+        FigmaFileResponse | { nodes: Record<string, { document: FigmaNode }> }
+      >(endpoint);
 
       let doc: FigmaNode;
       let name = 'Figma Import';
@@ -159,7 +161,11 @@ export class FigmaImportService {
       case 'Navbar':
         return { title: base.title || 'App', ctaLabel: 'Get Started' };
       case 'Hero':
-        return { title: base.title || 'Welcome', subtitle: 'Get started today', ctaLabel: 'Learn More' };
+        return {
+          title: base.title || 'Welcome',
+          subtitle: 'Get started today',
+          ctaLabel: 'Learn More',
+        };
       case 'FeatureGrid':
         return { title: 'Features', columns: 3 };
       case 'FeatureCard':
@@ -176,15 +182,31 @@ export class FigmaImportService {
   private getDefaultComponents(): ComponentSpec[] {
     return [
       { id: 'nav-1', type: 'Navbar', props: { title: 'App', ctaLabel: 'Get Started' } },
-      { id: 'hero-1', type: 'Hero', props: { title: 'Welcome', subtitle: 'From Figma', ctaLabel: 'Learn More' } },
+      {
+        id: 'hero-1',
+        type: 'Hero',
+        props: { title: 'Welcome', subtitle: 'From Figma', ctaLabel: 'Learn More' },
+      },
       {
         id: 'fg-1',
         type: 'FeatureGrid',
         props: { title: 'Features', columns: 3 },
         children: [
-          { id: 'fc-1', type: 'FeatureCard', props: { icon: '🚀', title: 'Fast', description: 'Quick.' } },
-          { id: 'fc-2', type: 'FeatureCard', props: { icon: '⚡', title: 'Simple', description: 'Easy.' } },
-          { id: 'fc-3', type: 'FeatureCard', props: { icon: '✨', title: 'Modern', description: 'Today.' } },
+          {
+            id: 'fc-1',
+            type: 'FeatureCard',
+            props: { icon: '🚀', title: 'Fast', description: 'Quick.' },
+          },
+          {
+            id: 'fc-2',
+            type: 'FeatureCard',
+            props: { icon: '⚡', title: 'Simple', description: 'Easy.' },
+          },
+          {
+            id: 'fc-3',
+            type: 'FeatureCard',
+            props: { icon: '✨', title: 'Modern', description: 'Today.' },
+          },
         ],
       },
       { id: 'cta-1', type: 'CTA', props: { title: 'Ready?', buttonLabel: 'Get Started' } },

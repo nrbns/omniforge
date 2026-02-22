@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
     private reflector: Reflector,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {
     super();
   }
@@ -39,4 +39,3 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return user;
   }
 }
-

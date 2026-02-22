@@ -62,9 +62,16 @@ export class ABTestingService {
   /**
    * Track conversion
    */
-  async trackConversion(testId: string, variantId: string, userId: string, conversionType: string): Promise<void> {
+  async trackConversion(
+    testId: string,
+    variantId: string,
+    userId: string,
+    conversionType: string
+  ): Promise<void> {
     // TODO: Store conversion in database
-    this.logger.log(`Conversion tracked: ${conversionType} for variant ${variantId} in test ${testId}`);
+    this.logger.log(
+      `Conversion tracked: ${conversionType} for variant ${variantId} in test ${testId}`
+    );
   }
 
   /**
@@ -88,4 +95,3 @@ export class ABTestingService {
     return null;
   }
 }
-

@@ -18,7 +18,7 @@ export class AuthController {
     // For demo mode, generate token
     const userId = body.userId || `user_${Date.now()}`;
     const token = await this.authService.generateToken(userId, body.email);
-    
+
     return {
       access_token: token,
       token_type: 'Bearer',
@@ -39,4 +39,3 @@ export class AuthController {
     };
   }
 }
-

@@ -36,7 +36,7 @@ export interface UpdateSuggestion {
 
 /**
  * Code analyzer service for understanding generated codebases
- * 
+ *
  * Features:
  * - AST parsing (basic)
  * - Codebase structure analysis
@@ -73,7 +73,11 @@ export class CodeAnalyzerService {
   /**
    * Walk directory and analyze files
    */
-  private async walkDirectory(dir: string, structure: CodebaseStructure, basePath: string = ''): Promise<void> {
+  private async walkDirectory(
+    dir: string,
+    structure: CodebaseStructure,
+    basePath: string = ''
+  ): Promise<void> {
     const entries = await fs.readdir(dir, { withFileTypes: true });
 
     for (const entry of entries) {
@@ -119,7 +123,10 @@ export class CodeAnalyzerService {
   /**
    * Detect file type based on name and path
    */
-  private detectFileType(filename: string, filepath: string): CodebaseStructure['files'][0]['type'] {
+  private detectFileType(
+    filename: string,
+    filepath: string
+  ): CodebaseStructure['files'][0]['type'] {
     const lowerPath = filepath.toLowerCase();
     const lowerName = filename.toLowerCase();
 
@@ -135,7 +142,11 @@ export class CodeAnalyzerService {
     if (lowerPath.includes('service') || lowerName.includes('service')) {
       return 'service';
     }
-    if (lowerPath.includes('model') || lowerPath.includes('schema') || lowerName.includes('model')) {
+    if (
+      lowerPath.includes('model') ||
+      lowerPath.includes('schema') ||
+      lowerName.includes('model')
+    ) {
       return 'model';
     }
     if (lowerName.includes('config') || lowerName.includes('settings')) {
@@ -154,12 +165,12 @@ export class CodeAnalyzerService {
     // Import statements
     const importPattern = /import\s+(?:.*?\s+from\s+)?['"]([^'"]+)['"]/g;
     const imports = [...code.matchAll(importPattern)];
-    dependencies.push(...imports.map(m => m[1]));
+    dependencies.push(...imports.map((m) => m[1]));
 
     // Require statements
     const requirePattern = /require\(['"]([^'"]+)['"]\)/g;
     const requires = [...code.matchAll(requirePattern)];
-    dependencies.push(...requires.map(m => m[1]));
+    dependencies.push(...requires.map((m) => m[1]));
 
     return [...new Set(dependencies)];
   }
@@ -173,7 +184,7 @@ export class CodeAnalyzerService {
     // Named exports
     const exportPattern = /export\s+(?:const|function|class|interface|type)\s+(\w+)/g;
     const namedExports = [...code.matchAll(exportPattern)];
-    exports.push(...namedExports.map(m => m[1]));
+    exports.push(...namedExports.map((m) => m[1]));
 
     // Default exports
     const defaultPattern = /export\s+default\s+(?:class|function|const)?\s*(\w+)?/;
@@ -223,7 +234,11 @@ export class CodeAnalyzerService {
   /**
    * Suggest updates based on change request
    */
-  async suggestUpdate(change: string, codebase: CodebaseStructure, context: any): Promise<UpdateSuggestion[]> {
+  async suggestUpdate(
+    change: string,
+    codebase: CodebaseStructure,
+    context: any
+  ): Promise<UpdateSuggestion[]> {
     const suggestions: UpdateSuggestion[] = [];
 
     // Analyze change request
@@ -247,7 +262,11 @@ export class CodeAnalyzerService {
     }
 
     // Modify feature
-    if (changeLower.includes('modify') || changeLower.includes('update') || changeLower.includes('change')) {
+    if (
+      changeLower.includes('modify') ||
+      changeLower.includes('update') ||
+      changeLower.includes('change')
+    ) {
       const feature = this.extractFeature(change);
       if (feature) {
         const targetFile = this.findFileByFeature(feature, codebase);
@@ -334,7 +353,7 @@ export class CodeAnalyzerService {
       if (file.path.toLowerCase().includes(featureLower)) {
         return file.path;
       }
-      if (file.exports.some(exp => exp.toLowerCase().includes(featureLower))) {
+      if (file.exports.some((exp) => exp.toLowerCase().includes(featureLower))) {
         return file.path;
       }
     }
@@ -352,7 +371,7 @@ export class CodeAnalyzerService {
       if (file.path.toLowerCase().includes(featureLower)) {
         return true;
       }
-      if (file.exports.some(exp => exp.toLowerCase().includes(featureLower))) {
+      if (file.exports.some((exp) => exp.toLowerCase().includes(featureLower))) {
         return true;
       }
     }
@@ -360,4 +379,3 @@ export class CodeAnalyzerService {
     return false;
   }
 }
-

@@ -58,7 +58,10 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Commit visual editor changes' })
   @ApiParam({ name: 'id', description: 'Project ID' })
   @ApiResponse({ status: 200, description: 'Changes committed' })
-  async commit(@Param('id') id: string, @Body() body: { message: string; tokens?: any; content?: any }) {
+  async commit(
+    @Param('id') id: string,
+    @Body() body: { message: string; tokens?: any; content?: any }
+  ) {
     return this.projectsService.commitChanges(id, body);
   }
 }

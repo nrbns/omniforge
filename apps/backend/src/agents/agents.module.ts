@@ -20,7 +20,12 @@ import { LLMService } from '@omniforge/llm';
 
 @Module({
   imports: [
-    BullModule.registerQueue({ name: 'idea-parser' }, { name: 'build' }, { name: 'deploy' }, { name: 'workflow' }),
+    BullModule.registerQueue(
+      { name: 'idea-parser' },
+      { name: 'build' },
+      { name: 'deploy' },
+      { name: 'workflow' }
+    ),
     RAGModule,
     KnowledgeBaseModule,
     ScaffoldModule,

@@ -14,7 +14,7 @@ export class MonitoringService implements OnModuleInit {
 
   private initializeSentry() {
     const sentryDsn = this.configService.get<string>('SENTRY_DSN');
-    
+
     if (!sentryDsn) {
       this.logger.log('Sentry DSN not provided, skipping Sentry initialization');
       return;
@@ -49,7 +49,11 @@ export class MonitoringService implements OnModuleInit {
   /**
    * Capture message for monitoring
    */
-  captureMessage(message: string, level: 'info' | 'warning' | 'error' = 'info', context?: Record<string, any>) {
+  captureMessage(
+    message: string,
+    level: 'info' | 'warning' | 'error' = 'info',
+    context?: Record<string, any>
+  ) {
     const method = level === 'warning' ? 'warn' : level === 'info' ? 'log' : level;
     this.logger[method](message, context);
 
@@ -69,4 +73,3 @@ export class MonitoringService implements OnModuleInit {
     // }
   }
 }
-

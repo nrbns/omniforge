@@ -60,7 +60,7 @@ export class TokensService {
     const tokens = await this.findAll(projectId);
     const grouped: Record<string, Record<string, string>> = {};
 
-    tokens.forEach((token) => {
+    tokens.forEach((token: { category: string; key: string; value: string }) => {
       if (!grouped[token.category]) {
         grouped[token.category] = {};
       }

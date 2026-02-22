@@ -79,7 +79,10 @@ export class AgentsService {
     });
   }
 
-  async generateWorkflow(prompt: string, ideaId?: string): Promise<{
+  async generateWorkflow(
+    prompt: string,
+    ideaId?: string
+  ): Promise<{
     nodes: any[];
     edges: any[];
     metadata: any;
@@ -132,8 +135,12 @@ Generate a workflow that makes sense for: "${prompt}"`;
 
       // Detect workflow type from prompt
       const lowerPrompt = prompt.toLowerCase();
-      
-      if (lowerPrompt.includes('payment') || lowerPrompt.includes('stripe') || lowerPrompt.includes('checkout')) {
+
+      if (
+        lowerPrompt.includes('payment') ||
+        lowerPrompt.includes('stripe') ||
+        lowerPrompt.includes('checkout')
+      ) {
         nodes.push({
           id: String(nodeId++),
           type: 'webhook',

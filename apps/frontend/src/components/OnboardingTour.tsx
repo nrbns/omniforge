@@ -17,7 +17,7 @@ const steps: Step[] = [
     content: (
       <div>
         <h3 className="text-lg font-bold mb-2">🎉 Welcome to OmniForge!</h3>
-        <p>Build your app from idea to deployment in minutes. Let's get started!</p>
+        <p>Build your app from idea to deployment in minutes. Let&apos;s get started!</p>
       </div>
     ),
     placement: 'center',
@@ -29,7 +29,7 @@ const steps: Step[] = [
       <div>
         <h3 className="text-lg font-bold mb-2">Step 1: Share Your Idea 🎯</h3>
         <p>Paste your app idea here—AI will parse it instantly and generate a full spec!</p>
-        <p className="text-sm text-gray-600 mt-2">Example: "Build a todo app with add, edit, delete"</p>
+        <p className="text-sm text-gray-600 mt-2">Example: &quot;Build a todo app with add, edit, delete&quot;</p>
       </div>
     ),
     placement: 'bottom',
@@ -52,7 +52,7 @@ const steps: Step[] = [
       <div>
         <h3 className="text-lg font-bold mb-2">Step 3: Share & Deploy 🌐</h3>
         <p>Deploy to Vercel, share preview links, or generate native apps—all in one flow!</p>
-        <p className="text-sm text-gray-600 mt-2">🎊 First deploy? We'll celebrate with confetti!</p>
+        <p className="text-sm text-gray-600 mt-2">🎊 First deploy? We&apos;ll celebrate with confetti!</p>
       </div>
     ),
     placement: 'bottom',

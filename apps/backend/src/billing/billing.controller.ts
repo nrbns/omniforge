@@ -15,7 +15,7 @@ export class BillingController {
   }
 
   @Get('user/:userId/plan')
-  @ApiOperation({ summary: 'Get user\'s current plan' })
+  @ApiOperation({ summary: "Get user's current plan" })
   @ApiResponse({ status: 200, description: 'User plan' })
   async getUserPlan(@Param('userId') userId: string) {
     return this.billingService.getUserPlan(userId);
@@ -25,11 +25,7 @@ export class BillingController {
   @ApiOperation({ summary: 'Create subscription' })
   @ApiResponse({ status: 200, description: 'Subscription created' })
   async createSubscription(
-    @Body() body: {
-      userId: string;
-      planId: PlanType;
-      paymentMethodId?: string;
-    },
+    @Body() body: { userId: string; planId: PlanType; paymentMethodId?: string }
   ) {
     return this.billingService.createSubscription(body.userId, body.planId, body.paymentMethodId);
   }
@@ -41,4 +37,3 @@ export class BillingController {
     return this.billingService.getUsage(userId);
   }
 }
-

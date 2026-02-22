@@ -142,15 +142,19 @@ export class BuildProcessor extends WorkerHost {
       while (backendAttempt < 3) {
         try {
           backendFiles = await this.backendAgent.generateBackend(plannedSpec);
-          
+
           // Check for hallucinations
           for (const file of backendFiles.files) {
-            const check = await this.hallucinationDetector.detect(file.content, plannedSpec, 'typescript');
+            const check = await this.hallucinationDetector.detect(
+              file.content,
+              plannedSpec,
+              'typescript'
+            );
             if (check.isHallucination) {
               this.logger.warn(`Hallucination detected in ${file.path}: ${check.issues[0]}`);
             }
           }
-          
+
           break; // Success
         } catch (error) {
           backendAttempt++;
@@ -160,14 +164,14 @@ export class BuildProcessor extends WorkerHost {
             agent: 'BackendAgent',
             attempt: backendAttempt,
           });
-          
+
           if (recovery.type === 'abort' || backendAttempt >= 3) {
             throw error;
           }
-          
+
           if (recovery.type === 'retry') {
             const delay = this.errorRecovery.getRetryDelay(backendAttempt - 1);
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise((resolve) => setTimeout(resolve, delay));
             continue;
           }
         }
@@ -310,13 +314,31 @@ export class BuildProcessor extends WorkerHost {
   }
 
   private detectECommerce(spec: any): boolean {
-    const keywords = ['store', 'shop', 'ecommerce', 'e-commerce', 'cart', 'checkout', 'product', 'payment'];
+    const keywords = [
+      'store',
+      'shop',
+      'ecommerce',
+      'e-commerce',
+      'cart',
+      'checkout',
+      'product',
+      'payment',
+    ];
     const specStr = JSON.stringify(spec).toLowerCase();
     return keywords.some((keyword) => specStr.includes(keyword));
   }
 
   private detectCRM(spec: any): boolean {
-    const keywords = ['crm', 'lead', 'contact', 'pipeline', 'deal', 'email', 'campaign', 'marketing'];
+    const keywords = [
+      'crm',
+      'lead',
+      'contact',
+      'pipeline',
+      'deal',
+      'email',
+      'campaign',
+      'marketing',
+    ];
     const specStr = JSON.stringify(spec).toLowerCase();
     return keywords.some((keyword) => specStr.includes(keyword));
   }

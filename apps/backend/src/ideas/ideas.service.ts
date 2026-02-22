@@ -13,7 +13,7 @@ export class IdeasService {
     private agentsService: AgentsService,
     private realtimeService: RealtimeService,
     private realtimeGateway: RealtimeGateway,
-    @Optional() private searchService?: IdeasSearchService,
+    @Optional() private searchService?: IdeasSearchService
   ) {}
 
   async create(dto: CreateIdeaDto) {
@@ -193,7 +193,7 @@ export class IdeasService {
 
     // Simple AI prompt (in production, use actual LLM streaming)
     const aiPrompt = prompt || `Improve and expand this idea description: "${currentDescription}"`;
-    
+
     // Simulate streaming AI response (in production, use actual LLM streaming)
     const improvements = [
       'This idea has great potential. ',
@@ -208,7 +208,12 @@ export class IdeasService {
     const roomId = `idea:${ideaId}`;
     let position = currentDescription.length;
     for (const chunk of improvements) {
-      const result = await this.realtimeGateway.injectAIContent(roomId, 'description', chunk, position);
+      const result = await this.realtimeGateway.injectAIContent(
+        roomId,
+        'description',
+        chunk,
+        position
+      );
       position = result.position;
       // Small delay to simulate streaming
       await new Promise((resolve) => setTimeout(resolve, 200));

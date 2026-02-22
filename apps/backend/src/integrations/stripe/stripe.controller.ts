@@ -15,7 +15,7 @@ export class StripeController {
   async handleWebhook(
     @Req() req: Request,
     @Headers('stripe-signature') signature: string,
-    @Body() body: any,
+    @Body() body: any
   ) {
     // In production, use raw body for webhook signature verification
     // For now, use JSON body (Stripe webhooks should use raw body in production)
@@ -56,14 +56,16 @@ export class StripeController {
   @Post('checkout')
   @ApiOperation({ summary: 'Create Stripe checkout session' })
   @ApiResponse({ status: 200, description: 'Checkout session created' })
-  async createCheckout(@Body() body: {
-    lineItems: Array<{ price: string; quantity: number }>;
-    successUrl: string;
-    cancelUrl: string;
-    customerEmail?: string;
-  }) {
+  async createCheckout(
+    @Body()
+    body: {
+      lineItems: Array<{ price: string; quantity: number }>;
+      successUrl: string;
+      cancelUrl: string;
+      customerEmail?: string;
+    }
+  ) {
     const session = await this.stripeService.createCheckoutSession(body);
     return { sessionId: session.id, url: session.url };
   }
 }
-
