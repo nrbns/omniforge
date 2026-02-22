@@ -1,17 +1,31 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { DeploymentsService } from './deployments.service';
+import { VercelService } from './vercel.service';
 import { CreateDeploymentDto } from './dto';
 
 @ApiTags('deployments')
 @Controller('deployments')
 export class DeploymentsController {
-  constructor(private readonly deploymentsService: DeploymentsService) {}
+  constructor(
+    private readonly deploymentsService: DeploymentsService,
+    private readonly vercelService: VercelService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new deployment' })
   async create(@Body() createDeploymentDto: CreateDeploymentDto) {
     return this.deploymentsService.create(createDeploymentDto);
+  }
+
+  @Post('quick')
+  @ApiOperation({ summary: 'Quick deploy from builder layout (returns URL)' })
+  @ApiResponse({ status: 200, description: 'Deployment URL' })
+  async quickDeploy(
+    @Body() body: { projectName?: string; layout: any },
+  ) {
+    const { projectName = 'omniforge-app', layout } = body;
+    return this.vercelService.deployFromLayout(projectName, layout);
   }
 
   @Get()

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import * as Y from 'yjs';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import { MonacoBinding } from 'y-monaco';
@@ -10,7 +11,8 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { debounce } from 'lodash';
 import { toast } from 'sonner';
-import SandboxEditor from './SandboxEditor';
+
+const SandboxEditor = dynamic(() => import('./SandboxEditor'), { ssr: false });
 import WorkflowBuilder from './WorkflowBuilder';
 import PopupBuilder from './PopupBuilder';
 import { ResponsiveSandbox } from './ResponsiveSandbox';

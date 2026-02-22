@@ -2,9 +2,9 @@
 
 <div align="center">
 
-**The world's first open-source, end-to-end Idea → App → Deployment → App Store AI Builder**
+## **Build startups from ideas with AI-powered agents**
 
-**Powered by Hugging Face AI & Multi-Agent Orchestration**
+**OmniForge turns ideas into production-ready apps, launch workflows, and growth guidance — all in one open-source platform.**
 
 [![Build Status](https://github.com/omniforge/omniforge/actions/workflows/build.yml/badge.svg)](https://github.com/omniforge/omniforge/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,55 +12,142 @@
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Powered-yellow)](https://huggingface.co)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-*Transform your ideas into production-ready apps with AI-powered agents, real-time collaboration, and one-click deployment.*
+*Transform ideas into real apps with multi-agent AI, real-time collaboration, and one-click deployment.*
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Contributing](#-contributing) • [License](#-license)
+[✨ What you can do today](#-what-you-can-do-today) • [⚡ Quick Start](#-quick-start) • [🏗 Architecture](#️-architecture) • [🤝 Contributing](#-contributing)
 
 </div>
 
 ---
 
-## ✨ Features
+## ⭐ Why OmniForge Exists
 
-### 🤖 **Hugging Face AI Integration**
-- **AI-Powered Idea Parsing**: Uses Hugging Face models to intelligently extract app specifications from natural language
-- **Semantic Search**: Vector embeddings for finding similar ideas across your repository
-- **Code Generation**: AI-assisted code generation using StarCoder and Mistral models
-- **Text Classification**: Categorize and understand ideas automatically
+Building a startup today is fragmented.
 
-### 🔥 **Redix Idea Layer**
-- **Idea Version Control**: Git-like versioning for ideas with commits, branches, and merges
-- **Semantic Search**: Hugging Face-powered vector search across your idea repository
-- **Knowledge Graph**: Neo4j-powered graph database for idea relationships
-- **Real-time Collaboration**: Live presence, comments, and idea diffing
+You need:
 
-### 🤖 **Multi-Agent Build Engine** (Powered by Hugging Face)
-- **PlannerAgent**: Uses AI to convert ideas into full application specifications
-- **UIDesignerAgent**: Generates design tokens and Figma-compatible exports
-- **FrontendAgent**: AI-powered Next.js/React/Tailwind code generation
-- **BackendAgent**: Generates NestJS/FastAPI endpoints with Prisma schemas
-- **RealtimeAgent**: Creates WebSocket endpoints and real-time features
-- **TestAgent**: Generates Jest and Playwright tests
-- **DeployAgent**: Sets up CI/CD with GitHub Actions, Vercel, Docker
-- **PackageAgent**: Creates iOS/Android Fastlane configurations
+* design tools
+* coding tools
+* deployment tools
+* collaboration tools
+* marketing tools
 
-### 🎨 **UI/UX System**
-- **Design Tokens**: Centralized design system with colors, spacing, typography
-- **Figma Integration**: Sync tokens with Figma for design workflows
-- **Component Library**: Production-ready React components
-- **Drag-Drop Builder**: Visual UI builder compatibility
+And most founders struggle turning ideas into working products.
 
-### 📱 **Full-Stack Generation**
-- **Web Apps**: Next.js with App Router, TypeScript, Tailwind CSS
-- **Mobile Apps**: React Native / Capacitor wrappers
-- **Backend APIs**: NestJS or FastAPI with Prisma ORM
-- **Real-time**: WebSocket channels for live updates
+**OmniForge exists to reduce this friction.**
 
-### 🚀 **One-Click Deployment**
-- **Web**: Deploy to Vercel, Netlify, or Docker
-- **iOS**: Automated TestFlight uploads with Fastlane
-- **Android**: Google Play Store automation
-- **CI/CD**: GitHub Actions pipelines included
+👉 It converts ideas into structured application specs
+👉 Uses AI agents to generate full-stack apps
+👉 Enables preview and deployment
+👉 Guides founders through launch and growth
+
+The goal is simple:
+**Make building and launching products feel less lonely and more achievable.**
+
+---
+
+## ✨ What You Can Do Today
+
+With OmniForge (Alpha), you can:
+
+✅ Convert ideas into structured app specifications
+✅ Generate full-stack scaffolds (Next.js, NestJS, Prisma)
+✅ Explore multi-agent orchestration workflows
+✅ Experiment with design tokens and UI components
+✅ Run OmniForge locally with zero API keys (demo mode)
+✅ Experience real-time collaboration foundations
+
+OmniForge is still evolving — but the core idea → app pipeline is already explorable.
+
+---
+
+## 🔥 What Makes OmniForge Different
+
+### 🤖 Multi-Agent AI Orchestration
+
+Instead of a single AI response, OmniForge uses specialized agents for planning, design, frontend, backend, testing, deployment, and packaging.
+
+### 🧠 Idea Version Control (Redix Layer)
+
+Ideas behave like code:
+
+* commits
+* branches
+* merges
+* semantic search
+* knowledge graph relationships
+
+### 🚀 End-to-End Execution Flow
+
+OmniForge connects:
+👉 Idea → Specification → Code → Deployment → Launch workflows
+
+This makes it more than an AI builder — it becomes a startup execution platform.
+
+---
+
+## 🎬 Example Flow
+
+```
+Idea → AI Agents → Application Spec → Code Scaffold → Preview → Deploy → Launch
+```
+
+---
+
+## 📸 Demo & Screenshots
+
+*(Add screenshots / GIFs here — builder UI, idea creation, preview, workflow builder)*
+
+---
+
+## 🧭 Project Status
+
+OmniForge is currently **ALPHA** and evolving rapidly.
+
+### ✅ Implemented
+
+* Idea ingestion and parsing
+* Multi-agent orchestration pipeline
+* Next.js frontend + NestJS backend
+* Design tokens and component library
+* Dockerized infrastructure
+* Demo mode (no API keys required)
+
+### 🚧 In Progress
+
+* Real-time collaboration UX
+* Deployment flows and packaging automation
+* Business Engine (CRM, workflows, store)
+* Visual builder integration
+
+### ❌ Not Yet
+
+* Hosted SaaS environment
+* Production-grade RBAC and compliance
+* Marketplace ecosystem
+
+For architecture and milestones, see [docs/REAL_SAAS_BUILDER_ARCHITECTURE.md](./docs/REAL_SAAS_BUILDER_ARCHITECTURE.md).
+
+---
+
+## 💡 Who OmniForge Is For
+
+* Indie hackers exploring ideas
+* Founders building MVPs
+* Agencies prototyping products
+* Open-source contributors interested in AI orchestration
+* Teams experimenting with collaborative product design
+
+---
+
+## ⭐ Why Open Source
+
+OmniForge is open-source because building the future of AI-assisted product creation requires community experimentation and collaboration.
+
+We believe:
+👉 ideas should be versioned
+👉 AI workflows should be transparent
+👉 product creation should be accessible
 
 ---
 
@@ -121,91 +208,6 @@ For a step-by-step manual flow (including real API keys, custom env, and full se
 
 ---
 
-## 📌 Project Status & Roadmap
-
-OmniForge is currently **ALPHA**. We are actively stabilizing the core and building out the Business Engine.
-
-### ✅ Implemented
-
-- Demo mode (no external API keys required)
-- Idea ingestion + basic Redix idea storage and parsing
-- Next.js frontend + NestJS backend, Prisma + PostgreSQL
-- Multi-agent build engine (Planner, UI, Frontend, Backend, Realtime, Test, Deploy, Package)
-- Design tokens and shared UI component library
-- Dockerized infrastructure and CI build workflows
-
-### 🚧 In Progress
-
-- Real-time collaboration (presence, comments, idea diffing) surfaced in the UI
-- Full Redix branches/merges/knowledge graph exploration
-- Business Engine: CRM, marketing, store, workflows (backend implemented, UX in progress)
-- App Store packaging (Fastlane automation) and deployment flows
-- Drag-and-drop visual builder integration
-
-### ❌ Not Yet
-
-- Hosted multi-tenant SaaS environment
-- Production-ready auth/SSO and advanced RBAC
-- Hardening for compliance/security (SOC2, etc.)
-
-For a more detailed roadmap and December beta milestones, see [ROADMAP.md](./ROADMAP.md).
-
----
-
-```bash
-# 1. Copy environment files
-cp apps/backend/.env.example apps/backend/.env
-cp apps/frontend/.env.example apps/frontend/.env.local
-
-# 2. Add your API keys to apps/backend/.env
-# Get Hugging Face key: https://huggingface.co/settings/tokens
-DEMO_MODE=false
-HUGGINGFACE_API_KEY=hf_...
-
-# 3. Start normally
-npm run dev
-```
-
-### 📦 **One-Command Setup**
-
-```bash
-npm run setup
-```
-
-This installs, starts Docker, runs migrations, and seeds data automatically!
-
-### 📚 **Need Help?**
-
-See [QUICKSTART.md](./QUICKSTART.md) for detailed setup instructions.
-
----
-
-## 🤖 Hugging Face Integration
-
-OmniForge uses Hugging Face models throughout the platform:
-
-### **Idea Parsing**
-- **Model**: Mistral-7B-Instruct
-- **Purpose**: Extract structured specifications from natural language ideas
-- **Features**: Understands context, extracts pages, APIs, data models
-
-### **Code Generation**
-- **Model**: StarCoder / StarCoderBase
-- **Purpose**: Generate production-ready TypeScript/React code
-- **Features**: Context-aware code completion, component generation
-
-### **Semantic Search**
-- **Model**: sentence-transformers/all-MiniLM-L6-v2
-- **Purpose**: Vector embeddings for idea similarity search
-- **Features**: Find related ideas, suggest improvements
-
-### **Text Classification**
-- **Models**: DistilBERT, RoBERTa
-- **Purpose**: Categorize ideas, analyze sentiment
-- **Features**: Auto-tagging, quality assessment
-
----
-
 ## 📁 Project Structure
 
 ```
@@ -252,6 +254,32 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture documentation
 - **Auth**: Clerk
 - **CI/CD**: GitHub Actions
 - **Packaging**: Fastlane (iOS/Android)
+
+---
+
+## 🤖 Hugging Face Integration
+
+OmniForge uses Hugging Face models throughout the platform:
+
+### **Idea Parsing**
+- **Model**: Mistral-7B-Instruct
+- **Purpose**: Extract structured specifications from natural language ideas
+- **Features**: Understands context, extracts pages, APIs, data models
+
+### **Code Generation**
+- **Model**: StarCoder / StarCoderBase
+- **Purpose**: Generate production-ready TypeScript/React code
+- **Features**: Context-aware code completion, component generation
+
+### **Semantic Search**
+- **Model**: sentence-transformers/all-MiniLM-L6-v2
+- **Purpose**: Vector embeddings for idea similarity search
+- **Features**: Find related ideas, suggest improvements
+
+### **Text Classification**
+- **Models**: DistilBERT, RoBERTa
+- **Purpose**: Categorize ideas, analyze sentiment
+- **Features**: Auto-tagging, quality assessment
 
 ---
 

@@ -49,8 +49,8 @@
     "prepare": "husky install || true"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
     "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
     "cross-env": "^7.0.3",
     "husky": "^8.0.3",
     "prettier": "^3.1.0",
@@ -63,12 +63,14 @@
   },
   "packageManager": "npm@9.8.1",
   "dependencies": {
+    "@codesandbox/sandpack-react": "^2.20.0",
     "@tiptap/react": "^3.10.7",
     "@tiptap/starter-kit": "^3.10.7",
     "@types/lodash": "^4.17.20",
     "lodash": "^4.17.21",
     "rxjs": "^7.8.2",
-    "yjs": "^13.6.27"
+    "yjs": "^13.6.27",
+    "zustand": "^5.0.11"
   },
   "overrides": {
     "js-yaml": "^4.1.1",

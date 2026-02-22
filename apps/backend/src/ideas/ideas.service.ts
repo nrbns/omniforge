@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, Optional, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { IdeasSearchService } from './ideas-search.service';
 import { AgentsService } from '../agents/agents.service';
@@ -13,6 +13,7 @@ export class IdeasService {
     private agentsService: AgentsService,
     private realtimeService: RealtimeService,
     private realtimeGateway: RealtimeGateway,
+    @Optional() private searchService?: IdeasSearchService,
   ) {}
 
   async create(dto: CreateIdeaDto) {
@@ -22,6 +23,7 @@ export class IdeasService {
         title: dto.title,
         description: dto.description,
         rawInput: dto.rawInput,
+        uiPreferences: dto.uiPreferences ?? undefined,
         status: 'DRAFT',
       },
       include: {

@@ -67,7 +67,7 @@ export class RateLimitMiddleware implements NestMiddleware {
 
   private getKey(req: Request): string {
     // Use IP address or user ID if authenticated
-    const identifier = req.user?.id || req.ip || 'anonymous';
+    const identifier = (req as Request & { user?: { id: string } }).user?.id || req.ip || 'anonymous';
     const path = req.path.replace(/\//g, ':');
     return `rate_limit:${path}:${identifier}`;
   }

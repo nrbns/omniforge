@@ -4,6 +4,21 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Input, Textarea, Button } from '@omniforge/ui';
 
+const UI_STYLE_OPTIONS = [
+  { id: 'modern-saas', label: 'Modern SaaS', desc: 'Clean, professional', icon: '✨' },
+  { id: 'minimal', label: 'Minimal', desc: 'Simple and elegant', icon: '◻️' },
+  { id: 'bold-startup', label: 'Bold Startup', desc: 'High contrast, impactful', icon: '🚀' },
+  { id: 'luxury', label: 'Luxury', desc: 'Premium, refined', icon: '💎' },
+  { id: 'playful', label: 'Playful', desc: 'Fun, vibrant', icon: '🎨' },
+  { id: 'dark-first', label: 'Dark Mode', desc: 'Dark theme by default', icon: '🌙' },
+];
+
+const THEME_OPTIONS = [
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
+  { id: 'auto', label: 'Auto' },
+] as const;
+
 export default function NewIdeaPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -11,6 +26,10 @@ export default function NewIdeaPage() {
     title: '',
     description: '',
     rawInput: '',
+    uiStyle: 'modern-saas',
+    theme: 'light' as 'light' | 'dark' | 'auto',
+    layout: 'landing-page',
+    interaction: 'clean-static',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -34,6 +53,12 @@ export default function NewIdeaPage() {
           title: formData.title,
           description: formData.description || undefined,
           rawInput: formData.rawInput || undefined,
+          uiPreferences: {
+            style: formData.uiStyle,
+            theme: formData.theme,
+            layout: formData.layout,
+            interaction: formData.interaction,
+          },
         }),
       });
 
@@ -96,6 +121,49 @@ export default function NewIdeaPage() {
               helperText="This can include wireframes, user stories, or any other relevant information"
               error={errors.rawInput}
             />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Customize your UI</label>
+              <p className="text-sm text-gray-500 mb-3">Choose a style so your app feels personalized</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {UI_STYLE_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, uiStyle: opt.id })}
+                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
+                      formData.uiStyle === opt.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    <span className="text-lg">{opt.icon}</span>
+                    <div className="font-medium text-gray-900 text-sm mt-1">{opt.label}</div>
+                    <div className="text-xs text-gray-500">{opt.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Theme</label>
+                <div className="flex gap-2">
+                  {THEME_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, theme: opt.id })}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        formData.theme === opt.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {errors.submit && (
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg">

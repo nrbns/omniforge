@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AgentsService } from './agents.service';
-import { AgentsController } from './agents.controller';
 import { WorkflowController } from './workflow.controller';
 import { PopupController } from './popup.controller';
 import { BullModule } from '@nestjs/bullmq';
@@ -29,7 +28,7 @@ import { LLMService } from '@omniforge/llm';
     RealtimeModule,
     HuggingFaceModule,
   ],
-  controllers: [AgentsController, WorkflowController, PopupController],
+  controllers: [WorkflowController, PopupController],
   providers: [
     AgentsService,
     IdeaParserProcessor,
@@ -47,13 +46,13 @@ import { LLMService } from '@omniforge/llm';
         if (process.env.HUGGINGFACE_API_KEY) {
           configs.push({
             provider: 'huggingface' as const,
-            config: { apiKey: process.env.HUGGINGFACE_API_KEY },
+            config: { provider: 'huggingface' as const, apiKey: process.env.HUGGINGFACE_API_KEY },
           });
         }
         if (process.env.OPENAI_API_KEY) {
           configs.push({
             provider: 'openai' as const,
-            config: { apiKey: process.env.OPENAI_API_KEY },
+            config: { provider: 'openai' as const, apiKey: process.env.OPENAI_API_KEY },
           });
         }
         return new LLMService(configs, 'huggingface');

@@ -30,6 +30,12 @@ export default function HomePage() {
             </ConditionalSignedOut>
             <ConditionalSignedIn>
               <Link
+                href="/builder"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+              >
+                Builder
+              </Link>
+              <Link
                 href="/dashboard"
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
@@ -63,10 +69,16 @@ export default function HomePage() {
             </ConditionalSignedOut>
             <ConditionalSignedIn>
               <Link
-                href="/dashboard"
+                href="/builder"
                 className="px-8 py-4 text-lg font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
               >
-                Go to Dashboard
+                Open Builder
+              </Link>
+              <Link
+                href="/dashboard"
+                className="px-8 py-4 text-lg font-semibold border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
+              >
+                Dashboard
               </Link>
             </ConditionalSignedIn>
             <a

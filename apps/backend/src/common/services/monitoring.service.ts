@@ -50,7 +50,8 @@ export class MonitoringService implements OnModuleInit {
    * Capture message for monitoring
    */
   captureMessage(message: string, level: 'info' | 'warning' | 'error' = 'info', context?: Record<string, any>) {
-    this.logger[level](message, context);
+    const method = level === 'warning' ? 'warn' : level === 'info' ? 'log' : level;
+    this.logger[method](message, context);
 
     // In production with Sentry:
     // if (this.sentryInitialized) {

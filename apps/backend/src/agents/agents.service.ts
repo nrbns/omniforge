@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { Idea, Project, Deployment } from '@prisma/client';
+import type { Idea, Project, Deployment } from '@prisma/client';
 
 @Injectable()
 export class AgentsService {

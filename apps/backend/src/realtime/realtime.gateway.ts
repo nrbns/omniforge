@@ -9,7 +9,7 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as Y from 'yjs';
 import { RedisService } from '../redis/redis.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -144,7 +144,9 @@ export class RealtimeGateway
       const persist = throttle(
         async () => {
           try {
-            const state = Y.encodeStateAsUpdate(doc);
+            const d = this.yDocs.get(roomId);
+            if (!d) return;
+            const state = Y.encodeStateAsUpdate(d);
             
             // Persist to Prisma if YjsState model exists
             try {
@@ -180,7 +182,7 @@ export class RealtimeGateway
         5000, // Throttle to 5 seconds
         { leading: false, trailing: true },
       );
-      this.persistFunctions.set(roomId, persist);
+      this.persistFunctions.set(roomId, persist as () => Promise<void>);
 
       // Persist on document updates
       doc.on('update', () => {
@@ -311,7 +313,7 @@ export class RealtimeGateway
     // Trigger persistence
     const persist = this.persistFunctions.get(roomId);
     if (persist) {
-      await persist();
+      await (persist as () => Promise<void>)();
     }
 
     // Broadcast update to all clients

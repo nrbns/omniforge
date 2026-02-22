@@ -147,7 +147,7 @@ export default function WorkflowBuilder({ roomId, userId, ideaId }: WorkflowBuil
         yEdges.delete(0, yEdges.length);
         yEdges.insert(0, edges);
       }
-    }, 500);
+    }, 150);
 
     // Sync on changes
     const unsubscribeNodes = () => {

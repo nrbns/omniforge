@@ -1,7 +1,21 @@
-import { AppSpec, PageSpec, ComponentSpec } from '@omniforge/shared';
+import { AppSpec, PageSpec, ComponentSpec, UIPreferences } from '@omniforge/shared';
+
+const STYLE_PRESETS: Record<string, { nav: string; hero: string; card: string; cta: string; footer: string }> = {
+  'minimal': { nav: 'bg-white border-b', hero: 'bg-gray-50', card: 'border border-gray-200', cta: 'bg-gray-900', footer: 'bg-gray-100' },
+  'modern-saas': { nav: 'bg-white/80 backdrop-blur-sm border-b', hero: 'bg-gradient-to-br from-primary-500 to-primary-700', card: 'rounded-xl border shadow-sm', cta: 'bg-primary-600', footer: 'bg-gray-900' },
+  'glassmorphism': { nav: 'bg-white/20 backdrop-blur-xl border-white/20', hero: 'bg-gradient-to-br from-violet-500/80 to-purple-700/80 backdrop-blur', card: 'bg-white/10 backdrop-blur border-white/20', cta: 'bg-white/20 backdrop-blur', footer: 'bg-black/20 backdrop-blur' },
+  'neumorphism': { nav: 'bg-gray-100 shadow-inner', hero: 'bg-gray-100', card: 'bg-gray-100 shadow-[inset_2px_2px_4px_#fff,inset_-2px_-2px_4px_#ccc]', cta: 'bg-gray-100 shadow-lg', footer: 'bg-gray-200' },
+  'bold-startup': { nav: 'bg-black text-white', hero: 'bg-black text-white', card: 'border-2 border-black', cta: 'bg-yellow-400 text-black', footer: 'bg-black text-white' },
+  'luxury': { nav: 'bg-amber-50 border-amber-200', hero: 'bg-gradient-to-b from-amber-50 to-amber-100', card: 'border-amber-200 shadow-amber-100/50', cta: 'bg-amber-800 text-amber-50', footer: 'bg-amber-900 text-amber-200' },
+  'playful': { nav: 'bg-pink-100', hero: 'bg-gradient-to-r from-pink-400 to-purple-400', card: 'rounded-2xl border-4 border-pink-300', cta: 'bg-green-400 text-white', footer: 'bg-purple-600 text-white' },
+  'dark-first': { nav: 'bg-gray-900 border-gray-700', hero: 'bg-gray-900', card: 'bg-gray-800 border-gray-700', cta: 'bg-violet-600', footer: 'bg-black' },
+  'material': { nav: 'shadow-md', hero: 'bg-primary-600', card: 'shadow-lg rounded', cta: 'bg-primary-700', footer: 'bg-gray-800' },
+  'ios': { nav: 'bg-gray-100/80 backdrop-blur-xl', hero: 'bg-white', card: 'rounded-2xl shadow-sm', cta: 'bg-blue-500', footer: 'bg-gray-100' },
+};
 
 export class FrontendAgent {
   private huggingFaceService: any;
+  private _uiPrefs: UIPreferences | undefined;
 
   constructor(huggingFaceService?: any) {
     this.huggingFaceService = huggingFaceService;
@@ -11,6 +25,7 @@ export class FrontendAgent {
    * Generates comprehensive Next.js frontend code with Hugging Face assistance
    */
   async generateFrontend(spec: AppSpec): Promise<{ files: Array<{ path: string; content: string }> }> {
+    this._uiPrefs = spec.uiPreferences;
     const files: Array<{ path: string; content: string }> = [];
 
     // Generate layout (await is not needed here as it's synchronous)
@@ -143,10 +158,75 @@ export const metadata: Metadata = {
     };
   }
 
+  private getStylePreset() {
+    const style = this._uiPrefs?.style || 'modern-saas';
+    return STYLE_PRESETS[style] || STYLE_PRESETS['modern-saas'];
+  }
+
+  private getThemeClasses() {
+    const theme = this._uiPrefs?.theme || 'light';
+    const dark = theme === 'dark' || (theme === 'auto' && false);
+    return dark
+      ? { text: 'text-white', textMuted: 'text-gray-400', bg: 'bg-gray-900', border: 'border-gray-700' }
+      : { text: 'text-gray-900', textMuted: 'text-gray-600', bg: 'bg-white', border: 'border-gray-200' };
+  }
+
   private generateComponentCode(component: ComponentSpec, index: number): string {
-    return `<div key="${index}" className="mb-4">
-      {/* ${component.type} component */}
-    </div>`;
+    const type = (component.type || '').toLowerCase().replace(/\s/g, '');
+    const props = component.props || {};
+    const s = this.getStylePreset();
+    const tc = this.getThemeClasses();
+
+    const esc = (v: unknown) =>
+      String(v ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ');
+
+    const children = component.children
+      ?.map((c, i) => this.generateComponentCode(c, i))
+      .join('\n        ') || '';
+
+    switch (type) {
+      case 'navbar':
+      case 'nav':
+      case 'header':
+        return `<nav key="${index}" className="flex items-center justify-between px-6 py-4 ${s.nav} ${tc.border}">
+          <span className="text-xl font-bold ${tc.text}">${esc(props.title || 'Brand')}</span>
+          <button className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors">${esc(props.ctaLabel || 'Get Started')}</button>
+        </nav>`;
+      case 'hero':
+        return `<section key="${index}" className="py-20 px-6 text-center ${s.hero}">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">${esc(props.title || 'Build Something Amazing')}</h1>
+            <p className="text-lg mb-8 text-white/90">${esc(props.subtitle || '')}</p>
+            <button className="px-6 py-3 bg-white text-primary-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors">${esc(props.ctaLabel || 'Get Started')}</button>
+          </div>
+        </section>`;
+      case 'featuregrid':
+      case 'features':
+        return children
+          ? `<section key="${index}" className="py-16 px-6"><h2 className="text-2xl font-bold text-center mb-8 ${tc.text}">${esc(props.title || 'Features')}</h2><div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        ${children}
+        </div></section>`
+          : `<section key="${index}" className="py-16 px-6"><h2 className="text-2xl font-bold text-center mb-8 ${tc.text}">${esc(props.title || 'Features')}</h2><div className="max-w-6xl mx-auto grid gap-8" /></section>`;
+      case 'featurecard':
+      case 'feature_card':
+        return `<div key="${index}" className="p-6 ${s.card} ${tc.bg}">
+          <div className="text-3xl mb-3">${esc(props.icon || '✨')}</div>
+          <h3 className="text-xl font-semibold mb-2 ${tc.text}">${esc(props.title || 'Feature')}</h3>
+          <p className="${tc.textMuted}">${esc(props.description || '')}</p>
+        </div>`;
+      case 'cta':
+      case 'calltoaction':
+        return `<section key="${index}" className="py-16 px-6 ${s.cta} text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">${esc(props.title || 'Ready to get started?')}</h2>
+          <button className="px-8 py-3 bg-white text-primary-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors">${esc(props.buttonLabel || 'Get Started')}</button>
+        </section>`;
+      case 'footer':
+        return `<footer key="${index}" className="py-8 px-6 ${s.footer} ${tc.textMuted} text-center">
+          © ${new Date().getFullYear()} ${esc(props.brand || 'App')}
+        </footer>`;
+      default:
+        return `<div key="${index}" className="mb-4">{/* ${component.type} */}</div>`;
+    }
   }
 
   private generateSharedComponents(): Array<{ path: string; content: string }> {

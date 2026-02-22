@@ -291,11 +291,11 @@ export default function SandboxEditor({
         });
 
         const reader = process.output.getReader();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const decoder = new TextDecoder();
-          appendOutput(decoder.decode(value));
+        let readResult = await reader.read();
+        while (!readResult.done) {
+          const val = readResult.value;
+          appendOutput(typeof val === 'string' ? val : new TextDecoder().decode(val as BufferSource));
+          readResult = await reader.read();
         }
 
         const exitCode = await process.exit;

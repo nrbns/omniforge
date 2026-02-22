@@ -15,10 +15,15 @@ export class ExportTemplatesService {
    * Export design tokens to Figma format
    */
   async exportToFigma(businessId: string, figmaApiKey?: string, figmaFileKey?: string): Promise<any> {
-    // Get design tokens from database
-    const tokens = await this.prisma.designToken.findMany({
-      where: { project: { businessId } },
+    // Get design tokens from database (Business -> Project -> DesignToken via projectId)
+    const business = await this.prisma.business.findUnique({
+      where: { id: businessId },
+      select: { projectId: true },
     });
+    const projectId = business?.projectId;
+    const tokens = projectId
+      ? await this.prisma.designToken.findMany({ where: { projectId } })
+      : [];
 
     // Convert to Figma variables format
     const figmaVariables = {
@@ -67,10 +72,9 @@ export class ExportTemplatesService {
    * Export products to Shopify template format
    */
   async exportProductsToShopifyTemplate(businessId: string): Promise<string> {
-    const products = await this.prisma.$queryRaw`
-      SELECT * FROM "Product"
-      WHERE "businessId" = ${businessId}
-    `.catch(() => []);
+    const products = await this.prisma.product.findMany({
+      where: { store: { businessId } },
+    });
 
     // Generate Shopify Liquid template
     const liquidTemplate = `{% comment %}
@@ -143,10 +147,9 @@ export class ExportTemplatesService {
    * Export to Next.js template
    */
   async exportToNextJSTemplate(businessId: string): Promise<any> {
-    const products = await this.prisma.$queryRaw`
-      SELECT * FROM "Product"
-      WHERE "businessId" = ${businessId}
-    `.catch(() => []);
+    const products = await this.prisma.product.findMany({
+      where: { store: { businessId } },
+    });
 
     return {
       format: 'nextjs',
@@ -256,7 +259,7 @@ export default function ProductDetailPage() {
         <img src={product.imageUrl} alt={product.name} className="rounded-lg" />
         <div>
           <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-          <p className="text-xl text-green-600 font-bold mb-4">${product.price}</p>
+          <p className="text-xl text-green-600 font-bold mb-4">\${product.price}</p>
           <p className="text-gray-600 mb-6">{product.description}</p>
           <button className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700">
             Add to Cart
@@ -294,7 +297,7 @@ export function ProductCard({ product }: ProductCardProps) {
       )}
       <div className="p-4">
         <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-        <p className="text-green-600 font-bold mb-4">${product.price}</p>
+        <p className="text-green-600 font-bold mb-4">\${product.price}</p>
         <button className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700">
           Add to Cart
         </button>
@@ -323,7 +326,7 @@ export function ProductList() {
         <div key={product.id} className="product-card">
           <img src={product.imageUrl} alt={product.name} />
           <h3>{product.name}</h3>
-          <p className="price">${product.price}</p>
+          <p className="price">\${product.price}</p>
           <button>Add to Cart</button>
         </div>
       ))}

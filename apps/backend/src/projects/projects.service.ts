@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AgentsService } from '../agents/agents.service';
 import { RealtimeService } from '../realtime/realtime.service';
@@ -6,6 +6,8 @@ import { CreateProjectDto, UpdateProjectDto, BuildProjectDto } from './dto';
 
 @Injectable()
 export class ProjectsService {
+  private readonly logger = new Logger(ProjectsService.name);
+
   constructor(
     private prisma: PrismaService,
     private agentsService: AgentsService,
@@ -173,10 +175,12 @@ export class ProjectsService {
     }
 
     // Update content via hot patch endpoint (if preview is live)
-    if (updates.content && project.previewUrl) {
+    const previewDeployment = project.deployments?.find((d) => d.status === 'LIVE');
+    const previewUrl = previewDeployment?.url;
+    if (updates.content && previewUrl) {
       // TODO: Call preview deployment's hot patch endpoint
       // For now, just log
-      this.logger.log('Hot patching content to:', project.previewUrl);
+      this.logger.log('Hot patching content to:', previewUrl);
     }
 
     return { success: true, message: 'Changes applied live' };
@@ -197,14 +201,15 @@ export class ProjectsService {
       throw new Error('Idea not found');
     }
 
-    // Get current spec
-    const currentSpec = idea.specJson || {};
+    // Get current spec (Prisma JsonValue - cast for merge)
+    const rawSpec = idea.specJson;
+    const currentSpec = (typeof rawSpec === 'object' && rawSpec !== null ? rawSpec : {}) as Record<string, unknown>;
 
     // Merge changes into spec
     const updatedSpec = {
       ...currentSpec,
-      tokens: body.tokens || currentSpec.tokens,
-      content: body.content || currentSpec.content,
+      tokens: body.tokens ?? (currentSpec.tokens as unknown),
+      content: body.content ?? (currentSpec.content as unknown),
     };
 
     // Update idea spec

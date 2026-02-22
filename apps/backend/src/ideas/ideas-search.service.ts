@@ -19,7 +19,7 @@ export class IdeasSearchService {
   async searchSimilar(ideaId: string, limit: number = 10): Promise<any[]> {
     const idea = await this.prisma.idea.findUnique({
       where: { id: ideaId },
-      include: { currentCommit: true },
+      include: { commits: { orderBy: { createdAt: 'desc' }, take: 1 } },
     });
 
     if (!idea) {
@@ -42,7 +42,7 @@ export class IdeasSearchService {
         ],
       },
       take: limit,
-      include: { currentCommit: true },
+      include: { commits: { orderBy: { createdAt: 'desc' }, take: 1 } },
     });
 
     return similarIdeas.map((i) => ({
@@ -69,7 +69,7 @@ export class IdeasSearchService {
         ],
       },
       take: limit,
-      include: { currentCommit: true },
+      include: { commits: { orderBy: { createdAt: 'desc' }, take: 1 } },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -82,14 +82,15 @@ export class IdeasSearchService {
   async buildKnowledgeGraph(ideaId: string): Promise<void> {
     const idea = await this.prisma.idea.findUnique({
       where: { id: ideaId },
-      include: { currentCommit: true },
+      include: { commits: { orderBy: { createdAt: 'desc' }, take: 1 } },
     });
 
-    if (!idea || !idea.currentCommit) {
+    const currentCommit = idea?.commits?.[0];
+    if (!idea || !currentCommit) {
       return;
     }
 
-    const spec = idea.currentCommit.specJson as any;
+    const spec = (currentCommit.specSnapshot ?? {}) as any;
 
     // Extract concepts from spec
     const concepts: string[] = [];

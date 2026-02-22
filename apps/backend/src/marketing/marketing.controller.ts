@@ -35,7 +35,7 @@ export class MarketingController {
   @Post('ab-tests')
   @ApiOperation({ summary: 'Create A/B test' })
   @ApiResponse({ status: 200, description: 'A/B test created' })
-  async createABTest(@Body() body: any) {
+  async createABTest(@Body() body: any): Promise<any> {
     return this.abTestingService.createTest(body);
   }
 

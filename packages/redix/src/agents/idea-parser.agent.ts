@@ -1,5 +1,4 @@
-import { Idea } from '@omniforge/shared';
-import { AppSpec } from '@omniforge/shared';
+import { Idea, AppSpec, UIPreferences } from '@omniforge/shared';
 import { RAGService } from '@omniforge/rag';
 import { LLMService } from '@omniforge/llm';
 import { TemplateRetrievalService } from '@omniforge/knowledge-base';
@@ -24,11 +23,13 @@ export class IdeaParserAgent {
    */
   async parseIdea(idea: Idea): Promise<AppSpec> {
     const fullText = `${idea.title}\n\n${idea.description || ''}\n\n${idea.rawInput || ''}`;
+    let spec: AppSpec;
 
     // Use RAG if available for enhanced parsing with context
     if (this.ragService && this.llmService) {
       try {
-        return await this.parseWithRAG(idea, fullText);
+        spec = await this.parseWithRAG(idea, fullText);
+        return this.mergeUIPreferences(spec, idea);
       } catch (error) {
         console.error('RAG parsing failed, falling back to direct LLM:', error);
       }
@@ -37,7 +38,8 @@ export class IdeaParserAgent {
     // Use LLM directly if available
     if (this.llmService) {
       try {
-        return await this.parseWithLLM(idea, fullText);
+        spec = await this.parseWithLLM(idea, fullText);
+        return this.mergeUIPreferences(spec, idea);
       } catch (error) {
         console.error('LLM parsing failed, falling back to heuristics:', error);
       }
@@ -45,6 +47,17 @@ export class IdeaParserAgent {
 
     // Fallback to heuristic-based parsing
     return this.parseWithHeuristics(idea);
+  }
+
+  private mergeUIPreferences(spec: AppSpec, idea: Idea): AppSpec {
+    if (!idea.uiPreferences) return spec;
+    const prefs = this.normalizeUIPreferences(idea.uiPreferences);
+    const theme = prefs.theme === 'dark' ? 'dark' : prefs.theme === 'light' ? 'light' : (spec.ui?.theme || 'light');
+    return {
+      ...spec,
+      ui: { ...spec.ui, theme, primaryColor: spec.ui?.primaryColor || '#3b82f6' },
+      uiPreferences: prefs,
+    };
   }
 
   private async parseWithRAG(idea: Idea, fullText: string): Promise<AppSpec> {
@@ -81,11 +94,15 @@ export class IdeaParserAgent {
       throw new Error('LLM service not available');
     }
 
+    const uiPrefsHint = idea.uiPreferences
+      ? `\n\nUI/UX preferences (apply to generated spec): style=${idea.uiPreferences.style || 'modern-saas'}, theme=${idea.uiPreferences.theme || 'light'}, layout=${idea.uiPreferences.layout || 'landing-page'}, interaction=${idea.uiPreferences.interaction || 'clean-static'}`
+      : '';
+
     const prompt = `Parse this app idea into a structured JSON specification:
 
 Title: ${idea.title}
 Description: ${idea.description || ''}
-Raw Input: ${idea.rawInput || ''}
+Raw Input: ${idea.rawInput || ''}${uiPrefsHint}
 
 Extract:
 1. Pages with routes and components
@@ -93,7 +110,7 @@ Extract:
 3. API endpoints needed
 4. Real-time features required
 5. Third-party integrations
-6. UI/UX requirements
+6. UI/UX requirements (respect user preferences above)
 
 Return ONLY valid JSON:`;
 
@@ -121,6 +138,8 @@ Return ONLY valid JSON:`;
   }
 
   private parseWithHeuristics(idea: Idea): AppSpec {
+    const prefs = idea.uiPreferences;
+    const theme = prefs?.theme === 'dark' || prefs?.theme === 'auto' ? 'dark' : 'light';
     const spec: AppSpec = {
       version: '1.0.0',
       name: idea.title,
@@ -131,14 +150,25 @@ Return ONLY valid JSON:`;
       realtime: this.extractRealtime(idea),
       integrations: this.extractIntegrations(idea),
       ui: {
-        theme: 'light',
+        theme: prefs?.theme === 'dark' ? 'dark' : 'light',
         primaryColor: '#3b82f6',
       },
+      uiPreferences: prefs ? this.normalizeUIPreferences(prefs) : undefined,
       generatedAt: new Date().toISOString(),
     };
 
     return spec;
   }
+
+  private normalizeUIPreferences(prefs: UIPreferences): UIPreferences {
+    return {
+      style: prefs.style || 'modern-saas',
+      theme: prefs.theme || 'light',
+      layout: prefs.layout || 'landing-page',
+      interaction: prefs.interaction || 'clean-static',
+    };
+  }
+
 
   private extractPages(idea: Idea): any[] {
     const pages: any[] = [

@@ -39,6 +39,8 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { AuthModule } from './auth/auth.module';
 import { ShowcaseModule } from './showcase/showcase.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { ImportModule } from './import/import.module';
+import { BuilderModule } from './builder/builder.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
@@ -99,6 +101,8 @@ import { RateLimitMiddleware } from './common/middleware/rate-limit.middleware';
     AuthModule,
     ShowcaseModule,
     FeedbackModule,
+    ImportModule,
+    BuilderModule,
   ],
   providers: [
     {

@@ -1,9 +1,10 @@
 /**
  * PythonRunner - Singleton class for running Python code via Pyodide
  * Handles WASM loading, stdout/stderr capture, and package management
+ * Uses dynamic import for pyodide to avoid build errors (node: deps)
  */
 
-import { loadPyodide, PyodideInterface } from 'pyodide';
+type PyodideInterface = any;
 
 class PythonRunner {
   private _pyodide: PyodideInterface | null = null;
@@ -23,6 +24,12 @@ class PythonRunner {
 
     this._loading = true;
     try {
+      // Load from CDN to avoid webpack bundling (pyodide uses node: imports)
+      const pyodideUrl = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.mjs';
+      const { loadPyodide } = await import(
+        /* webpackIgnore: true */
+        pyodideUrl
+      );
       this._pyodide = await loadPyodide({
         indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/',
         stdout: (text: string) => {

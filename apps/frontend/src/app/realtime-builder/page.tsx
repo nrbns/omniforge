@@ -1,8 +1,13 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import RealtimeBuilder from '../../components/RealtimeBuilder';
+
+const RealtimeBuilder = dynamic(
+  () => import('../../components/RealtimeBuilder'),
+  { ssr: false, loading: () => <div className="min-h-screen flex items-center justify-center">Loading builder...</div> }
+);
 
 function RealtimeBuilderContent() {
   const searchParams = useSearchParams();

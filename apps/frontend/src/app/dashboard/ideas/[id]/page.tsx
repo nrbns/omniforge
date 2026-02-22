@@ -220,10 +220,16 @@ export default function IdeaDetailPage() {
           <h1 className="text-2xl font-bold text-gray-900">{idea.title}</h1>
               <div className="flex gap-2">
                 <button
-                  onClick={() => router.push(`/realtime-builder?roomId=idea:${id}&ideaId=${id}&userId=demo-user`)}
+                  onClick={() => router.push(`/builder?ideaId=${id}`)}
                   className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
                 >
-                  🚀 Open Realtime Builder
+                  🎨 Canvas Builder
+                </button>
+                <button
+                  onClick={() => router.push(`/realtime-builder?roomId=idea:${id}&ideaId=${id}&userId=demo-user`)}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                >
+                  🔄 Realtime Builder
                 </button>
                 {idea.status === 'DRAFT' && (
                   <button

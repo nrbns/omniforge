@@ -5,6 +5,8 @@ export interface Idea {
   description?: string;
   rawInput?: string;
   specJson?: any;
+  /** UI/UX style preferences for personalized app generation */
+  uiPreferences?: UIPreferences;
   status: 'DRAFT' | 'PARSING' | 'PARSED' | 'BUILDING' | 'BUILT' | 'DEPLOYED' | 'FAILED';
   branch: string;
   parentIdeaId?: string;
@@ -73,6 +75,8 @@ export interface AppSpec {
   realtime: RealtimeSpec[];
   integrations: IntegrationSpec[];
   ui: UISpec;
+  /** UI/UX style preferences for personalized generation */
+  uiPreferences?: UIPreferences;
   generatedAt: string;
 }
 
@@ -123,4 +127,41 @@ export interface UISpec {
   primaryColor: string;
   tokens?: Record<string, any>;
 }
+
+/** UI/UX style preferences — first-class input for personalization */
+export interface UIPreferences {
+  style?: VisualStyle;
+  theme?: 'light' | 'dark' | 'auto';
+  layout?: LayoutStyle;
+  interaction?: InteractionStyle;
+}
+
+export type VisualStyle =
+  | 'minimal'
+  | 'modern-saas'
+  | 'glassmorphism'
+  | 'neumorphism'
+  | 'bold-startup'
+  | 'luxury'
+  | 'playful'
+  | 'dark-first'
+  | 'material'
+  | 'ios';
+
+export type LayoutStyle =
+  | 'landing-page'
+  | 'dashboard'
+  | 'marketplace'
+  | 'social-app'
+  | 'e-commerce'
+  | 'mobile-first'
+  | 'enterprise-panel'
+  | 'one-page-app';
+
+export type InteractionStyle =
+  | 'clean-static'
+  | 'animated'
+  | 'micro-interactions'
+  | 'gamified'
+  | 'conversion-focused';
 

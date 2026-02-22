@@ -66,6 +66,7 @@ export class IdeaParserProcessor extends WorkerHost {
         rawInput: idea.rawInput ?? undefined,
         parentIdeaId: idea.parentIdeaId ?? undefined,
         specJson: idea.specJson ?? undefined,
+        uiPreferences: (idea as any).uiPreferences ?? undefined,
       };
       const spec = await ideaParserAgent.parseIdea(ideaForParsing);
 

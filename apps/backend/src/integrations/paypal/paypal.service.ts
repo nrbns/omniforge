@@ -50,11 +50,13 @@ export class PayPalService {
         },
       );
 
-      this.accessToken = response.data.access_token;
+      const token = response.data.access_token;
+      this.accessToken = token;
       const expiresIn = response.data.expires_in || 3600;
       this.tokenExpiry = new Date(Date.now() + expiresIn * 1000);
 
-      return this.accessToken;
+      if (!token) throw new Error('No access token in PayPal response');
+      return token;
     } catch (error) {
       this.logger.error('Failed to get PayPal access token:', error);
       throw new Error('Failed to authenticate with PayPal');

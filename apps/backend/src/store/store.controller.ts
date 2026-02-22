@@ -35,11 +35,11 @@ export class StoreController {
 
     // Import products
     const imported = [];
-    for (const record of records) {
+    for (const record of records as Array<Record<string, string>>) {
       // TODO: Create product in database
       imported.push({
         name: record.name || record.product_name,
-        price: parseFloat(record.price || 0),
+        price: parseFloat(record.price || '0'),
         description: record.description,
         stock: parseInt(record.stock || record.quantity || '0', 10),
       });

@@ -85,26 +85,28 @@ export class BuildProcessor extends WorkerHost {
 
       if (isECommerce && this.ecommAgent) {
         await this.updateBuildLog(buildId, 'Generating e-commerce store...');
+        const ps = plannedSpec as unknown as Record<string, unknown>;
         const ecommOutput = await this.ecommAgent.generate({
-          title: plannedSpec.name || spec.title || 'Store',
+          title: plannedSpec.name || (spec as any).title || 'Store',
           description: plannedSpec.description || '',
-          products: plannedSpec.products || [],
+          products: (ps.products as any[]) || [],
           paymentMethods: ['stripe'],
           shipping: { enabled: true },
         });
         // Merge e-commerce code into planned spec
-        plannedSpec.ecommerce = ecommOutput;
+        ps.ecommerce = ecommOutput;
         await this.updateProgress(buildId, 12);
       }
 
       if (needsCRM && this.crmAgent) {
         await this.updateBuildLog(buildId, 'Generating CRM and marketing...');
+        const ps = plannedSpec as unknown as Record<string, unknown>;
         const crmOutput = await this.crmAgent.generate({
-          businessType: plannedSpec.businessType || 'General',
-          audience: plannedSpec.audience || 'General',
+          businessType: (ps.businessType as string) || 'General',
+          audience: (ps.audience as string) || 'General',
         });
         // Merge CRM code into planned spec
-        plannedSpec.crm = crmOutput;
+        ps.crm = crmOutput;
         await this.updateProgress(buildId, 14);
       }
 
@@ -184,12 +186,12 @@ export class BuildProcessor extends WorkerHost {
 
       // Step 7: Write all files
       await this.updateBuildLog(buildId, 'Writing generated files...');
-      const outputPath = await this.writeFiles(projectId, {
+      const outputPath = await this.writeFiles(projectId, [
         ...frontendFiles.files,
-        ...backendFiles.files,
+        ...(backendFiles?.files ?? []),
         ...realtimeFiles.files,
         ...testFiles.files,
-      });
+      ]);
       await this.updateProgress(buildId, 95);
 
       // Step 8: Install dependencies

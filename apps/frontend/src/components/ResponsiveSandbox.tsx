@@ -77,16 +77,3 @@ export function ResponsiveSandbox({ children, defaultView = 'split' }: Responsiv
   return <div className="flex h-full">{children}</div>;
 }
 
-/**
- * Responsive Monaco Editor Wrapper
- */
-export function ResponsiveMonacoEditor({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="h-full w-full">
-      <ResponsiveSandbox>
-        <div className="flex-1 overflow-hidden">{children}</div>
-      </ResponsiveSandbox>
-    </div>
-  );
-}
-

@@ -14,7 +14,7 @@ export class AnalyticsController {
     @Param('businessId') businessId: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
-  ) {
+  ): Promise<any> {
     const dateRange =
       startDate && endDate
         ? {

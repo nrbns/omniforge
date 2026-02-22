@@ -30,5 +30,30 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  /* Premium builder glass panels */
+  .glass-panel {
+    @apply backdrop-blur-xl border border-white/[0.08];
+    background: rgba(17, 24, 39, 0.6);
+  }
+  .glass-panel-light {
+    @apply backdrop-blur-lg border border-white/10;
+    background: rgba(255, 255, 255, 0.03);
+  }
+}
+
+/* Shimmer loading animation */
+@keyframes shimmer-move {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.03) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-move 1.5s infinite;
 }
 

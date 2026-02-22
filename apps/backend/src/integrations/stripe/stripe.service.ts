@@ -11,7 +11,7 @@ export class StripeService {
     const apiKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     if (apiKey) {
       this.stripe = new Stripe(apiKey, {
-        apiVersion: '2024-11-20.acacia',
+        apiVersion: '2025-10-29.clover' as Stripe.LatestApiVersion,
       });
       this.logger.log('✅ Stripe service initialized');
     } else {
